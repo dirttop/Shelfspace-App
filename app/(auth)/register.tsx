@@ -3,11 +3,12 @@ import { View, Text, TextInput, Button } from 'react-native';
 
 const RegisterScreen = () => {
   const [email, setEmail] = useState('');
+  const [confirmEmail, setConfirmEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
 
   return (
     <View className="flex-1 justify-center p-5 bg-white">
@@ -18,21 +19,21 @@ const RegisterScreen = () => {
       <TextInput
         className="border border-gray-300 p-2 mb-2 rounded-lg"
         placeholder="Username"
-        value={email}
+        value={username}
         onChangeText={setUsername}
       />
 
       <TextInput
         className="border border-gray-300 p-2 mb-2 rounded-lg"
         placeholder="First Name"
-        value={email}
+        value={firstName}
         onChangeText={setFirstName}
       />
 
       <TextInput
         className="border border-gray-300 p-2 mb-2 rounded-lg"
         placeholder="Last Name"
-        value={email}
+        value={lastName}
         onChangeText={setLastName}
       />
 
@@ -46,8 +47,8 @@ const RegisterScreen = () => {
       <TextInput
         className="border border-gray-300 p-2 mb-2 rounded-lg"
         placeholder="Confirm Email"
-        value={email}
-        onChangeText={setEmail}
+        value={confirmEmail}
+        onChangeText={setConfirmEmail}
       />
 
       <TextInput
@@ -65,6 +66,8 @@ const RegisterScreen = () => {
         value={confirmPassword}
         onChangeText={setConfirmPassword}
       />
+
+      <Text className="ml-2 mb-2">I agree to the terms and conditions</Text>
 
       <Button title="Sign Up" onPress={() => {}} />
     </View>
