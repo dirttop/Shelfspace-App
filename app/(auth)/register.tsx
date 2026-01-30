@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
+import Checkbox from '@/components/common/Checkbox';
+import Buttons from '@/components/common/Buttons';
 
 const RegisterScreen = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +11,7 @@ const RegisterScreen = () => {
   const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [terms, setTerms] = useState(false);
 
   return (
     <View className="flex-1 justify-center p-5 bg-white">
@@ -67,7 +70,11 @@ const RegisterScreen = () => {
         onChangeText={setConfirmPassword}
       />
 
-      <Text className="ml-2 mb-2">I agree to the terms and conditions</Text>
+      <Checkbox
+        value={terms}
+        label="I agree to the terms and conditions"
+        onValueChange={setTerms}
+      />
 
       <Button title="Sign Up" onPress={() => {}} />
     </View>
