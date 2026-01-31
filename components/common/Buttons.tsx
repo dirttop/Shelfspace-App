@@ -11,20 +11,20 @@ interface ButtonProps {
 const Buttons = ({ title, onPress, disabled, variant = 'primary' }: ButtonProps) => {
 
   const getVariantStyle = () => {
-    if (disabled) return 'bg-gray-300 dark:bg-gray-700';
+    if (disabled) return 'bg-muted';
 
     switch (variant) {
-      case 'secondary': return 'bg-gray-200 dark:bg-gray-700';
-      case 'outline': return 'bg-transparent border-2 border-blue-600';
+      case 'secondary': return 'bg-secondary';
+      case 'outline': return 'bg-transparent border-2 border-primary';
       case 'primary':
-      default: return 'bg-blue-600';
+      default: return 'bg-primary';
     }
   };
 
   const getTextStyle = () => {
-    if (disabled) return 'text-gray-500 dark:text-gray-400';
-    if (variant === 'secondary') return 'text-gray-900 dark:text-white';
-    return variant === 'outline' ? 'text-blue-600' : 'text-white';
+    if (disabled) return 'text-muted-foreground';
+    if (variant === 'secondary') return 'text-secondary-foreground';
+    return variant === 'outline' ? 'text-primary' : 'text-primary-foreground';
   };
 
   return (

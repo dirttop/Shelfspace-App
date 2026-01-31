@@ -9,8 +9,9 @@ const Input = (props: InputProps) => {
   return (
     <TextInput
       {...props}
-      placeholderTextColor="#8E8E8E"
-      className="bg-white dark:bg-[#121417] border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white p-4 rounded-md mb-3"
+      {...props}
+      placeholderClassName="text-muted-foreground"
+      className="bg-background border border-input text-foreground p-4 rounded-md mb-3"
     />
   );
 };

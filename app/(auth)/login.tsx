@@ -13,7 +13,7 @@ const LoginScreen = () => {
   const insets = useSafeAreaInsets();
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-black" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className="flex-1"
@@ -29,14 +29,14 @@ const LoginScreen = () => {
           className="flex-1"
         >
           <View className="items-center mb-8">
-            <Text className="text-3xl font-bold text-gray-900 dark:text-white">
+            <Text className="text-3xl font-bold text-foreground">
               Welcome Back
             </Text>
           </View>
 
           <Card className="w-full max-w-md mx-auto">
             <View className="mb-4">
-              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">
+              <Text className="text-sm font-medium text-foreground mb-1 ml-1">
                 Email
               </Text>
               <Input
@@ -49,7 +49,7 @@ const LoginScreen = () => {
             </View>
 
             <View className="mb-6">
-              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">
+              <Text className="text-sm font-medium text-foreground mb-1 ml-1">
                 Password
               </Text>
               <Input
@@ -66,11 +66,11 @@ const LoginScreen = () => {
             />
 
             <View className="mt-4 flex-row justify-center">
-              <Text className="text-gray-600 dark:text-gray-400">
+              <Text className="text-muted-foreground">
                 Don't have an account?{' '}
               </Text>
               <Link href="/(auth)/register" asChild>
-                <Text className="text-blue-600 font-semibold">
+                <Text className="text-primary font-semibold">
                   Sign up
                 </Text>
               </Link>
@@ -79,7 +79,7 @@ const LoginScreen = () => {
           </Card>
 
           <View className="mt-8 items-center">
-            <Text className="text-xs text-gray-400">
+            <Text className="text-xs text-muted-foreground">
               © 2026 Shelfspace
             </Text>
           </View>
