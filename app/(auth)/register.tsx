@@ -1,82 +1,155 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import MyButton from '@/components/common/Buttons';
+import Card from '@/components/common/Card';
 import Checkbox from '@/components/common/Checkbox';
-import Buttons from '@/components/common/Buttons';
+import Input from '@/components/common/Input';
+import { Link } from 'expo-router';
+import React, { useState } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const RegisterScreen = () => {
   const [email, setEmail] = useState('');
-  const [confirmEmail, setConfirmEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
   const [terms, setTerms] = useState(false);
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <View className="flex-1 justify-center p-5 bg-white">
-      <Text className="text-2xl mb-5 text-center font-bold">
-        Register
-      </Text>
+    <View className="flex-1 bg-gray-50 dark:bg-black" style={{ paddingTop: insets.top }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        className="flex-1"
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      >
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'center',
+            padding: 20,
+            paddingBottom: 20 + insets.bottom
+          }}
+          className="flex-1"
+        >
+          <View className="items-center mb-8">
+            <Text className="text-3xl font-bold text-gray-900 dark:text-white">
+              Create Account
+            </Text>
+          </View>
 
-      <TextInput
-        className="border border-gray-300 p-2 mb-2 rounded-lg"
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-      />
+          <Card className="w-full max-w-md mx-auto">
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">
+                Full Name
+              </Text>
+              <View className="flex-row space-x-2">
+                <View className="flex-1">
+                  <Input
+                    placeholder="First name"
+                    value={firstName}
+                    onChangeText={setFirstName}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Input
+                    placeholder="Last name"
+                    value={lastName}
+                    onChangeText={setLastName}
+                  />
+                </View>
+              </View>
+            </View>
 
-      <TextInput
-        className="border border-gray-300 p-2 mb-2 rounded-lg"
-        placeholder="First Name"
-        value={firstName}
-        onChangeText={setFirstName}
-      />
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">
+                Username
+              </Text>
+              <Input
+                placeholder="Username"
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
+              />
+            </View>
 
-      <TextInput
-        className="border border-gray-300 p-2 mb-2 rounded-lg"
-        placeholder="Last Name"
-        value={lastName}
-        onChangeText={setLastName}
-      />
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">
+                Email
+              </Text>
+              <Input
+                placeholder="Email address"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
 
-      <TextInput
-        className="border border-gray-300 p-2 mb-2 rounded-lg"
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-      />
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">
+                Password
+              </Text>
+              <Input
+                placeholder="Password (at least 6 characters)"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+              <Text className="text-xs text-gray-500 dark:text-gray-400 ml-1 mt-1">
+                Passwords must be at least 6 characters.
+              </Text>
+            </View>
 
-      <TextInput
-        className="border border-gray-300 p-2 mb-2 rounded-lg"
-        placeholder="Confirm Email"
-        value={confirmEmail}
-        onChangeText={setConfirmEmail}
-      />
+            <View className="mb-6">
+              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">
+                Confirm Password
+              </Text>
+              <Input
+                placeholder="Re-enter password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+              />
+            </View>
 
-      <TextInput
-        className="border border-gray-300 p-2 mb-2 rounded-lg"
-        placeholder="Password"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={setPassword}
-      />
+            <View className="mb-6">
+              <Checkbox
+                label="I agree to the Terms of Service and Privacy Policy"
+                value={terms}
+                onValueChange={setTerms}
+              />
+            </View>
 
-      <TextInput
-        className="border border-gray-300 p-2 mb-2 rounded-lg"
-        placeholder="Confirm Password"
-        secureTextEntry={true}
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-      />
+            <MyButton
+              title="Create account"
+              onPress={() => { }}
+              disabled={!terms}
+            />
 
-      <Checkbox
-        value={terms}
-        label="I agree to the terms and conditions"
-        onValueChange={setTerms}
-      />
+            <View className="mt-4 flex-row justify-center">
+              <Text className="text-gray-600 dark:text-gray-400">
+                Already have an account?{' '}
+              </Text>
+              <Link href="/(auth)/login" asChild>
+                <Text className="text-blue-600 font-semibold">
+                  Sign in
+                </Text>
+              </Link>
+            </View>
 
-      <Button title="Sign Up" onPress={() => {}} />
+          </Card>
+
+          <View className="mt-8 items-center">
+            <Text className="text-xs text-gray-400">
+              © 2026 Shelfspace
+            </Text>
+          </View>
+
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 };

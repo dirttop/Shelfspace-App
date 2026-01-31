@@ -1,32 +1,93 @@
+import MyButton from '@/components/common/Buttons';
+import Card from '@/components/common/Card';
+import Input from '@/components/common/Input';
+import { Link } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function LoginScreen() {
+const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <View className="flex-1 justify-center p-5 bg-white">
-      <Text className="text-2xl mb-5 text-center font-bold">
-        Login
-      </Text>
+    <View className="flex-1 bg-gray-50 dark:bg-black" style={{ paddingTop: insets.top }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        className="flex-1"
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      >
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'center',
+            padding: 20,
+            paddingBottom: 20 + insets.bottom
+          }}
+          className="flex-1"
+        >
+          <View className="items-center mb-8">
+            <Text className="text-3xl font-bold text-gray-900 dark:text-white">
+              Welcome Back
+            </Text>
+          </View>
 
-      <TextInput
-        className="border border-gray-300 p-2 mb-2 rounded-lg"
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-      />
+          <Card className="w-full max-w-md mx-auto">
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">
+                Email
+              </Text>
+              <Input
+                placeholder="Email address"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
 
-      <TextInput
-        className="border border-gray-300 p-2 mb-2 rounded-lg"
-        placeholder="Password"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={setPassword}
-      />
+            <View className="mb-6">
+              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">
+                Password
+              </Text>
+              <Input
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+            </View>
 
-      <Button title="Log In" onPress={() => {}} />
+            <MyButton
+              title="Sign in"
+              onPress={() => { }}
+            />
+
+            <View className="mt-4 flex-row justify-center">
+              <Text className="text-gray-600 dark:text-gray-400">
+                Don't have an account?{' '}
+              </Text>
+              <Link href="/(auth)/register" asChild>
+                <Text className="text-blue-600 font-semibold">
+                  Sign up
+                </Text>
+              </Link>
+            </View>
+
+          </Card>
+
+          <View className="mt-8 items-center">
+            <Text className="text-xs text-gray-400">
+              © 2026 Shelfspace
+            </Text>
+          </View>
+
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
-}
+};
+
+export default LoginScreen;
