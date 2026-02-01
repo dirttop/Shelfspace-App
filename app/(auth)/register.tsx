@@ -1,4 +1,4 @@
-import MyButton from '@/components/common/Buttons';
+import Buttons from '@/components/common/Buttons';
 import Card from '@/components/common/Card';
 import Checkbox from '@/components/common/Checkbox';
 import Input from '@/components/common/Input';
@@ -125,7 +125,7 @@ const RegisterScreen = () => {
               />
             </View>
 
-            <MyButton
+            <Buttons
               title="Create account"
               onPress={() => { }}
               disabled={!terms}

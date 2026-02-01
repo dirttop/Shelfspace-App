@@ -1,4 +1,4 @@
-import MyButton from '@/components/common/Buttons';
+import Buttons from '@/components/common/Buttons';
 import Card from '@/components/common/Card';
 import Input from '@/components/common/Input';
 import { Link } from 'expo-router';
@@ -60,7 +60,7 @@ const LoginScreen = () => {
               />
             </View>
 
-            <MyButton
+            <Buttons
               title="Sign in"
               onPress={() => { }}
             />
