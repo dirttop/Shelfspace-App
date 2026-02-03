@@ -27,11 +27,9 @@ const RegisterScreen = () => {
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >
         <ScrollView
+          contentContainerClassName="flex-grow justify-center p-5"
           contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: 'center',
-            padding: 20,
-            paddingBottom: 20 + insets.bottom
+            paddingBottom: 20 + insets.bottom //easier to read than inline
           }}
           className="flex-1"
         >
