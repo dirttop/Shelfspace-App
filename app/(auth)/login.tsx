@@ -78,7 +78,7 @@ const LoginScreen = () => {
 
           <View className="mt-8 items-center">
             <Text className="text-xs text-muted-foreground">
-              © 2026 Shelfspace
+              © 2026 ShelfSpace
             </Text>
           </View>
 
