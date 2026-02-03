@@ -1,4 +1,4 @@
-import { Monitor, Moon, Sun } from 'lucide-react-native';
+import { Moon, Sun } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -7,7 +7,6 @@ const ThemeSelector = () => {
     const { colorScheme, setColorScheme } = useColorScheme();
 
     const options = [
-        { value: 'system', label: 'System', icon: Monitor },
         { value: 'light', label: 'Light', icon: Sun },
         { value: 'dark', label: 'Dark', icon: Moon },
     ] as const;
