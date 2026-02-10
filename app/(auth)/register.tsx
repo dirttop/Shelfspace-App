@@ -1,6 +1,7 @@
 import Buttons from '@/components/common/Buttons';
 import Card from '@/components/common/Card';
 import Checkbox from '@/components/common/Checkbox';
+import Icons from '@/components/common/Icons';
 import Input from '@/components/common/Input';
 import ThemeSelector from '@/components/common/ThemeSelector';
 import { Link } from 'expo-router';
@@ -34,9 +35,13 @@ const RegisterScreen = () => {
           className="flex-1"
         >
           <View className="items-center mb-8">
-            <Text className="text-3xl font-bold text-foreground">
-              Create Account
-            </Text>
+            <Icons 
+              name="logo" 
+              size={100} 
+              label="ShelfSpace" 
+              labelPosition="right" 
+              align="flex-end"
+              labelClassName="text-3xl font-bold text-secondary-foreground"/>
           </View>
 
           <Card className="w-full max-w-md mx-auto">
@@ -53,7 +58,7 @@ const RegisterScreen = () => {
                     onChangeText={setFirstName}
                   />
                 </View>
-                <View className="flex-1">
+                <View className="flex-1"> 
                   <Input
                     placeholder="Last name"
                     value={lastName}
@@ -93,7 +98,7 @@ const RegisterScreen = () => {
                 Password
               </Text>
               <Input
-                placeholder="Password (at least 6 characters)"
+                placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -117,7 +122,7 @@ const RegisterScreen = () => {
 
             <View className="mb-6">
               <Checkbox
-                label="I agree to the Terms of Service and Privacy Policy"
+                label="I agree to the ShelfSpace Terms of Service and Privacy Policy"
                 value={terms}
                 onValueChange={setTerms}
               />
