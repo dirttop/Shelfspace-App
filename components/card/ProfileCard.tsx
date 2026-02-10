@@ -1,20 +1,19 @@
+import AppText from '@/components/common/Input';
 import React from 'react';
 import { View, ViewProps } from 'react-native';
 
-interface CardProps extends ViewProps {
+interface ProfileProps extends ViewProps {
+    name: String;
+    username: String;
     children: React.ReactNode;
 }
 
-const Card = ({ children, className, ...props }: CardProps) => {
+const ProfileCard = () => {
     return (
-        <View
-            {...props}
-            className={`bg-card text-card-foreground rounded-xl p-6 shadow-sm border border-border ${className || ''}`}
-        >
-            
-            {children}
+        <View>
+            <AppText>Profile Card Placeholder</AppText>
         </View>
     );
 };
 
-export default Card;
+export default ProfileCard;
