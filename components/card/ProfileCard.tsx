@@ -1,4 +1,4 @@
-import AppText from '@/components/common/Input';
+import AppText from '@/components/common/AppText';
 import React from 'react';
 import { View, ViewProps } from 'react-native';
 

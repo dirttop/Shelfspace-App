@@ -49,7 +49,7 @@ const Icons = ({
 
   const labelElement = label ? (
     <Text 
-      className={`text-foreground ${labelClassName || ''}`} 
+      className={`text-zinc-950 dark:text-gray-100 ${labelClassName || ''}`} 
       style={labelStyle}
     >
       {label}
