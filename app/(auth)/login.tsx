@@ -1,29 +1,58 @@
+import React, { useState } from 'react';
+import { Link, router } from "expo-router";
+import React, { useState } from "react";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { supabase } from "../lib/supabase";
+
 import AppText from '@/components/common/AppText';
 import Buttons from '@/components/common/Buttons';
 import Card from '@/components/common/Card';
 import Input from '@/components/common/Input';
-import { Link } from 'expo-router';
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const insets = useSafeAreaInsets();
+
+  async function signInWithEmail() {
+    setLoading(true);
+    const {
+      error,
+      data: { session },
+    } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (session) {
+      router.push("/home");
+    }
+    if (error) Alert.alert(error.message);
+    setLoading(false);
+  }
 
   return (
     <View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
         <ScrollView
           contentContainerClassName="flex-grow justify-center p-5"
           contentContainerStyle={{
-            paddingBottom: 20 + insets.bottom //easier to read than inline
+            paddingBottom: 20 + insets.bottom, //easier to read than inline
           }}
           className="flex-1"
         >
@@ -59,22 +88,18 @@ const LoginScreen = () => {
               />
             </View>
 
-            <Buttons
-              title="Sign in"
-              onPress={() => { }}
-            />
+            <Buttons title="Sign in" onPress={() => signInWithEmail()} />
 
             <View className="mt-4 flex-row justify-center">
               <AppText className="text-zinc-500">
                 Don&apos;t have an account?{' '}
               </AppText>
-              <Link href="/(main)/(tabs)/profile" asChild>
+              <Link href="/(auth)/register" asChild>
                 <AppText className="font-semibold">
                   Sign up
                 </AppText>
               </Link>
             </View>
-
           </Card>
 
           <View className="mt-8 items-center">
@@ -82,7 +107,6 @@ const LoginScreen = () => {
               © 2026 ShelfSpace
             </AppText>
           </View>
-
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
