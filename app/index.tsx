@@ -8,7 +8,7 @@ const StartPage = () => {
     }
 
     // Default production routing
-    return <Redirect href="/(main)/(tabs)/profile" />;
+    return <Redirect href="/(main)/welcome" />;
 };
 
 export default StartPage;
