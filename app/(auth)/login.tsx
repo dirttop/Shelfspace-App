@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
 import { Link, router } from "expo-router";
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Text,
-  View,
+  View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
