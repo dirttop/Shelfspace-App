@@ -24,11 +24,7 @@ const ShelfStat = ({ label, value }: { label: string; value: number }) => (
   </View>
 );
 
-const SocialStat = ({ label, value }: { label: string; value: number }) => (
-    <View className="items-center">
-        <AppText className="text-lg font-bold text-slate-900">{value} {label}</AppText>
-    </View>
-);
+
 
 const ProfileCard = ({
     fullName, 

@@ -1,12 +1,12 @@
+import AppText from '@/components/common/AppText';
 import Buttons from '@/components/common/Buttons';
 import Card from '@/components/common/Card';
 import Checkbox from '@/components/common/Checkbox';
 import Icons from '@/components/common/Icons';
 import Input from '@/components/common/Input';
-import ThemeSelector from '@/components/common/ThemeSelector';
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const RegisterScreen = () => {
@@ -21,7 +21,7 @@ const RegisterScreen = () => {
   const insets = useSafeAreaInsets();
 
   return (
-    <View className="flex-1 bg-white dark:bg-zinc-950" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className="flex-1"
@@ -37,18 +37,18 @@ const RegisterScreen = () => {
           <View className="items-center mb-8">
             <View className="flex-row items-end justify-center gap-2">
               <Icons.logo width={100} height={100} color="#000" />
-              <Text className="text-3xl font-bold text-zinc-900 dark:text-gray-50 pb-2">
+              <AppText variant="title">
                 ShelfSpace
-              </Text>
+              </AppText>
             </View>
           </View>
 
           <Card className="w-full max-w-md mx-auto">
             <View className="mb-4">
-              <ThemeSelector />
-              <Text className="text-sm font-medium text-zinc-950 dark:text-gray-100 mb-1 ml-1">
+
+              <AppText variant="label" className="mb-1 ml-1">
                 Full Name
-              </Text>
+              </AppText>
               <View className="flex-row space-x-2">
                 <View className="flex-1">
                   <Input
@@ -68,9 +68,9 @@ const RegisterScreen = () => {
             </View>
 
             <View className="mb-4">
-              <Text className="text-sm font-medium text-zinc-950 dark:text-gray-100 mb-1 ml-1">
+              <AppText variant="label" className="mb-1 ml-1">
                 Username
-              </Text>
+              </AppText>
               <Input
                 placeholder="Username"
                 value={username}
@@ -80,9 +80,9 @@ const RegisterScreen = () => {
             </View>
 
             <View className="mb-4">
-              <Text className="text-sm font-medium text-zinc-950 dark:text-gray-100 mb-1 ml-1">
+              <AppText variant="label" className="mb-1 ml-1">
                 Email
-              </Text>
+              </AppText>
               <Input
                 placeholder="Email address"
                 value={email}
@@ -93,24 +93,24 @@ const RegisterScreen = () => {
             </View>
 
             <View className="mb-4">
-              <Text className="text-sm font-medium text-zinc-950 dark:text-gray-100 mb-1 ml-1">
+              <AppText variant="label" className="mb-1 ml-1">
                 Password
-              </Text>
+              </AppText>
               <Input
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
               />
-              <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+              <AppText variant="caption" className="text-zinc-500">
                 Passwords must be at least 6 characters.
-              </Text>
+              </AppText>
             </View>
 
             <View className="mb-6">
-              <Text className="text-sm font-medium text-zinc-950 dark:text-gray-100 mb-1 ml-1">
+              <AppText variant="label" className="mb-1 ml-1">
                 Confirm Password
-              </Text>
+              </AppText>
               <Input
                 placeholder="Re-enter password"
                 value={confirmPassword}
@@ -134,22 +134,22 @@ const RegisterScreen = () => {
             />
 
             <View className="mt-4 flex-row justify-center">
-              <Text className="text-zinc-500 dark:text-zinc-400">
+              <AppText className="text-zinc-500">
                 Already have an account?{' '}
-              </Text>
+              </AppText>
               <Link href="/(auth)/login" asChild>
-                <Text className="text-zinc-900 dark:text-gray-50 font-semibold">
+                <AppText className="font-semibold">
                   Sign in
-                </Text>
+                </AppText>
               </Link>
             </View>
 
           </Card>
 
           <View className="mt-8 items-center">
-            <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+            <AppText variant="caption" className="text-zinc-500">
               © 2026 Shelfspace
-            </Text>
+            </AppText>
           </View>
 
         </ScrollView>
