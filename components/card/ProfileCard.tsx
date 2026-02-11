@@ -5,8 +5,8 @@ import { View, ViewProps } from 'react-native';
 import Avatar from '../common/Avatar';
 
 interface ProfileProps extends ViewProps {
-    fullName?: string;
-    username?: string;
+    fullName: string;
+    username: string;
     bio?: string;
     uriAvatar?: string;
     readCount?: number;
@@ -24,16 +24,12 @@ const ShelfStat = ({ label, value }: { label: string; value: number }) => (
   </View>
 );
 
-const SocialStat = ({ label, value }: { label: string; value: number }) => (
-    <View className="items-center">
-        <AppText className="text-lg font-bold text-slate-900">{value} {label}</AppText>
-    </View>
-);
+
 
 const ProfileCard = ({
-    fullName = "John Smith", 
-    username = "johnny-418",
-    bio = "Insert bio here",
+    fullName, 
+    username,
+    bio,
     uriAvatar,
     readCount = 0,
     readingCount = 0,
@@ -54,11 +50,11 @@ const ProfileCard = ({
                 </View>
                
                <View className="flex-1 gap-y-1 mt-6">
-                    <AppText className = 'text-xl font-bold text-slate-900'>{fullName}</AppText>
-                    <AppText className = ' text-slate-500'>@{username}</AppText>
+                    <AppText variant='subtitle'>{fullName}</AppText>
+                    <AppText variant='caption'>@{username}</AppText>
                     <View className='flex-1 flex-row justify-around'>
-                            <ShelfStat label="Read" value={readCount} />
                             <ShelfStat label="Reading" value={readingCount}/>
+                            <ShelfStat label="Read" value={readCount} />
                             <ShelfStat label='Shelved' value={shelvedCount}/>
                     </View>
                 </View>

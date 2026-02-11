@@ -1,5 +1,11 @@
+import { cssInterop } from 'nativewind';
+import { PressableScale } from 'pressto';
 import React from 'react';
-import { Pressable, Text } from 'react-native';
+import AppText from './AppText';
+
+const StyledPressable = cssInterop(PressableScale, {
+  className: "style",
+});
 
 interface ButtonProps {
   title: string;
@@ -12,13 +18,13 @@ interface ButtonProps {
 const Buttons = ({ title, onPress, disabled, variant = 'primary', size = 'md' }: ButtonProps) => {
 
   const getVariantStyle = () => {
-    if (disabled) return 'bg-zinc-100 dark:bg-zinc-800';
+    if (disabled) return 'bg-slate-800';
 
     switch (variant) {
-      case 'secondary': return 'bg-zinc-100 dark:bg-zinc-800';
-      case 'outline': return 'bg-transparent border-2 border-zinc-900 dark:border-zinc-100';
+      case 'secondary': return 'bg-slate-300';
+      case 'outline': return 'bg-transparent border-2 border-zinc-900';
       case 'primary':
-      default: return 'bg-zinc-900 dark:bg-zinc-100';
+      default: return 'bg-slate-300';
     }
   };
 
@@ -33,9 +39,9 @@ const Buttons = ({ title, onPress, disabled, variant = 'primary', size = 'md' }:
 
   const getTextStyle = () => {
     let colorClass = '';
-    if (disabled) colorClass = 'text-zinc-500 dark:text-zinc-400';
-    else if (variant === 'secondary') colorClass = 'text-zinc-900 dark:text-zinc-100';
-    else colorClass = variant === 'outline' ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-50 dark:text-zinc-900';
+    if (disabled) colorClass = 'text-zinc-500';
+    else if (variant === 'secondary') colorClass = 'text-zinc-900';
+    else colorClass = variant === 'outline' ? 'text-zinc-900' : 'text-zinc-50';
 
     let sizeClass = '';
     switch (size) {
@@ -49,15 +55,14 @@ const Buttons = ({ title, onPress, disabled, variant = 'primary', size = 'md' }:
   };
 
   return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
+    <StyledPressable
+      onPress={() => !disabled && onPress()}
       className={`items-center justify-center ${getSizeStyle()} ${getVariantStyle()}`}
     >
-      <Text className={`font-bold ${getTextStyle()}`}>
+      <AppText className={`font-bold ${getTextStyle()}`}>
         {title}
-      </Text>
-    </Pressable>
+      </AppText>
+    </StyledPressable>
   );
 };
 
