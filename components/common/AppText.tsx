@@ -12,7 +12,7 @@ const AppText = ({
   className,
   ...props
 }: AppTextProps) => {
-  const baseClasses = "text-primary dark:text-foreground";
+  const baseClasses = "text-zinc-900 dark:text-gray-100";
 
   const variantClasses = {
     title: "text-3xl font-bold",

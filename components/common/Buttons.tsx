@@ -6,34 +6,55 @@ interface ButtonProps {
   onPress: () => void;
   disabled?: boolean;
   variant?: 'primary' | 'secondary' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
 }
 
-const Buttons = ({ title, onPress, disabled, variant = 'primary' }: ButtonProps) => {
+const Buttons = ({ title, onPress, disabled, variant = 'primary', size = 'md' }: ButtonProps) => {
 
   const getVariantStyle = () => {
-    if (disabled) return 'bg-muted';
+    if (disabled) return 'bg-zinc-100 dark:bg-zinc-800';
 
     switch (variant) {
-      case 'secondary': return 'bg-secondary';
-      case 'outline': return 'bg-transparent border-2 border-primary';
+      case 'secondary': return 'bg-zinc-100 dark:bg-zinc-800';
+      case 'outline': return 'bg-transparent border-2 border-zinc-900 dark:border-zinc-100';
       case 'primary':
-      default: return 'bg-primary';
+      default: return 'bg-zinc-900 dark:bg-zinc-100';
+    }
+  };
+
+  const getSizeStyle = () => {
+    switch (size) {
+      case 'sm': return 'p-2 mb-2 rounded-lg';
+      case 'lg': return 'p-5 mb-5 rounded-2xl';
+      case 'md':
+      default: return 'p-4 mb-4 rounded-xl';
     }
   };
 
   const getTextStyle = () => {
-    if (disabled) return 'text-muted-foreground';
-    if (variant === 'secondary') return 'text-secondary-foreground';
-    return variant === 'outline' ? 'text-primary' : 'text-primary-foreground';
+    let colorClass = '';
+    if (disabled) colorClass = 'text-zinc-500 dark:text-zinc-400';
+    else if (variant === 'secondary') colorClass = 'text-zinc-900 dark:text-zinc-100';
+    else colorClass = variant === 'outline' ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-50 dark:text-zinc-900';
+
+    let sizeClass = '';
+    switch (size) {
+      case 'sm': sizeClass = 'text-sm'; break;
+      case 'lg': sizeClass = 'text-xl'; break;
+      case 'md':
+      default: sizeClass = 'text-lg'; break;
+    }
+
+    return `${colorClass} ${sizeClass}`;
   };
 
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      className={`p-4 rounded-xl items-center justify-center mb-4 ${getVariantStyle()}`}
+      className={`items-center justify-center ${getSizeStyle()} ${getVariantStyle()}`}
     >
-      <Text className={`font-bold text-lg ${getTextStyle()}`}>
+      <Text className={`font-bold ${getTextStyle()}`}>
         {title}
       </Text>
     </Pressable>
