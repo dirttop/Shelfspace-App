@@ -67,7 +67,7 @@ const LoginScreen = () => {
               <Text className="text-zinc-500 dark:text-zinc-400">
                 Don't have an account?{' '}
               </Text>
-              <Link href="/(auth)/register" asChild>
+              <Link href="/(main)/(tabs)/profile" asChild>
                 <Text className="text-zinc-900 dark:text-gray-50 font-semibold">
                   Sign up
                 </Text>

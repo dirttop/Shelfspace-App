@@ -35,13 +35,12 @@ const RegisterScreen = () => {
           className="flex-1"
         >
           <View className="items-center mb-8">
-            <Icons 
-              name="logo" 
-              size={100} 
-              label="ShelfSpace" 
-              labelPosition="right" 
-              align="flex-end"
-              labelClassName="text-3xl font-bold text-zinc-900 dark:text-gray-50"/>
+            <View className="flex-row items-end justify-center gap-2">
+              <Icons.logo width={100} height={100} color="#000" />
+              <Text className="text-3xl font-bold text-zinc-900 dark:text-gray-50 pb-2">
+                ShelfSpace
+              </Text>
+            </View>
           </View>
 
           <Card className="w-full max-w-md mx-auto">
@@ -58,7 +57,7 @@ const RegisterScreen = () => {
                     onChangeText={setFirstName}
                   />
                 </View>
-                <View className="flex-1"> 
+                <View className="flex-1">
                   <Input
                     placeholder="Last name"
                     value={lastName}

@@ -6,9 +6,10 @@ interface ButtonProps {
   onPress: () => void;
   disabled?: boolean;
   variant?: 'primary' | 'secondary' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
 }
 
-const Buttons = ({ title, onPress, disabled, variant = 'primary' }: ButtonProps) => {
+const Buttons = ({ title, onPress, disabled, variant = 'primary', size = 'md' }: ButtonProps) => {
 
   const getVariantStyle = () => {
     if (disabled) return 'bg-zinc-100 dark:bg-zinc-800';
@@ -21,19 +22,39 @@ const Buttons = ({ title, onPress, disabled, variant = 'primary' }: ButtonProps)
     }
   };
 
+  const getSizeStyle = () => {
+    switch (size) {
+      case 'sm': return 'p-2 mb-2 rounded-lg';
+      case 'lg': return 'p-5 mb-5 rounded-2xl';
+      case 'md':
+      default: return 'p-4 mb-4 rounded-xl';
+    }
+  };
+
   const getTextStyle = () => {
-    if (disabled) return 'text-zinc-500 dark:text-zinc-400';
-    if (variant === 'secondary') return 'text-zinc-900 dark:text-zinc-100';
-    return variant === 'outline' ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-50 dark:text-zinc-900';
+    let colorClass = '';
+    if (disabled) colorClass = 'text-zinc-500 dark:text-zinc-400';
+    else if (variant === 'secondary') colorClass = 'text-zinc-900 dark:text-zinc-100';
+    else colorClass = variant === 'outline' ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-50 dark:text-zinc-900';
+
+    let sizeClass = '';
+    switch (size) {
+      case 'sm': sizeClass = 'text-sm'; break;
+      case 'lg': sizeClass = 'text-xl'; break;
+      case 'md':
+      default: sizeClass = 'text-lg'; break;
+    }
+
+    return `${colorClass} ${sizeClass}`;
   };
 
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      className={`p-4 rounded-xl items-center justify-center mb-4 ${getVariantStyle()}`}
+      className={`items-center justify-center ${getSizeStyle()} ${getVariantStyle()}`}
     >
-      <Text className={`font-bold text-lg ${getTextStyle()}`}>
+      <Text className={`font-bold ${getTextStyle()}`}>
         {title}
       </Text>
     </Pressable>
