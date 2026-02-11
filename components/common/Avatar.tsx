@@ -17,8 +17,8 @@ const sizeMap = {
 };
 
 const textMap = {
-  sm: 'text-xs',
-  md: 'text-lg',
+  sm: 'text-lg',
+  md: 'text-xl',
   lg: 'text-3xl',
   xl: 'text-5xl',
 };
