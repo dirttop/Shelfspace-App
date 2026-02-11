@@ -4,10 +4,11 @@ import Checkbox from '@/components/common/Checkbox';
 import Icons from '@/components/common/Icons';
 import Input from '@/components/common/Input';
 import ThemeSelector from '@/components/common/ThemeSelector';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, View, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { supabase } from '../lib/supabase'
 
 const RegisterScreen = () => {
   const [email, setEmail] = useState('');
@@ -17,8 +18,38 @@ const RegisterScreen = () => {
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
   const [terms, setTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [errors, setErrors] = useState({
+    firstName: '',
+    lastName: '',
+    username: '',
+    password: '',
+    confirmPassword: '',
+    email: '',
+  });
 
   const insets = useSafeAreaInsets();
+
+  async function signUpWithEmail() {
+      setLoading(true)
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+      })
+      if (session) {
+        router.push("/home")
+      }
+
+      if (error) Alert.alert(error.message)
+      if (!session) Alert.alert('Please check your inbox for email verification!')
+      setLoading(false)
+    }
+
+
 
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
@@ -130,7 +161,7 @@ const RegisterScreen = () => {
 
             <Buttons
               title="Create account"
-              onPress={() => { }}
+              onPress={() => signUpWithEmail()}
               disabled={!terms}
             />
 
