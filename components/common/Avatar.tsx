@@ -1,12 +1,12 @@
-import React from 'react';
-import {View, Image} from 'react-native';
 import AppText from '@/components/common/AppText';
+import React, { useState } from 'react';
+import { Image, View } from 'react-native';
 
 interface AvatarProps {
-    src?: string; 
+    uri?: string; 
     name?: string;
     size?: 'sm' | 'md' | 'lg' | 'xl';
-    onPress: () => void;
+    onPress?: () => void;
 }
 
 const sizeMap = {
@@ -23,14 +23,43 @@ const textMap = {
   xl: 'text-4xl',
 };
 
-const Avatar = ({src, name, size}: AvatarProps) => {
+const Avatar = ({uri, name, size = 'md'}: AvatarProps) => {
+
+    const [hasError, setHasError] = useState(false);
 
     const getInitials = (fullName?: string) => {
-        
+        if (!fullName) return '?';
+        return fullName
+            .split(' ')
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
     }
-    <View>
-    </View>
-  );
-};
 
+    return (
+    <View
+        className={`
+        ${sizeMap[size]} 
+        rounded-full 
+        bg-slate-200 
+        items-center 
+        justify-center 
+        overflow-hidden
+        `}
+    >
+        <AppText className={`${textMap[size]}`}>
+            {getInitials(name)}
+        </AppText>
+
+        {uri && !hasError && (
+        <Image
+          source={{ uri }}
+          className="absolute inset-0 w-full h-full"
+          onError={() => setHasError(true)}
+        />
+        )}
+    </View>
+    );
+};
 export default Avatar;
