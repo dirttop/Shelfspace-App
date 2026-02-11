@@ -57,8 +57,8 @@ const ProfileCard = ({
                     <AppText className = 'text-xl font-bold text-slate-900'>{fullName}</AppText>
                     <AppText className = ' text-slate-500'>@{username}</AppText>
                     <View className='flex-1 flex-row justify-around'>
-                            <ShelfStat label="Read" value={readCount} />
                             <ShelfStat label="Reading" value={readingCount}/>
+                            <ShelfStat label="Read" value={readCount} />
                             <ShelfStat label='Shelved' value={shelvedCount}/>
                     </View>
                 </View>
