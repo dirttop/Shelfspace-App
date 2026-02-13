@@ -10,8 +10,8 @@ const Input = (props: InputProps) => {
     <TextInput
       {...props}
       {...props}
-      placeholderClassName="text-muted-foreground"
-      className="bg-background border border-input text-foreground p-4 rounded-md mb-3"
+      placeholderClassName="text-zinc-500 dark:text-zinc-400"
+      className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-gray-50 p-4 rounded-md mb-3"
     />
   );
 };

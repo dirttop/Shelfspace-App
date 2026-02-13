@@ -58,7 +58,7 @@ const RegisterScreen = () => {
   }
 
   return (
-    <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 bg-white dark:bg-zinc-950" style={{ paddingTop: insets.top }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
@@ -80,12 +80,18 @@ const RegisterScreen = () => {
               align="flex-end"
               labelClassName="text-3xl font-bold text-secondary-foreground"
             />
+            <View className="flex-row items-end justify-center gap-2">
+              <Icons.logo width={100} height={100} color="#000" />
+              <Text className="text-3xl font-bold text-zinc-900 dark:text-gray-50 pb-2">
+                ShelfSpace
+              </Text>
+            </View>
           </View>
 
           <Card className="w-full max-w-md mx-auto">
             <View className="mb-4">
               <ThemeSelector />
-              <Text className="text-sm font-medium text-foreground mb-1 ml-1">
+              <Text className="text-sm font-medium text-zinc-950 dark:text-gray-100 mb-1 ml-1">
                 Full Name
               </Text>
               <View className="flex-row space-x-2">
@@ -107,7 +113,7 @@ const RegisterScreen = () => {
             </View>
 
             <View className="mb-4">
-              <Text className="text-sm font-medium text-foreground mb-1 ml-1">
+              <Text className="text-sm font-medium text-zinc-950 dark:text-gray-100 mb-1 ml-1">
                 Username
               </Text>
               <Input
@@ -119,7 +125,7 @@ const RegisterScreen = () => {
             </View>
 
             <View className="mb-4">
-              <Text className="text-sm font-medium text-foreground mb-1 ml-1">
+              <Text className="text-sm font-medium text-zinc-950 dark:text-gray-100 mb-1 ml-1">
                 Email
               </Text>
               <Input
@@ -132,7 +138,7 @@ const RegisterScreen = () => {
             </View>
 
             <View className="mb-4">
-              <Text className="text-sm font-medium text-foreground mb-1 ml-1">
+              <Text className="text-sm font-medium text-zinc-950 dark:text-gray-100 mb-1 ml-1">
                 Password
               </Text>
               <Input
@@ -141,13 +147,13 @@ const RegisterScreen = () => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-              <Text className="text-xs text-muted-foreground ml-1 mt-1">
+              <Text className="text-xs text-zinc-500 dark:text-zinc-400">
                 Passwords must be at least 6 characters.
               </Text>
             </View>
 
             <View className="mb-6">
-              <Text className="text-sm font-medium text-foreground mb-1 ml-1">
+              <Text className="text-sm font-medium text-zinc-950 dark:text-gray-100 mb-1 ml-1">
                 Confirm Password
               </Text>
               <Input
@@ -173,17 +179,19 @@ const RegisterScreen = () => {
             />
 
             <View className="mt-4 flex-row justify-center">
-              <Text className="text-muted-foreground">
-                Already have an account?{" "}
+              <Text className="text-zinc-500 dark:text-zinc-400">
+                Already have an account?{' '}
               </Text>
               <Link href="/(auth)/login" asChild>
-                <Text className="text-primary font-semibold">Sign in</Text>
+                <Text className="text-zinc-900 dark:text-gray-50 font-semibold">
+                  Sign in
+                </Text>
               </Link>
             </View>
           </Card>
 
           <View className="mt-8 items-center">
-            <Text className="text-xs text-muted-foreground">
+            <Text className="text-xs text-zinc-500 dark:text-zinc-400">
               © 2026 Shelfspace
             </Text>
           </View>
