@@ -1,78 +1,85 @@
-import Buttons from '@/components/common/Buttons';
-import Card from '@/components/common/Card';
-import Checkbox from '@/components/common/Checkbox';
-import Icons from '@/components/common/Icons';
-import Input from '@/components/common/Input';
-import ThemeSelector from '@/components/common/ThemeSelector';
-import { Link, router } from 'expo-router';
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View, Alert } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { supabase } from '../lib/supabase'
+import Buttons from "@/components/common/Buttons";
+import Card from "@/components/common/Card";
+import Checkbox from "@/components/common/Checkbox";
+import Icons from "@/components/common/Icons";
+import Input from "@/components/common/Input";
+import ThemeSelector from "@/components/common/ThemeSelector";
+import { Link, router } from "expo-router";
+import React, { useState } from "react";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { supabase } from "../lib/supabase";
 
 const RegisterScreen = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
   const [terms, setTerms] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState({
-    firstName: '',
-    lastName: '',
-    username: '',
-    password: '',
-    confirmPassword: '',
-    email: '',
+    firstName: "",
+    lastName: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+    email: "",
   });
 
   const insets = useSafeAreaInsets();
 
   async function signUpWithEmail() {
-      setLoading(true)
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-      })
-      if (session) {
-        router.push("/home")
-      }
-
-      if (error) Alert.alert(error.message)
-      if (!session) Alert.alert('Please check your inbox for email verification!')
-      setLoading(false)
+    setLoading(true);
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    });
+    if (session) {
+      router.push("/home");
     }
 
-
+    if (error) Alert.alert(error.message);
+    if (!session)
+      Alert.alert("Please check your inbox for email verification!");
+    setLoading(false);
+  }
 
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
         <ScrollView
           contentContainerClassName="flex-grow justify-center p-5"
           contentContainerStyle={{
-            paddingBottom: 20 + insets.bottom //easier to read than inline
+            paddingBottom: 20 + insets.bottom, //easier to read than inline
           }}
           className="flex-1"
         >
           <View className="items-center mb-8">
-            <Icons 
-              name="logo" 
-              size={100} 
-              label="ShelfSpace" 
-              labelPosition="right" 
+            <Icons
+              name="logo"
+              size={100}
+              label="ShelfSpace"
+              labelPosition="right"
               align="flex-end"
-              labelClassName="text-3xl font-bold text-secondary-foreground"/>
+              labelClassName="text-3xl font-bold text-secondary-foreground"
+            />
           </View>
 
           <Card className="w-full max-w-md mx-auto">
@@ -89,7 +96,7 @@ const RegisterScreen = () => {
                     onChangeText={setFirstName}
                   />
                 </View>
-                <View className="flex-1"> 
+                <View className="flex-1">
                   <Input
                     placeholder="Last name"
                     value={lastName}
@@ -167,15 +174,12 @@ const RegisterScreen = () => {
 
             <View className="mt-4 flex-row justify-center">
               <Text className="text-muted-foreground">
-                Already have an account?{' '}
+                Already have an account?{" "}
               </Text>
               <Link href="/(auth)/login" asChild>
-                <Text className="text-primary font-semibold">
-                  Sign in
-                </Text>
+                <Text className="text-primary font-semibold">Sign in</Text>
               </Link>
             </View>
-
           </Card>
 
           <View className="mt-8 items-center">
@@ -183,7 +187,6 @@ const RegisterScreen = () => {
               © 2026 Shelfspace
             </Text>
           </View>
-
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
