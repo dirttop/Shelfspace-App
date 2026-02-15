@@ -1,3 +1,4 @@
+import AppText from "@/components/common/AppText";
 import Buttons from "@/components/common/Buttons";
 import Card from "@/components/common/Card";
 import Checkbox from "@/components/common/Checkbox";
@@ -27,19 +28,11 @@ const RegisterScreen = () => {
   const [terms, setTerms] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [errors, setErrors] = useState({
-    firstName: "",
-    lastName: "",
-    username: "",
-    password: "",
-    confirmPassword: "",
-    email: "",
-  });
-
   const insets = useSafeAreaInsets();
 
   async function signUpWithEmail() {
     setLoading(true);
+
     const {
       data: { session },
       error,
@@ -58,7 +51,10 @@ const RegisterScreen = () => {
   }
 
   return (
-    <View className="flex-1 bg-white dark:bg-zinc-950" style={{ paddingTop: insets.top }}>
+    <View
+      className="flex-1 bg-white dark:bg-zinc-950"
+      style={{ paddingTop: insets.top }}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
@@ -72,14 +68,10 @@ const RegisterScreen = () => {
           className="flex-1"
         >
           <View className="items-center mb-8">
-            <Icons
-              name="logo"
-              size={100}
-              label="ShelfSpace"
-              labelPosition="right"
-              align="flex-end"
-              labelClassName="text-3xl font-bold text-secondary-foreground"
-            />
+            <View className="flex-row items-end justify-center gap-2">
+              <Icons.logo width={100} height={100} color="#000" />
+              <AppText variant="title">ShelfSpace</AppText>
+            </View>
             <View className="flex-row items-end justify-center gap-2">
               <Icons.logo width={100} height={100} color="#000" />
               <Text className="text-3xl font-bold text-zinc-900 dark:text-gray-50 pb-2">
@@ -180,7 +172,7 @@ const RegisterScreen = () => {
 
             <View className="mt-4 flex-row justify-center">
               <Text className="text-zinc-500 dark:text-zinc-400">
-                Already have an account?{' '}
+                Already have an account?{" "}
               </Text>
               <Link href="/(auth)/login" asChild>
                 <Text className="text-zinc-900 dark:text-gray-50 font-semibold">
