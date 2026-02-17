@@ -36,12 +36,12 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="social"
+        name="search"
         options={{
-          title: 'Social',
-          tabBarIcon: ({ color, focused }) => (
+          title: 'Search',
+          tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons 
-              name={focused ? 'account-group' : 'account-group-outline'} 
+              name="magnify" 
               size={28} 
               color={color} 
             />
@@ -50,12 +50,12 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="search"
+        name="add"
         options={{
-          title: 'Search',
-          tabBarIcon: ({ color }) => (
+          title: 'Add',
+          tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons 
-              name="magnify" 
+              name={focused ? 'book-plus' : 'book-plus-outline'} 
               size={28} 
               color={color} 
             />
