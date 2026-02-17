@@ -1,24 +1,29 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { cssInterop } from "nativewind";
 import { PressableScale } from 'pressto';
 import React from "react";
-import { View } from "react-native";
+import { Image, View } from "react-native";
+import AppText from "../common/AppText";
 
+const StyledPressable = cssInterop(PressableScale, {
+  className: "style",
+});
 
-interface BookProps {
-    uri?: string;
-    onPress?: () => void;
-
-}
-
-const BookItem = ({uri}: BookProps) => {
-
-    return(
-        <View className = "flex-1 aspect-[2/3] m-0.5 bg-slate-100 rounded-lg items-center justify-center">
-            <PressableScale>
-                <MaterialCommunityIcons name="book-outline" size={28} color="#94a3b8" />
-            </PressableScale>
-        </View>
-    );
+type BookItemProps = {
+    book: Book;
+    onPress: () => void;
 };
 
+const BookItem = ({ book, onPress }: BookItemProps) => {
+  return (
+    <StyledPressable onPress={() => onPress()}>
+        <View className={""}>
+        <Image source={{ uri: book.coverImage }} className={""} />
+        <View className={""}>
+            <AppText className={""}>{book.title}</AppText>
+            <AppText className={""}>by {book.authors?.join(", ")}</AppText>
+        </View>
+        </View>
+    </StyledPressable>
+  );
+};
 export default BookItem;
