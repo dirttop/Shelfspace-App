@@ -9,7 +9,7 @@ const Card = ({ children, className, ...props }: CardProps) => {
     return (
         <View
             {...props}
-            className={`bg-white dark:bg-zinc-950 text-zinc-950 dark:text-gray-100 rounded-xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 ${className || ''}`}
+            className={`bg-white rounded-xl p-6 shadow-sm border border-zinc-200 ${className || ''}`}
         >
             {children}
         </View>

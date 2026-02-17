@@ -1,9 +1,6 @@
-import Buttons from '@/components/common/Buttons';
-import Card from '@/components/common/Card';
-import Input from '@/components/common/Input';
-import { Link } from 'expo-router';
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
+import AppText from '@/components/common/AppText';
+import React from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 //Following account signup is onboarding
 
@@ -27,7 +24,7 @@ const OnboardingScreen = () => {
                           className="flex-1"
                 >
                     <View>
-                        <Text>Onboarding!</Text>
+                        <AppText>Onboarding!</AppText>
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>

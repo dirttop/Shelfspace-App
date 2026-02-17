@@ -17,10 +17,10 @@ const sizeMap = {
 };
 
 const textMap = {
-  sm: 'text-xs',
-  md: 'text-base',
-  lg: 'text-2xl',
-  xl: 'text-4xl',
+  sm: 'text-lg',
+  md: 'text-xl',
+  lg: 'text-3xl',
+  xl: 'text-5xl',
 };
 
 const Avatar = ({uri, name, size = 'md'}: AvatarProps) => {
