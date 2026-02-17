@@ -98,7 +98,10 @@ export default function EditProfile() {
           .limit(1);
 
         if (existingErr) {
-          console.warn("Username availability check failed:", existingErr.message);
+          console.warn(
+            "Username availability check failed:",
+            existingErr.message,
+          );
           // fall through: allow server to enforce uniqueness if needed
         } else if (existing && Array.isArray(existing) && existing.length > 0) {
           setUsernameError("That username is already in use.");
