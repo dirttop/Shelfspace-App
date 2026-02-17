@@ -5,6 +5,7 @@ export default function MainLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="welcome" />
       <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="edit-profile" />
     </Stack>
   );
 }

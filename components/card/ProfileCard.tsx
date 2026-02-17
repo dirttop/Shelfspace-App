@@ -1,22 +1,22 @@
-import AppText from '@/components/common/AppText';
-import Buttons from '@/components/common/Buttons';
-import React from 'react';
-import { View, ViewProps } from 'react-native';
-import Avatar from '../common/Avatar';
-
+import AppText from "@/components/common/AppText";
+import Buttons from "@/components/common/Buttons";
+import { useRouter } from "expo-router";
+import React from "react";
+import { View, ViewProps } from "react-native";
+import Avatar from "../common/Avatar";
 
 interface ProfileProps extends ViewProps {
-    firstName?: string;
-    lastName?: string;
-    username?: string;
-    bio?: string;
-    uriAvatar?: string;
-    readCount?: number;
-    readingCount?: number;
-    shelvedCount?: number;
-    postCount?: number;
-    friendCount?: number;
-    followCount?: number;
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  bio?: string;
+  uriAvatar?: string;
+  readCount?: number;
+  readingCount?: number;
+  shelvedCount?: number;
+  postCount?: number;
+  friendCount?: number;
+  followCount?: number;
 }
 
 const ShelfStat = ({ label, value }: { label: string; value: number }) => (
@@ -27,64 +27,68 @@ const ShelfStat = ({ label, value }: { label: string; value: number }) => (
 );
 
 const SocialStat = ({ label, value }: { label: string; value: number }) => (
-    <View className="items-center">
-        <AppText className="text-lg font-bold text-slate-900">{value} {label}</AppText>
-    </View>
+  <View className="items-center">
+    <AppText className="text-lg font-bold text-slate-900">
+      {value} {label}
+    </AppText>
+  </View>
 );
 
 const ProfileCard = ({
-    firstName = "John", 
-    lastName = "Smith",
-    username = "johnny-418",
-    bio = "Insert bio here",
-    uriAvatar,
-    readCount = 0,
-    readingCount = 0,
-    shelvedCount = 0,
-    postCount = 0,
-    friendCount = 0,
-    followCount = 0,
-    className,
-    ...props
+  firstName = "",
+  lastName = "",
+  username = "",
+  bio = "Insert bio here",
+  uriAvatar,
+  readCount = 0,
+  readingCount = 0,
+  shelvedCount = 0,
+  postCount = 0,
+  friendCount = 0,
+  followCount = 0,
+  className,
+  ...props
 }: ProfileProps) => {
-    return (
-        <View className={`p-6 bg-white rounded-2xl shadow-sm border border-slate-100 ${className}`} 
-        {...props}
-        >
-            <View className={'flex-row items-center mb-6'}>
-                <View className='pr-6'>
-                    <Avatar uri={uriAvatar} name={firstName + " " + lastName} size='xl' />
-                </View>
-               
-               <View className="flex-1 gap-y-1 mt-6">
-                    <AppText className = 'text-xl font-bold text-slate-900'>{firstName + " " + lastName}</AppText>
-                    <AppText className = ' text-slate-500'>@{username}</AppText>
-                    <View className='flex-1 flex-row justify-around'>
-                            <ShelfStat label="Read" value={readCount} />
-                            <ShelfStat label="Reading" value={readingCount}/>
-                            <ShelfStat label='Shelved' value={shelvedCount}/>
-                    </View>
-                </View>
-            </View>
-
-            <View className='mb-4 p-2'>
-                    {bio && (
-                    <AppText className="text-sm text-slate-700 leading-5">
-                        {bio}
-                    </AppText>
-                    )}
-            </View>
-            <View className="flex-row gap-x-3">
-                <View className="w-1/2">
-                    <Buttons
-                        title="Edit Profile"
-                        size='sm'
-                        onPress={() => {}}
-                    />
-                </View>
-            </View>
+  const router = useRouter();
+  return (
+    <View
+      className={`p-6 bg-white rounded-2xl shadow-sm border border-slate-100 ${className}`}
+      {...props}
+    >
+      <View className={"flex-row items-center mb-6"}>
+        <View className="pr-6">
+          <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="xl" />
         </View>
-    );
+
+        <View className="flex-1 gap-y-1 mt-6">
+          <AppText className="text-xl font-bold text-slate-900">
+            {firstName + " " + lastName}
+          </AppText>
+          <AppText className=" text-slate-500">@{username}</AppText>
+          <View className="flex-1 flex-row justify-around">
+            <ShelfStat label="Read" value={readCount} />
+            <ShelfStat label="Reading" value={readingCount} />
+            <ShelfStat label="Shelved" value={shelvedCount} />
+          </View>
+        </View>
+      </View>
+
+      <View className="mb-4 p-2">
+        {bio && (
+          <AppText className="text-sm text-slate-700 leading-5">{bio}</AppText>
+        )}
+      </View>
+      <View className="flex-row gap-x-3">
+        <View className="w-1/2">
+          <Buttons
+            title="Edit Profile"
+            size="sm"
+            onPress={() => router.push("/(main)/editProfile")}
+          />
+        </View>
+      </View>
+    </View>
+  );
 };
 
 export default ProfileCard;

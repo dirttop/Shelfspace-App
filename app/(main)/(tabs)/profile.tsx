@@ -84,6 +84,7 @@ export default function Profile() {
             </View>
           ) : (
             <ProfileCard
+              className="mt-5"
               firstName={profile?.first_name}
               lastName={profile?.last_name}
               username={profile?.username}
