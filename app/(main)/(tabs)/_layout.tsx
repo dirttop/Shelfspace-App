@@ -12,13 +12,11 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: Platform.select({
           ios: {
-            // Use absolute positioning on iOS to allow content to scroll behind the tab bar (blur effect)
             position: 'absolute', 
           },
           default: {
-            // Android typically has a solid background
             backgroundColor: 'white',
-            elevation: 8, // slight shadow for Android
+            elevation: 8,
           },
         }),
       }}>
@@ -70,7 +68,6 @@ export default function TabLayout() {
         options={{
           title: 'Club',
           tabBarIcon: ({ color, focused }) => (
-            // Using a Book icon since you mentioned "Book Clubs"
             <MaterialCommunityIcons 
               name={focused ? 'book-open-page-variant' : 'book-open-page-variant-outline'} 
               size={28} 
