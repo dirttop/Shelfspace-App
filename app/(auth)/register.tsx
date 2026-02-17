@@ -18,64 +18,111 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase'
 
 const RegisterScreen = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
   const [terms, setTerms] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const [errors, setErrors] = useState({
-    firstName: '',
-    lastName: '',
-    username: '',
-    password: '',
-    confirmPassword: '',
-    email: '',
-  });
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const insets = useSafeAreaInsets();
+  const isFormValid =
+    firstName.trim().length > 0 &&
+    lastName.trim().length > 0 &&
+    username.trim().length > 0 &&
+    email.trim().length > 0 &&
+    password.length >= 6 &&
+    password === confirmPassword &&
+    terms;
 
   async function signUpWithEmail() {
-      setLoading(true)
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-      })
-      if (session) {
-        router.push("/home")
-      }
+    setLoading(true);
+    setSubmitAttempted(true);
 
-      if (error) Alert.alert(error.message)
-      if (!session) Alert.alert('Please check your inbox for email verification!')
-      setLoading(false)
+    // use component-level validation
+    if (!isFormValid) {
+      setLoading(false);
+      return;
     }
 
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    });
 
+    if (error) {
+      Alert.alert(error.message);
+      setLoading(false);
+      return;
+    }
+
+    const user = data?.user ?? null;
+
+    // If we have a user id (some flows provide a session immediately), try to create/update the profile row.
+    if (user?.id) {
+      try {
+        const { error: upsertError } = await supabase.from("profiles").upsert({
+          id: user.id,
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          username: username.trim().toLowerCase(),
+        });
+
+        if (upsertError) {
+          // Non-fatal: show message so the developer/user can see why profile fields were not saved.
+          console.warn("Profile upsert error:", upsertError.message);
+          Alert.alert(
+            "Warning",
+            "Account created but we couldn't save your profile details yet.",
+          );
+        }
+      } catch (e: any) {
+        console.warn("Unexpected error upserting profile:", e?.message ?? e);
+      }
+    }
+
+    // If signUp did not return a session (email confirmation required), inform the user.
+    if (!data?.session) {
+      Alert.alert("Please check your inbox for email verification!");
+      setLoading(false);
+      return;
+    }
+
+    // If we have a session, redirect to home
+    if (data.session) {
+      router.push("/home");
+    }
+    setLoading(false);
+  }
 
   return (
-    <View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
+    <View
+      className="flex-1 bg-white dark:bg-zinc-950"
+      style={{ paddingTop: insets.top }}
+    >
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
         <ScrollView
           contentContainerClassName="flex-grow justify-center p-5"
           contentContainerStyle={{
-            paddingBottom: 20 + insets.bottom //easier to read than inline
+            paddingBottom: 20 + insets.bottom, //easier to read than inline
           }}
           className="flex-1"
         >
           <View className="items-center mb-8">
             <View className="flex-row items-end justify-center gap-2">
               <Icons.logo width={100} height={100} color="#000" />
-              <AppText variant="title">
+              <AppText variant="title">ShelfSpace</AppText>
+            </View>
+            <View className="flex-row items-end justify-center gap-2">
+              <Icons.logo width={100} height={100} color="#000" />
+              <Text className="text-3xl font-bold text-zinc-900 dark:text-gray-50 pb-2">
                 ShelfSpace
               </AppText>
             </View>
@@ -103,6 +150,12 @@ const RegisterScreen = () => {
                   />
                 </View>
               </View>
+              {submitAttempted &&
+                (firstName.trim() === "" || lastName.trim() === "") && (
+                  <Text className="text-xs text-red-500 mt-2 ml-1">
+                    First and last name are required.
+                  </Text>
+                )}
             </View>
 
             <View className="mb-4">
@@ -115,6 +168,11 @@ const RegisterScreen = () => {
                 onChangeText={setUsername}
                 autoCapitalize="none"
               />
+              {submitAttempted && username.trim() === "" && (
+                <Text className="text-xs text-red-500 mt-2 ml-1">
+                  Username is required.
+                </Text>
+              )}
             </View>
 
             <View className="mb-4">
@@ -128,6 +186,11 @@ const RegisterScreen = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
+              {submitAttempted && email.trim() === "" && (
+                <Text className="text-xs text-red-500 mt-2 ml-1">
+                  Email is required.
+                </Text>
+              )}
             </View>
 
             <View className="mb-4">
@@ -142,7 +205,14 @@ const RegisterScreen = () => {
               />
               <AppText variant="caption" className="text-zinc-500">
                 Passwords must be at least 6 characters.
-              </AppText>
+              </Text>
+              {submitAttempted &&
+                password.length > 0 &&
+                password.length < 6 && (
+                  <Text className="text-xs text-red-500 mt-2 ml-1">
+                    Password must be at least 6 characters.
+                  </Text>
+                )}
             </View>
 
             <View className="mb-6">
@@ -155,6 +225,13 @@ const RegisterScreen = () => {
                 onChangeText={setConfirmPassword}
                 secureTextEntry
               />
+              {submitAttempted &&
+                confirmPassword.length > 0 &&
+                password !== confirmPassword && (
+                  <Text className="text-xs text-red-500 mt-2 ml-1">
+                    Passwords do not match.
+                  </Text>
+                )}
             </View>
 
             <View className="mb-6">
@@ -163,25 +240,29 @@ const RegisterScreen = () => {
                 value={terms}
                 onValueChange={setTerms}
               />
+              {submitAttempted && !terms && (
+                <Text className="text-xs text-red-500 mt-2 ml-1">
+                  You must accept the terms to continue.
+                </Text>
+              )}
             </View>
 
             <Buttons
               title="Create account"
               onPress={() => signUpWithEmail()}
-              disabled={!terms}
+              disabled={!isFormValid || loading}
             />
 
             <View className="mt-4 flex-row justify-center">
-              <AppText className="text-zinc-500">
-                Already have an account?{' '}
-              </AppText>
+              <Text className="text-zinc-500 dark:text-zinc-400">
+                Already have an account?{" "}
+              </Text>
               <Link href="/(auth)/login" asChild>
                 <AppText className="font-semibold">
                   Sign in
                 </AppText>
               </Link>
             </View>
-
           </Card>
 
           <View className="mt-8 items-center">
@@ -189,7 +270,6 @@ const RegisterScreen = () => {
               © 2026 Shelfspace
             </AppText>
           </View>
-
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
