@@ -124,7 +124,7 @@ const RegisterScreen = () => {
               <Icons.logo width={100} height={100} color="#000" />
               <Text className="text-3xl font-bold text-zinc-900 dark:text-gray-50 pb-2">
                 ShelfSpace
-              </AppText>
+              </Text>
             </View>
           </View>
 
@@ -203,7 +203,7 @@ const RegisterScreen = () => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-              <AppText variant="caption" className="text-zinc-500">
+              <Text className="text-xs text-zinc-500 dark:text-zinc-400">
                 Passwords must be at least 6 characters.
               </Text>
               {submitAttempted &&

@@ -46,28 +46,32 @@ const ProfileCard = ({
   postCount = 0,
   friendCount = 0,
   followCount = 0,
-  className,
+  className = "",
   ...props
 }: ProfileProps) => {
-    return (
-        <View className={`p-6 bg-white rounded-2xl shadow-sm border border-slate-100 ${className}`} 
-        {...props}
-        >
-            <View className={'flex-row items-center mb-6'}>
-                <View className='pr-6'>
-                    <Avatar uri={uriAvatar} name={firstName + " " + lastName} size='xl' />
-                </View>
-               
-               <View className="flex-1 gap-y-1 mt-6">
-                    <AppText className = 'text-xl font-bold text-slate-900'>{firstName + " " + lastName}</AppText>
-                    <AppText className = ' text-slate-500'>@{username}</AppText>
-                    <View className='flex-1 flex-row justify-around'>
-                            <ShelfStat label="Reading" value={readingCount}/>
-                            <ShelfStat label="Read" value={readCount} />
-                            <ShelfStat label='Shelved' value={shelvedCount}/>
-                    </View>
-                </View>
-            </View>
+  const router = useRouter();
+  return (
+    <View
+      className={`p-6 bg-white rounded-2xl shadow-sm border border-slate-100 ${className}`}
+      {...props}
+    >
+      <View className={"flex-row items-center mb-6"}>
+        <View className="pr-6">
+          <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="xl" />
+        </View>
+
+        <View className="flex-1 gap-y-1 mt-6">
+          <AppText className="text-xl font-bold text-slate-900">
+            {firstName + " " + lastName}
+          </AppText>
+          <AppText className=" text-slate-500">@{username}</AppText>
+          <View className="flex-1 flex-row justify-around">
+            <ShelfStat label="Reading" value={readingCount} />
+            <ShelfStat label="Read" value={readCount} />
+            <ShelfStat label="Shelved" value={shelvedCount} />
+          </View>
+        </View>
+      </View>
 
       <View className="mb-4 p-2">
         {bio && (

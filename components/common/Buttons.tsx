@@ -1,7 +1,8 @@
-import { cssInterop } from 'nativewind';
-import { PressableScale } from 'pressto';
-import React from 'react';
-import AppText from './AppText';
+import { cssInterop } from "nativewind";
+import { PressableScale } from "pressto";
+import React from "react";
+import { ActivityIndicator, Pressable, View } from "react-native";
+import AppText from "./AppText";
 
 const StyledPressable = cssInterop(PressableScale, {
   className: "style",
@@ -25,13 +26,16 @@ const Buttons = ({
   size = "md",
 }: ButtonProps) => {
   const getVariantStyle = () => {
-    if (disabled) return 'bg-slate-800';
+    if (disabled) return "bg-slate-800";
 
     switch (variant) {
-      case 'secondary': return 'bg-slate-300';
-      case 'outline': return 'bg-transparent border-2 border-zinc-900';
-      case 'primary':
-      default: return 'bg-slate-300';
+      case "secondary":
+        return "bg-slate-300";
+      case "outline":
+        return "bg-transparent border-2 border-zinc-900";
+      case "primary":
+      default:
+        return "bg-slate-300";
     }
   };
 
@@ -76,14 +80,25 @@ const Buttons = ({
   };
 
   return (
-    <StyledPressable
-      onPress={() => !disabled && onPress()}
+    <Pressable
+      onPress={onPress}
+      disabled={disabled || loading}
       className={`items-center justify-center ${getSizeStyle()} ${getVariantStyle()}`}
     >
-      <AppText className={`font-bold ${getTextStyle()}`}>
-        {title}
-      </AppText>
-    </StyledPressable>
+      {loading ? (
+        <View className="flex-row items-center">
+          <ActivityIndicator
+            size="small"
+            color={variant === "primary" ? "#fff" : "#000"}
+          />
+          <AppText className={`font-bold ${getTextStyle()} ml-2`}>
+            {title}
+          </AppText>
+        </View>
+      ) : (
+        <AppText className={`font-bold ${getTextStyle()}`}>{title}</AppText>
+      )}
+    </Pressable>
   );
 };
 
