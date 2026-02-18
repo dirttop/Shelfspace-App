@@ -99,12 +99,7 @@ export default function Profile() {
             />
           )}
         </View>
-      );
-  }, [activeTab, flatListData.length]);
-
-  return (
-    <View className="flex-1 bg-slate-50" style={{ paddingTop: insets.top }}>
-        <ProfileHeader></ProfileHeader>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
