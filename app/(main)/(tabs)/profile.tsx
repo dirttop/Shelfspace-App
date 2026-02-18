@@ -1,6 +1,6 @@
 import { supabase } from "@/app/lib/supabase";
 import ProfileCard from "@/components/card/ProfileCard";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -98,13 +98,9 @@ export default function Profile() {
               followCount={profile?.follow_count}
             />
           )}
-        </View>
-      );
-  }, [activeTab, flatListData.length]);
 
-  return (
-    <View className="flex-1 bg-slate-50" style={{ paddingTop: insets.top }}>
-        <ProfileHeader></ProfileHeader>
-    </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
