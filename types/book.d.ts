@@ -1,4 +1,4 @@
-type Book = {
+export type Book = {
     title: string;
     authors: string[];
     description: string;
