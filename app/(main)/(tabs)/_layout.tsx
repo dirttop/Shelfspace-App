@@ -12,13 +12,11 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: Platform.select({
           ios: {
-            // Use absolute positioning on iOS to allow content to scroll behind the tab bar (blur effect)
             position: 'absolute', 
           },
           default: {
-            // Android typically has a solid background
             backgroundColor: 'white',
-            elevation: 8, // slight shadow for Android
+            elevation: 8,
           },
         }),
       }}>
@@ -30,20 +28,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons 
               name={focused ? 'home' : 'home-outline'} 
-              size={28} 
-              color={color} 
-            />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="social"
-        options={{
-          title: 'Social',
-          tabBarIcon: ({ color, focused }) => (
-            <MaterialCommunityIcons 
-              name={focused ? 'account-group' : 'account-group-outline'} 
               size={28} 
               color={color} 
             />
@@ -66,11 +50,24 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
+        name="add"
+        options={{
+          title: 'Add',
+          tabBarIcon: ({ color, focused }) => (
+            <MaterialCommunityIcons 
+              name={focused ? 'book-plus' : 'book-plus-outline'} 
+              size={28} 
+              color={color} 
+            />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
         name="club"
         options={{
           title: 'Club',
           tabBarIcon: ({ color, focused }) => (
-            // Using a Book icon since you mentioned "Book Clubs"
             <MaterialCommunityIcons 
               name={focused ? 'book-open-page-variant' : 'book-open-page-variant-outline'} 
               size={28} 

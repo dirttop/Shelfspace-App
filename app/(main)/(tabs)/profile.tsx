@@ -12,72 +12,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-// nativewind classes are used via className
-import AppText from "@/components/common/AppText";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-
-// local TabItem type
-type TabItem = { id: string; icon: string; label?: string };
-
-// NOTE: PressableScale (pressto) was removed — use Pressable from react-native instead
-
-const PROFILE_TABS: TabItem[] = [
-  { id: "books", icon: "book" },
-  { id: "social", icon: "account-group" },
-];
-
-const BOOKS_DATA = Array.from({ length: 12 }, (_, i) => ({ id: `book-${i}` }));
-const SOCIAL_DATA = Array.from({ length: 8 }, (_, i) => ({ id: `post-${i}` }));
-
-const BookItem = () => (
-  <Pressable
-    className="flex-1 aspect-[2/3] m-0.5 bg-slate-100 rounded-lg items-center justify-center"
-    onPress={() => console.log("Book pressed")}
-  >
-    <MaterialCommunityIcons name="book-outline" size={28} color="#94a3b8" />
-  </Pressable>
-);
-
-const BookRow = ({ items }: { items: any[] }) => (
-  <View className="flex-row px-0.5">
-    {items.map((item) => (
-      <BookItem key={item.id} />
-    ))}
-    {Array.from({ length: 3 - items.length }).map((_, i) => (
-      <View key={`empty-${i}`} className="flex-1 m-0.5" />
-    ))}
-  </View>
-);
-
-const SocialPostItem = () => (
-  <View className="mx-4 mb-3 p-4 bg-white rounded-xl border border-slate-100">
-    <View className="flex-row items-center mb-3">
-      <View className="w-8 h-8 rounded-full bg-slate-200 mr-3" />
-      <View>
-        <AppText className="text-sm font-semibold text-slate-900">
-          username
-        </AppText>
-        <AppText className="text-xs text-slate-400">2h ago</AppText>
-      </View>
-    </View>
-    <AppText className="text-sm text-slate-600 leading-5">
-      This is a mock post.
-    </AppText>
-  </View>
-);
-
-const chunkData = (data: any[], size: number) => {
-  const chunks = [];
-  for (let i = 0; i < data.length; i += size) {
-    chunks.push({
-      id: `row-${i}`,
-      type: "book-row",
-      items: data.slice(i, i + size),
-    });
-  }
-  return chunks;
-};
-
 export default function Profile() {
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
@@ -205,25 +139,7 @@ export default function Profile() {
         >
           <ActivityIndicator />
         </View>
-      ) : error ? (
-        <View className="py-20 items-center">
-          <Text className="text-center text-sm text-red-600">{error}</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={flatListData}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          ListHeaderComponent={ListHeader}
-          ListEmptyComponent={ListEmpty}
-          stickyHeaderIndices={[1]}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingBottom: insets.bottom + 16,
-            paddingTop: insets.top,
-          }}
-        />
-      )}
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }

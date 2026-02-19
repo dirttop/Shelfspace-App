@@ -6,16 +6,16 @@ import Icons from '@/components/common/Icons';
 import Input from '@/components/common/Input';
 import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
-import { 
-    KeyboardAvoidingView,
-    Platform, 
-    ScrollView, 
-    Text, 
-    View, 
-    Alert } 
-from 'react-native';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  View
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { supabase } from '../lib/supabase'
+import { supabase } from '../lib/supabase';
 
 const RegisterScreen = () => {
   const [email, setEmail] = useState("");
@@ -122,7 +122,7 @@ const RegisterScreen = () => {
             </View>
             <View className="flex-row items-end justify-center gap-2">
               <Icons.logo width={100} height={100} color="#000" />
-              <Text className="text-3xl font-bold text-zinc-900 dark:text-gray-50 pb-2">
+              <AppText className="text-3xl font-bold text-zinc-900 dark:text-gray-50 pb-2">
                 ShelfSpace
               </Text>
             </View>
@@ -205,7 +205,7 @@ const RegisterScreen = () => {
               />
               <Text className="text-xs text-zinc-500 dark:text-zinc-400">
                 Passwords must be at least 6 characters.
-              </Text>
+              </AppText>
               {submitAttempted &&
                 password.length > 0 &&
                 password.length < 6 && (
