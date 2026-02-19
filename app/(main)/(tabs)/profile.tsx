@@ -1,6 +1,6 @@
 import { supabase } from "@/app/lib/supabase";
 import ProfileCard from "@/components/card/ProfileCard";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
