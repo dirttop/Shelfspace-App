@@ -3,20 +3,23 @@ import ProfileCard from "@/components/card/ProfileCard";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  FlatList,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
+  Pressable,
   Text,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
 
 export default function Profile() {
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [activeTab, setActiveTab] = useState<TabItem["id"]>("books");
+  const [flatListData, setFlatListData] = useState<any[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -60,45 +63,81 @@ export default function Profile() {
     };
   }, []);
 
+  // build flatListData whenever activeTab changes
+  useEffect(() => {
+    if (activeTab === "books") {
+      // chunk into rows of 3
+      const chunks = chunkData(BOOKS_DATA, 3);
+      setFlatListData(chunks);
+    } else {
+      // social - each post as its own row
+      const socialRows = SOCIAL_DATA.map((s) => ({ id: s.id, type: "social" }));
+      setFlatListData(socialRows);
+    }
+  }, [activeTab]);
+
+  function renderItem({ item }: { item: any }) {
+    if (item.type === "book-row") {
+      return <BookRow items={item.items} />;
+    }
+    return <SocialPostItem />;
+  }
+
+  const ListHeader = () => (
+    <>
+      <ProfileCard
+        className="mt-5"
+        firstName={profile?.first_name}
+        lastName={profile?.last_name}
+        username={profile?.username}
+        bio={profile?.bio}
+        uriAvatar={profile?.avatar_url}
+        readCount={profile?.read_count}
+        readingCount={profile?.reading_count}
+        shelvedCount={profile?.shelved_count}
+        postCount={profile?.post_count}
+        friendCount={profile?.friend_count}
+        followCount={profile?.follow_count}
+      />
+
+      <View className="mt-4 bg-white px-4 py-2 border-b border-slate-100">
+        <View className="flex-row justify-around">
+          {PROFILE_TABS.map((tab) => (
+            <Pressable
+              key={tab.id}
+              onPress={() => setActiveTab(tab.id)}
+              className={`px-3 py-2 ${activeTab === tab.id ? "bg-zinc-900 rounded-md" : ""}`}
+            >
+              <MaterialCommunityIcons
+                name={tab.icon as any}
+                size={20}
+                color={activeTab === tab.id ? "#fff" : "#64748b"}
+              />
+            </Pressable>
+          ))}
+        </View>
+      </View>
+    </>
+  );
+
+  const ListEmpty = () => (
+    <View className="py-20 items-center">
+      <Text className="text-sm text-zinc-500">No items yet</Text>
+    </View>
+  );
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       className="flex-1"
       keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
     >
-      <ScrollView
-        contentContainerClassName="flex-grow  p-5"
-        contentContainerStyle={{
-          paddingBottom: 20 + insets.bottom, //easier to read than inline
-          paddingTop: insets.top,
-        }}
-        className="flex-1"
-      >
-        <View>
-          {loading ? (
-            <View className="items-center justify-center py-20">
-              <ActivityIndicator />
-            </View>
-          ) : error ? (
-            <View className="py-20 items-center">
-              <Text className="text-center text-sm text-red-600">{error}</Text>
-            </View>
-          ) : (
-            <ProfileCard
-              firstName={profile?.first_name}
-              lastName={profile?.last_name}
-              username={profile?.username}
-              bio={profile?.bio}
-              uriAvatar={profile?.avatar_url}
-              readCount={profile?.read_count}
-              readingCount={profile?.reading_count}
-              shelvedCount={profile?.shelved_count}
-              postCount={profile?.post_count}
-              friendCount={profile?.friend_count}
-              followCount={profile?.follow_count}
-            />
-          )}
-
+      {loading ? (
+        <View
+          className="flex-1 justify-center items-center"
+          style={{ paddingTop: insets.top }}
+        >
+          <ActivityIndicator />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
