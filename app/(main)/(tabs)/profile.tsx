@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { TabItem } from "@/components/common/Tabs";
 
 export default function Profile() {
   const insets = useSafeAreaInsets();
