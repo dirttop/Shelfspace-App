@@ -1,16 +1,29 @@
-import React from 'react';
-import { TextInput, TextInputProps } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import { cssInterop } from "nativewind";
+import { PressableScale } from "pressto";
+import { Pressable } from 'react-native';
+import AppText from './AppText';
 
-type InputProps = TextInputProps;
+const StyledPressable = cssInterop(PressableScale, {
+  className: "style",
+});
 
-const Input = (props: InputProps) => {
+export default function Search() {
+
+  const handleSearch = () => {
+    router.push('/search')
+  }
+
   return (
-    <TextInput
-      {...props}
-      placeholderClassName="text-zinc-500"
-      className="bg-white border border-zinc-200 text-zinc-950 p-4 rounded-md mb-3"
-    />
+    <Pressable
+      onPress = {handleSearch}
+      className="flex flex-row rounded-3xl bg-zinc-200/80 justify-between items-center p-1" 
+    >
+      <AppText >
+        Search...
+      </AppText>
+      <MaterialCommunityIcons name="magnify" size={20} color="gray" />
+    </Pressable>
   );
 };
-
-export default React.memo(Input);
