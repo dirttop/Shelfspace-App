@@ -10,16 +10,16 @@ interface AvatarProps {
 }
 
 const sizeMap = {
-  sm: 'w-8 h-8',
-  md: 'w-12 h-12',
+  sm: 'w-10 h-10',
+  md: 'w-16 h-16',
   lg: 'w-20 h-20',
-  xl: 'w-32 h-32',
+  xl: 'w-24 h-24',
 };
 
 const textMap = {
-  sm: 'text-lg',
-  md: 'text-xl',
-  lg: 'text-3xl',
+  sm: 'text-2xl',
+  md: 'text-3xl',
+  lg: 'text-4xl',
   xl: 'text-5xl',
 };
 
@@ -62,4 +62,4 @@ const Avatar = ({uri, name, size = 'md'}: AvatarProps) => {
     </View>
     );
 };
-export default Avatar;
+export default React.memo(Avatar);

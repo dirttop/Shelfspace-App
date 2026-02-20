@@ -40,4 +40,4 @@ const Tabs = ({ items, activeTab, onTabChange, className }: TabsProps) => {
   );
 };
 
-export default Tabs;
+export default React.memo(Tabs);

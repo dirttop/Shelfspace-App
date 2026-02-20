@@ -1,5 +1,6 @@
 import AppText from "@/components/common/AppText";
 import Buttons from "@/components/common/Buttons";
+import Card from "@/components/common/Card";
 import { useRouter } from "expo-router";
 import React from "react";
 import { View, ViewProps } from "react-native";
@@ -51,10 +52,7 @@ const ProfileCard = ({
 }: ProfileProps) => {
   const router = useRouter();
   return (
-    <View
-      className={`p-6 bg-white rounded-2xl shadow-sm border border-slate-100 ${className}`}
-      {...props}
-    >
+    <Card className={className} {...props}>
       <View className={"flex-row items-center mb-6"}>
         <View className="pr-6">
           <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="xl" />
@@ -87,7 +85,7 @@ const ProfileCard = ({
           />
         </View>
       </View>
-    </View>
+    </Card>
   );
 };
 

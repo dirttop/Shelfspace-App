@@ -17,6 +17,30 @@ interface ButtonProps {
   size?: "sm" | "md" | "lg";
 }
 
+const containerVariantStyles = {
+  primary: "bg-slate-300",
+  secondary: "bg-slate-300",
+  outline: "bg-transparent border-2 border-zinc-900",
+};
+
+const containerSizeStyles = {
+  sm: "p-2 mb-2 rounded-3xl",
+  md: "p-4 mb-4 rounded-4xl",
+  lg: "p-5 mb-5 rounded-5xl",
+};
+
+const textVariantStyles = {
+  primary: "text-zinc-50 dark:text-zinc-900",
+  secondary: "text-zinc-900 dark:text-zinc-100",
+  outline: "text-zinc-900 dark:text-zinc-100",
+};
+
+const textSizeStyles = {
+  sm: "text-sm",
+  md: "text-lg",
+  lg: "text-xl",
+};
+
 const Buttons = ({
   title,
   onPress,
@@ -25,65 +49,19 @@ const Buttons = ({
   variant = "primary",
   size = "md",
 }: ButtonProps) => {
-  const getVariantStyle = () => {
-    if (disabled) return "bg-slate-800";
+  const containerClasses = disabled
+    ? `bg-slate-800 ${containerSizeStyles[size]}`
+    : `${containerVariantStyles[variant]} ${containerSizeStyles[size]}`;
 
-    switch (variant) {
-      case "secondary":
-        return "bg-slate-300";
-      case "outline":
-        return "bg-transparent border-2 border-zinc-900";
-      case "primary":
-      default:
-        return "bg-slate-300";
-    }
-  };
-
-  const getSizeStyle = () => {
-    switch (size) {
-      case "sm":
-        return "p-2 mb-2 rounded-lg";
-      case "lg":
-        return "p-5 mb-5 rounded-2xl";
-      case "md":
-      default:
-        return "p-4 mb-4 rounded-xl";
-    }
-  };
-
-  const getTextStyle = () => {
-    let colorClass = "";
-    if (disabled) colorClass = "text-zinc-500 dark:text-zinc-400";
-    else if (variant === "secondary")
-      colorClass = "text-zinc-900 dark:text-zinc-100";
-    else
-      colorClass =
-        variant === "outline"
-          ? "text-zinc-900 dark:text-zinc-100"
-          : "text-zinc-50 dark:text-zinc-900";
-
-    let sizeClass = "";
-    switch (size) {
-      case "sm":
-        sizeClass = "text-sm";
-        break;
-      case "lg":
-        sizeClass = "text-xl";
-        break;
-      case "md":
-      default:
-        sizeClass = "text-lg";
-        break;
-    }
-
-    return `${colorClass} ${sizeClass}`;
-  };
+  const textClasses = disabled
+    ? `text-zinc-500 dark:text-zinc-400 ${textSizeStyles[size]}`
+    : `${textVariantStyles[variant]} ${textSizeStyles[size]}`;
 
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled || loading}
-      className={`items-center justify-center ${getSizeStyle()} ${getVariantStyle()}`}
+      className={`items-center justify-center ${containerClasses}`}
     >
       {loading ? (
         <View className="flex-row items-center">
@@ -91,15 +69,15 @@ const Buttons = ({
             size="small"
             color={variant === "primary" ? "#fff" : "#000"}
           />
-          <AppText className={`font-bold ${getTextStyle()} ml-2`}>
+          <AppText className={`font-bold ${textClasses} ml-2`}>
             {title}
           </AppText>
         </View>
       ) : (
-        <AppText className={`font-bold ${getTextStyle()}`}>{title}</AppText>
+        <AppText className={`font-bold ${textClasses}`}>{title}</AppText>
       )}
     </Pressable>
   );
 };
 
-export default Buttons;
+export default React.memo(Buttons);

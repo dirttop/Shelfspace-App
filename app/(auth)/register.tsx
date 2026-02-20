@@ -118,10 +118,6 @@ const RegisterScreen = () => {
           <View className="items-center mb-8">
             <View className="flex-row items-end justify-center gap-2">
               <Icons.logo width={100} height={100} color="#000" />
-              <AppText variant="title">ShelfSpace</AppText>
-            </View>
-            <View className="flex-row items-end justify-center gap-2">
-              <Icons.logo width={100} height={100} color="#000" />
               <AppText className="text-3xl font-bold text-zinc-900 dark:text-gray-50 pb-2">
                 ShelfSpace
               </AppText>

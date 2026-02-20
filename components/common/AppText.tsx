@@ -1,9 +1,20 @@
+import { memo } from "react";
 import type { TextProps } from "react-native";
 import { Text } from "react-native";
 
 interface AppTextProps extends TextProps {
   variant?: "title" | "subtitle" | "body" | "caption" | "label";
 }
+
+const baseClasses = "text-zinc-900";
+
+const variantClasses = {
+  title: "text-3xl font-bold",
+  subtitle: "text-2xl font-semibold",
+  body: "text-base font-normal",
+  caption: "text-xs font-normal",
+  label: "text-sm font-medium",
+};
 
 const AppText = ({
   children,
@@ -12,16 +23,6 @@ const AppText = ({
   className,
   ...props
 }: AppTextProps) => {
-  const baseClasses = "text-zinc-900";
-
-  const variantClasses = {
-    title: "text-3xl font-bold",
-    subtitle: "text-2xl font-semibold",
-    body: "text-base font-normal",
-    caption: "text-xs font-normal",
-    label: "text-sm font-medium",
-  };
-
   const combinedClasses = `${baseClasses} ${variantClasses[variant]} ${
     className || ""
   }`;
@@ -33,4 +34,4 @@ const AppText = ({
   );
 };
 
-export default AppText;
+export default memo(AppText);

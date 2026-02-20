@@ -1,4 +1,5 @@
 import { Check } from 'lucide-react-native';
+import { memo } from 'react';
 import { Pressable, View } from "react-native";
 
 
@@ -22,4 +23,4 @@ const Checkbox = (props: { value: boolean, label: string, onValueChange: (value:
         </Pressable>
     );
 };
-export default Checkbox;
+export default memo(Checkbox);
