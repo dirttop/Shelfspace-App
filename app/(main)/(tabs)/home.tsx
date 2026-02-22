@@ -1,4 +1,4 @@
-import BookItem from "@/components/book/BookItem";
+import ReviewCard from "@/components/card/ReviewCard";
 import { Book } from "@/types/book";
 import { View } from "react-native";
 
@@ -15,10 +15,13 @@ const mockBook: Book = {
 
 export default function Home() {
   return (
-    <View className="flex-1 bg-gray-50 items-center justify-center">
-      <BookItem 
+    <View className="flex-1 bg-gray-50 items-center justify-center p-4">
+      <ReviewCard 
         book={mockBook} 
-        onPress={() => console.log("Book pressed! Navigate to details.")} 
+        postText="This is a sample review! We love reviews!"
+        firstName="John"
+        lastName="Doe"
+        username="johndoe"
       />
     </View>
   );
