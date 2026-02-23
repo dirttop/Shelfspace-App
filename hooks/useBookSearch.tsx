@@ -1,5 +1,5 @@
+import { Book } from '@/types/book';
 import { gql, useQuery } from '@apollo/client';
-import { Book } from '../types/book';
 
 interface SearchBooksResponse {
   searchBooks: Array<Omit<Book, 'source'> & { source: string }>;
@@ -11,7 +11,7 @@ interface SearchBooksVariables {
 
 export const SEARCH_BOOKS_QUERY = gql`
   query SearchBooks($query: String!) {
-    searchBooks(query: $query) {
+    searchBooks(q: $query) {
       title
       authors
       description
@@ -34,7 +34,7 @@ export function useBookSearch(query: string) {
   );
 
   const books: Book[] = 
-    data?.searchBooks.map((book) => {
+    data?.searchBooks?.map((book) => {
       let validSource: Book['source'] = 'Google Books';
       
       if (book.source === 'Cache' || book.source === 'Google Books' || book.source === 'Open Library') {
