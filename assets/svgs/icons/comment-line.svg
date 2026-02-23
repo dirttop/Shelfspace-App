@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="48"
+   height="48"
+   viewBox="0 0 48 48"
+   version="1.1"
+   id="svg1"
+   inkscape:export-filename="heart-fill.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="9.2919173"
+     inkscape:cx="13.613983"
+     inkscape:cy="22.115995"
+     inkscape:window-width="1440"
+     inkscape:window-height="900"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1">
+    <inkscape:page
+       x="0"
+       y="0"
+       width="48"
+       height="48"
+       id="page2"
+       margin="0"
+       bleed="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Shelfspace-Icons"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       inkscape:groupmode="layer"
+       id="layer2"
+       inkscape:label="Heart"
+       style="display:none">
+      <path
+         id="rect1"
+         style="display:inline;fill:none;stroke:#000000;stroke-width:2.75917;stroke-dasharray:none;stroke-opacity:1"
+         d="m 16.584802,10.083174 a 8.6958913,8.6958422 0 0 0 -6.148266,2.546237 l -0.0185,0.0185 a 8.6958913,8.6958422 0 0 0 10e-7,12.298073 l 1.265411,1.265412 11.100479,11.100479 a 1.7193245,1.7193147 0 0 1 0.0015,0.0015 l 0.186499,0.186497 a 1.4544498,1.4544417 0 0 0 2.056102,0 l 0.188042,-0.18804 11.100477,-11.100481 1.265412,-1.265411 a 8.6958913,8.6958422 0 0 0 1e-6,-12.298074 l -0.0185,-0.0185 a 8.6958913,8.6958422 0 0 0 -12.298075,2e-6 l -1.26534,1.265474 -1.265414,-1.265412 a 8.6958913,8.6958422 0 0 0 -6.149829,-2.546258 z"
+         inkscape:label="Heart"
+         inkscape:export-filename="heart-line.svg"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+    </g>
+    <g
+       inkscape:groupmode="layer"
+       id="layer3"
+       inkscape:label="Comment"
+       style="display:inline;fill:none"
+       transform="matrix(0.74468107,0,0,0.74468107,6.1276544,6.1276545)"
+       inkscape:export-filename="comment-line.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <path
+         id="path4"
+         style="fill:none;stroke:#000000;stroke-width:4.00521"
+         d="M 22.617356,3.8375007 C 11.508428,3.8378336 2.5029447,12.843318 2.5026118,23.952245 2.5029432,35.004884 11.419219,44.063442 22.450473,44.154393 l 0.08084,0.0026 c 0,0 23.777985,0.03888 23.069109,-0.09 L 40.103676,33.88967 C 41.821409,30.86676 42.731945,27.442903 42.7321,23.952247 42.731766,12.843318 33.726285,3.8378338 22.617356,3.8375007 Z"
+         sodipodi:nodetypes="cccccccc"
+         inkscape:label="Comment"
+         inkscape:export-filename="comment-fill.svg"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+    </g>
+  </g>
+</svg>

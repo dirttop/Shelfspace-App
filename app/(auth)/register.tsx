@@ -7,12 +7,11 @@ import Input from '@/components/common/Input';
 import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  View
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
@@ -148,9 +147,9 @@ const RegisterScreen = () => {
               </View>
               {submitAttempted &&
                 (firstName.trim() === "" || lastName.trim() === "") && (
-                  <Text className="text-xs text-red-500 mt-2 ml-1">
+                  <AppText className="text-xs text-red-500 mt-2 ml-1">
                     First and last name are required.
-                  </Text>
+                  </AppText>
                 )}
             </View>
 
@@ -165,9 +164,9 @@ const RegisterScreen = () => {
                 autoCapitalize="none"
               />
               {submitAttempted && username.trim() === "" && (
-                <Text className="text-xs text-red-500 mt-2 ml-1">
+                <AppText className="text-xs text-red-500 mt-2 ml-1">
                   Username is required.
-                </Text>
+                </AppText>
               )}
             </View>
 
@@ -183,9 +182,9 @@ const RegisterScreen = () => {
                 autoCapitalize="none"
               />
               {submitAttempted && email.trim() === "" && (
-                <Text className="text-xs text-red-500 mt-2 ml-1">
+                <AppText className="text-xs text-red-500 mt-2 ml-1">
                   Email is required.
-                </Text>
+                </AppText>
               )}
             </View>
 
@@ -205,9 +204,9 @@ const RegisterScreen = () => {
               {submitAttempted &&
                 password.length > 0 &&
                 password.length < 6 && (
-                  <Text className="text-xs text-red-500 mt-2 ml-1">
+                  <AppText className="text-xs text-red-500 mt-2 ml-1">
                     Password must be at least 6 characters.
-                  </Text>
+                  </AppText>
                 )}
             </View>
 
@@ -224,9 +223,9 @@ const RegisterScreen = () => {
               {submitAttempted &&
                 confirmPassword.length > 0 &&
                 password !== confirmPassword && (
-                  <Text className="text-xs text-red-500 mt-2 ml-1">
+                  <AppText className="text-xs text-red-500 mt-2 ml-1">
                     Passwords do not match.
-                  </Text>
+                  </AppText>
                 )}
             </View>
 
@@ -237,9 +236,9 @@ const RegisterScreen = () => {
                 onValueChange={setTerms}
               />
               {submitAttempted && !terms && (
-                <Text className="text-xs text-red-500 mt-2 ml-1">
+                <AppText className="text-xs text-red-500 mt-2 ml-1">
                   You must accept the terms to continue.
-                </Text>
+                </AppText>
               )}
             </View>
 
@@ -250,9 +249,9 @@ const RegisterScreen = () => {
             />
 
             <View className="mt-4 flex-row justify-center">
-              <Text className="text-zinc-500 dark:text-zinc-400">
+              <AppText className="text-zinc-500 dark:text-zinc-400">
                 Already have an account?{" "}
-              </Text>
+              </AppText>
               <Link href="/(auth)/login" asChild>
                 <AppText className="font-semibold">
                   Sign in
