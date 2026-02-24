@@ -1,8 +1,11 @@
+import IconButton from "@/components/button/IconButton";
 import AppText from "@/components/common/AppText";
 import Buttons from "@/components/common/Buttons";
 import Card from "@/components/common/Card";
+import { UserSettingsModal } from "@/components/modals/UserSettingsModal";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useCallback, useRef } from "react";
 import { View, ViewProps } from "react-native";
 import Avatar from "../common/Avatar";
 
@@ -51,6 +54,15 @@ const ProfileCard = ({
   ...props
 }: ProfileProps) => {
   const router = useRouter();
+  
+  // ref
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
   return (
     <Card className={className} {...props}>
       <View className={"flex-row items-center mb-6"}>
@@ -58,7 +70,7 @@ const ProfileCard = ({
           <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="xl" />
         </View>
 
-        <View className="flex-1 gap-y-1 mt-6">
+        <View className="flex-1 gap-y-1">
           <AppText className="text-xl font-bold text-slate-900">
             {firstName + " " + lastName}
           </AppText>
@@ -76,12 +88,24 @@ const ProfileCard = ({
           <AppText className="text-sm text-slate-700 leading-5">{bio}</AppText>
         )}
       </View>
-      <View className="flex-row gap-x-3">
-        <View className="w-1/2">
+      <View className="flex-row gap-x-3 justify-between items-center">
+        <View className="flex-1">
           <Buttons
             title="Edit Profile"
             size="sm"
+            className="mb-0"
             onPress={() => router.push("/(main)/editProfile")}
+          />
+        </View>
+        <View className="flex-row justify-end items-center mr-2">
+          <IconButton 
+            icon="gearOutline"
+            pressedIcon="gearFill"
+            onPress={handlePresentModalPress}
+            size="md"
+          />
+          <UserSettingsModal
+            ref={bottomSheetModalRef}
           />
         </View>
       </View>
