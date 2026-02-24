@@ -15,6 +15,7 @@ interface ButtonProps {
   loading?: boolean;
   variant?: "primary" | "secondary" | "outline";
   size?: "sm" | "md" | "lg";
+  className?: string;
 }
 
 const containerVariantStyles = {
@@ -24,9 +25,9 @@ const containerVariantStyles = {
 };
 
 const containerSizeStyles = {
-  sm: "p-2 mb-2 rounded-3xl",
-  md: "p-4 mb-4 rounded-4xl",
-  lg: "p-5 mb-5 rounded-5xl",
+  sm: "p-2 rounded-3xl",
+  md: "p-4 rounded-4xl",
+  lg: "p-5 rounded-5xl",
 };
 
 const textVariantStyles = {
@@ -48,10 +49,11 @@ const Buttons = ({
   loading = false,
   variant = "primary",
   size = "md",
+  className = "",
 }: ButtonProps) => {
   const containerClasses = disabled
-    ? `bg-slate-800 ${containerSizeStyles[size]}`
-    : `${containerVariantStyles[variant]} ${containerSizeStyles[size]}`;
+    ? `bg-slate-800 ${containerSizeStyles[size]} ${className}`
+    : `${containerVariantStyles[variant]} ${containerSizeStyles[size]} ${className}`;
 
   const textClasses = disabled
     ? `text-zinc-500 dark:text-zinc-400 ${textSizeStyles[size]}`
