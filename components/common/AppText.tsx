@@ -11,8 +11,8 @@ const baseClasses = "text-zinc-900";
 const variantClasses = {
   title: "text-3xl font-bold",
   subtitle: "text-2xl font-semibold",
-  body: "text-base font-normal",
-  caption: "text-xs font-normal",
+  body: "text-base font-sans",
+  caption: "text-xs font-sans",
   label: "text-sm font-medium",
 };
 
