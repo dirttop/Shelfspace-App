@@ -15,6 +15,8 @@ interface ReviewProps extends ViewProps {
   uriAvatar?: string;
   book?: Book;
   postText?: string;
+  postType?: "review" | "progress";
+  progress?: number;
 }
 
 const ReviewCard = ({
@@ -26,6 +28,8 @@ const ReviewCard = ({
   children,
   book,
   postText,
+  postType,
+  progress,
   ...props
 }: ReviewProps) => {
   const router = useRouter();
@@ -34,30 +38,41 @@ const ReviewCard = ({
   return (
     <Card className={`p-2 w-full ${className}`} {...props}>
       <View className="flex-row">
-        <View className="flex-1 pr-1 justify-start">
-          <View className="items-start mb-2">
+        <View className="flex-1 pr-3 justify-start">
+          <View className="flex-row items-center mb-2 flex-wrap">
             <UserHeader 
               firstName={firstName} 
               lastName={lastName} 
               username={username} 
               uriAvatar={uriAvatar} 
             />
+            {postType === "review" && (
+              <AppText className="text-zinc-500 text-sm ml-1 flex-shrink">
+                finished reading
+              </AppText>
+            )}
+            {postType === "progress" && progress !== undefined && (
+              <AppText className="text-zinc-500 text-sm ml-1 flex-shrink">
+                is reading - {progress}%
+              </AppText>
+            )}
           </View>
 
           {book && (
             <View className="mb-2 flex-row flex-wrap items-center">
-              <AppText className="text-xl font-bold" numberOfLines={2}>
+              <AppText className="text-lg font-bold" numberOfLines={2}>
                 {book.title}
               </AppText>
             </View>
           )}
 
           {!!postText && (
-            <AppText className="text-base leading-relaxed mb-3">
+            <AppText variant="body" className="leading-relaxed mb-3">
               {postText}
             </AppText>
           )}
-          <View className="flex-row items-center mt-2 -ml-3 -mb-2">
+          
+          <View className="flex-row items-center mt-2 -ml-2 -mb-2">
             <IconButton
               icon="heartOutline"
               toggledIcon="heartFill"
@@ -72,7 +87,15 @@ const ReviewCard = ({
               pressedColor="blue"
               onPress={() => {}}
               size="sm"
-              className="-ml-2"
+              className="-ml-.6"
+            />
+            <IconButton
+              icon="shareOutline"
+              pressedIcon="shareFill"
+              pressedColor="blue"
+              onPress={() => {}}
+              size="sm"
+              className="-ml-.5"
             />
           </View>
 
@@ -84,7 +107,7 @@ const ReviewCard = ({
         </View>
 
         {book && (
-          <View className="justify-end p-1">
+          <View className="justify-start pt-1 pl-0.5">
             <BookItem book={book} onPress={() => {}} className="w-20 h-32" />
           </View>
         )}
