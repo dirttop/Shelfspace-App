@@ -51,6 +51,8 @@ export default function Home() {
         firstName="John"
         lastName="Doe"
         username="johndoe"
+        postType="progress"
+        progress={50}
       />
     </View>
   );
