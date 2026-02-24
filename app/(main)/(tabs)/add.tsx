@@ -14,33 +14,18 @@ export default function AddTab() {
     <View className="flex-1 bg-white">
       {/* Floating Add Button */}
       <View
+        className="absolute z-10"
         style={{
-          position: "absolute",
           right: 24,
           bottom: 60 + (insets.bottom || 0),
-          zIndex: 10,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.2,
-          shadowRadius: 4,
-          elevation: 4,
         }}
       >
         <TouchableOpacity
-          style={{
-            backgroundColor: "#2563eb",
-            borderRadius: 28,
-            width: 56,
-            height: 56,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+          className="bg-blue-600 rounded-full w-14 h-14 items-center justify-center shadow-lg"
           onPress={() => setModalVisible(true)}
           activeOpacity={0.8}
         >
-          <Text style={{ color: "white", fontSize: 32, lineHeight: 36 }}>
-            +
-          </Text>
+          <Text className="text-white text-3xl leading-9">+</Text>
         </TouchableOpacity>
       </View>
       <AddBookModal
