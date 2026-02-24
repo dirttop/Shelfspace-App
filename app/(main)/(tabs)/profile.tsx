@@ -3,11 +3,11 @@ import ProfileCard from "@/components/card/ProfileCard";
 import AppText from "@/components/common/AppText";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  View
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -78,6 +78,7 @@ export default function Profile() {
           showsVerticalScrollIndicator={false}
           style={{ paddingTop: insets.top }}
         >
+
           <ProfileCard
             className="mt-5 mx-4"
             firstName={profile?.first_name}
