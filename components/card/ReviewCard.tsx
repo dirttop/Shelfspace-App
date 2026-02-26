@@ -60,7 +60,7 @@ const ReviewCard = ({
 
           {book && (
             <View className="mb-2 flex-row flex-wrap items-center">
-              <AppText className="text-lg font-bold" numberOfLines={2}>
+              <AppText variant="subtitle" numberOfLines={2}>
                 {book.title}
               </AppText>
             </View>

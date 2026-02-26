@@ -70,11 +70,11 @@ const ProfileCard = ({
           <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="xl" />
         </View>
 
-        <View className="flex-1 gap-y-1">
-          <AppText className="text-xl font-bold text-slate-900">
+        <View className="flex-1 gap-y-.5 mt-2">
+          <AppText variant="subtitle" className="text-slate-900">
             {firstName + " " + lastName}
           </AppText>
-          <AppText className=" text-slate-500">@{username}</AppText>
+          <AppText variant="body" className="text-slate-500 mb-2">@{username}</AppText>
           <View className="flex-1 flex-row justify-around">
             <ShelfStat label="Reading" value={readingCount} />
             <ShelfStat label="Read" value={readCount} />
@@ -85,7 +85,7 @@ const ProfileCard = ({
 
       <View className="mb-4 p-2">
         {bio && (
-          <AppText className="text-sm text-slate-700 leading-5">{bio}</AppText>
+          <AppText variant="caption" className="text-slate-700 leading-5">{bio}</AppText>
         )}
       </View>
       <View className="flex-row gap-x-3 justify-between items-center">
