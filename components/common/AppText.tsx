@@ -9,11 +9,11 @@ interface AppTextProps extends TextProps {
 const baseClasses = "text-zinc-900";
 
 const variantClasses = {
-  title: "text-3xl font-bold",
-  subtitle: "text-2xl font-semibold",
+  title: "text-4xl font-sono-bold",
+  subtitle: "text-2xl font-sono-semibold",
   body: "text-base font-sans",
   caption: "text-xs font-sans",
-  label: "text-sm font-medium",
+  label: "text-sm font-sono-medium",
 };
 
 const AppText = ({

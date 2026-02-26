@@ -13,6 +13,7 @@ import { supabase } from "../lib/supabase";
 import AppText from '@/components/common/AppText';
 import Buttons from '@/components/common/Buttons';
 import Card from '@/components/common/Card';
+import Icons from '@/components/common/Icons';
 import Input from '@/components/common/Input';
 
 const LoginScreen = () => {
@@ -54,11 +55,17 @@ const LoginScreen = () => {
           }}
           className="flex-1"
         >
-          <View className="items-center mb-8">
-            <AppText variant="title">
-              Welcome Back
-            </AppText>
-          </View>
+          <View className="items-center mb-4">
+            <View className="flex-row items-center justify-center">
+                <AppText variant="title" className="dark:text-gray-50 pb-2">
+                  Shelf
+                </AppText>
+                <Icons.logo width={100} height={100} color="#000" />
+                <AppText variant="title" className="dark:text-gray-50 pb-2">
+                  Space
+                </AppText>
+              </View>
+            </View>
 
           <Card className="w-full max-w-md mx-auto">
             <View className="mb-4">

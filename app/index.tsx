@@ -5,7 +5,7 @@ const StartPage = () => {
     if (DevConfig.enableDevRouting) {
         return <Redirect href={DevConfig.initialRoute as any} />;
     }
-    return <Redirect href="/(main)/welcome" />;
+    return <Redirect href="/(auth)/login" />;
 };
 
 export default StartPage;
