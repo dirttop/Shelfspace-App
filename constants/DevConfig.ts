@@ -1,6 +1,6 @@
 export const DevConfig = {
     // Set to true to enable the initial route override
-    enableDevRouting: true,
+    enableDevRouting: false,
 
     initialRoute: '/(main)/bookInfo',
 };
