@@ -19,21 +19,21 @@ interface ButtonProps {
 }
 
 const containerVariantStyles = {
-  primary: "bg-slate-300",
-  secondary: "bg-slate-300",
-  outline: "bg-transparent border-2 border-zinc-900",
+  primary: "bg-primary ",
+  secondary: "bg-secondary",
+  outline: "bg-transparent border-2 border-primary",
 };
 
 const containerSizeStyles = {
-  sm: "p-2 rounded-3xl",
-  md: "p-4 rounded-4xl",
-  lg: "p-5 rounded-5xl",
+  sm: "py-1 px-3 rounded-xl",
+  md: "py-1 px-6 rounded-2xl",
+  lg: "py-2 px-8 rounded-3xl",
 };
 
 const textVariantStyles = {
-  primary: "text-zinc-50 dark:text-zinc-900",
-  secondary: "text-zinc-900 dark:text-zinc-100",
-  outline: "text-zinc-900 dark:text-zinc-100",
+  primary: "text-primary-foreground",
+  secondary: "text-secondary-foreground",
+  outline: "text-primary",
 };
 
 const textSizeStyles = {
@@ -52,11 +52,11 @@ const Buttons = ({
   className = "",
 }: ButtonProps) => {
   const containerClasses = disabled
-    ? `bg-slate-800 ${containerSizeStyles[size]} ${className}`
+    ? `bg-[#1e656d] ${containerSizeStyles[size]} ${className}`
     : `${containerVariantStyles[variant]} ${containerSizeStyles[size]} ${className}`;
 
   const textClasses = disabled
-    ? `text-zinc-500 dark:text-zinc-400 ${textSizeStyles[size]}`
+    ? `text-white/60 dark:text-zinc-300 ${textSizeStyles[size]}`
     : `${textVariantStyles[variant]} ${textSizeStyles[size]}`;
 
   return (
@@ -71,12 +71,12 @@ const Buttons = ({
             size="small"
             color={variant === "primary" ? "#fff" : "#000"}
           />
-          <AppText className={`font-bold ${textClasses} ml-2`}>
+          <AppText className={`font-sono-bold ${textClasses} ml-2`}>
             {title}
           </AppText>
         </View>
       ) : (
-        <AppText className={`font-bold ${textClasses}`}>{title}</AppText>
+        <AppText className={`font-sono-bold ${textClasses}`}>{title}</AppText>
       )}
     </Pressable>
   );

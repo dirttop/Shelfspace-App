@@ -1,5 +1,5 @@
 import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
-import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, useFonts } from '@expo-google-fonts/inter';
+import { Sono_400Regular, Sono_500Medium, Sono_600SemiBold, Sono_700Bold, useFonts } from '@expo-google-fonts/sono';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -19,10 +19,10 @@ const client = new ApolloClient({
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
+    Sono_400Regular,
+    Sono_500Medium,
+    Sono_600SemiBold,
+    Sono_700Bold,
   });
 
   useEffect(() => {

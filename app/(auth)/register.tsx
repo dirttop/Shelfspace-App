@@ -7,11 +7,11 @@ import Input from '@/components/common/Input';
 import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    View
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
@@ -114,11 +114,14 @@ const RegisterScreen = () => {
           }}
           className="flex-1"
         >
-          <View className="items-center mb-8">
-            <View className="flex-row items-end justify-center gap-2">
+          <View className="items-center mb-1">
+            <View className="flex-row items-center justify-center">
+              <AppText variant="title" className="dark:text-gray-50 pb-2">
+                Shelf
+              </AppText>
               <Icons.logo width={100} height={100} color="#000" />
-              <AppText className="text-3xl font-bold text-zinc-900 dark:text-gray-50 pb-2">
-                ShelfSpace
+              <AppText variant="title" className="dark:text-gray-50 pb-2">
+                Space
               </AppText>
             </View>
           </View>
@@ -246,6 +249,8 @@ const RegisterScreen = () => {
               title="Create account"
               onPress={() => signUpWithEmail()}
               disabled={!isFormValid || loading}
+              variant="primary"
+              size="lg"
             />
 
             <View className="mt-4 flex-row justify-center">
