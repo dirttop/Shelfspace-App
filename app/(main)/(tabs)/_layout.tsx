@@ -1,17 +1,18 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import * as ImagePicker from "expo-image-picker";
 import { Tabs, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import { Alert, Platform } from "react-native";
-import AddBookModal from "../../../components/modals/AddBookModal";
+import { AddBookModal } from "../../../components/modals/AddBookModal";
 
 export default function TabLayout() {
-  const [modalVisible, setModalVisible] = useState(false);
+  const addBookModalRef = React.useRef<BottomSheetModal>(null);
   const router = useRouter();
 
   // Handlers for AddBookModal actions
   const handleScan = async () => {
-    setModalVisible(false);
+    addBookModalRef.current?.dismiss();
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
@@ -32,7 +33,7 @@ export default function TabLayout() {
   };
 
   const handleSearch = () => {
-    setModalVisible(false);
+    addBookModalRef.current?.dismiss();
     router.push("/search");
   };
 
@@ -93,7 +94,7 @@ export default function TabLayout() {
           listeners={{
             tabPress: (e) => {
               e.preventDefault();
-              setModalVisible(true);
+              addBookModalRef.current?.present();
             },
           }}
         />
@@ -131,8 +132,7 @@ export default function TabLayout() {
         />
       </Tabs>
       <AddBookModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
+        ref={addBookModalRef}
         onScan={handleScan}
         onSearch={handleSearch}
       />
