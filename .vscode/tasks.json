@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "terminal-health-check",
+			"type": "shell",
+			"command": "echo",
+			"args": [
+				"terminal-ok"
+			]
+		}
+	]
+}
