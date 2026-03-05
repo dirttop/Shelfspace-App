@@ -7,6 +7,7 @@ export default function MainLayout() {
       <Stack.Screen name="onboarding" />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="editProfile" />
+      <Stack.Screen name="bookScan" />
     </Stack>
   );
 }
