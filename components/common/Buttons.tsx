@@ -64,6 +64,9 @@ const Buttons = ({
       onPress={onPress}
       disabled={disabled || loading}
       className={`items-center justify-center ${containerClasses}`}
+      style={({ pressed }) => [
+        pressed ? { opacity: 0.8 } : {}
+      ]}
     >
       {loading ? (
         <View className="flex-row items-center">

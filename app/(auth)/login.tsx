@@ -1,7 +1,6 @@
 import { Link, router } from "expo-router";
 import React, { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -37,7 +36,7 @@ const LoginScreen = () => {
     if (session) {
       router.push("/home");
     }
-    if (error) Alert.alert(error.message);
+    if (error) setError("Your email or password is incorrect.");
     setLoading(false);
   }
 
@@ -57,15 +56,23 @@ const LoginScreen = () => {
         >
           <View className="items-center mb-4">
             <View className="flex-row items-center justify-center">
-                <AppText variant="title" className="dark:text-gray-50 pb-2">
-                  Shelf
-                </AppText>
-                <Icons.logo width={100} height={100} color="#000" />
-                <AppText variant="title" className="dark:text-gray-50 pb-2">
-                  Space
-                </AppText>
-              </View>
+              <AppText variant="title" className="dark:text-gray-50 pb-2">
+                Shelf
+              </AppText>
+              <Icons.logo width={100} height={100} color="#000" />
+              <AppText variant="title" className="dark:text-gray-50 pb-2">
+                Space
+              </AppText>
             </View>
+          </View>
+
+          {error ? (
+            <View className="items-center mb-4">
+              <AppText variant="body" className="text-red-500 text-center">
+                {error}
+              </AppText>
+            </View>
+          ) : null}
 
           <Card className="w-full max-w-md mx-auto">
             <View className="mb-4">
@@ -93,7 +100,7 @@ const LoginScreen = () => {
               />
             </View>
 
-            <Buttons title="Sign in" onPress={() => signInWithEmail()} />
+            <Buttons title="Sign in" loading={loading} onPress={() => signInWithEmail()} />
 
             <View className="mt-4 flex-row justify-center">
               <AppText className="text-zinc-500">

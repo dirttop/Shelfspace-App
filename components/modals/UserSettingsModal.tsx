@@ -1,6 +1,8 @@
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, useBottomSheetModal } from '@gorhom/bottom-sheet';
+import { router } from 'expo-router';
 import React, { forwardRef, useCallback, useMemo } from 'react';
-import { View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
+import { supabase } from '../../app/lib/supabase';
 import AppText from '../common/AppText';
 
 export type UserSettingsModalProps = {
@@ -9,8 +11,19 @@ export type UserSettingsModalProps = {
 
 export const UserSettingsModal = forwardRef<BottomSheetModal, UserSettingsModalProps>(
   (props, ref) => {
+    const { dismiss } = useBottomSheetModal();
     // variables
     const snapPoints = useMemo(() => ['25%', '50%'], []);
+
+    const handleSignOut = async () => {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        Alert.alert('Error signing out', error.message);
+      } else {
+        dismiss();
+        router.replace('/(auth)/login');
+      }
+    };
 
     // callbacks
     const renderBackdrop = useCallback(
@@ -50,6 +63,11 @@ export const UserSettingsModal = forwardRef<BottomSheetModal, UserSettingsModalP
                 Account settings
               </AppText>
             </View>
+            <Pressable onPress={handleSignOut} className="bg-muted p-4 rounded-2xl flex-row items-center justify-between">
+              <AppText variant="body" className="font-medium text-foreground">
+                Sign Out
+              </AppText>
+            </Pressable>
           </View>
         </BottomSheetView>
       </BottomSheetModal>

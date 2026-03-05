@@ -26,6 +26,7 @@ const RegisterScreen = () => {
   const [terms, setTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [error, setError] = useState("");
 
   const insets = useSafeAreaInsets();
   const isFormValid =
@@ -47,13 +48,13 @@ const RegisterScreen = () => {
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email: email,
       password: password,
     });
 
-    if (error) {
-      Alert.alert(error.message);
+    if (signUpError) {
+      setError(signUpError.message);
       setLoading(false);
       return;
     }
@@ -125,6 +126,14 @@ const RegisterScreen = () => {
               </AppText>
             </View>
           </View>
+
+          {error ? (
+            <View className="items-center mb-4">
+              <AppText variant="body" className="text-red-500 text-center">
+                {error}
+              </AppText>
+            </View>
+          ) : null}
 
           <Card className="w-full max-w-md mx-auto">
             <View className="mb-4">
@@ -249,6 +258,7 @@ const RegisterScreen = () => {
               title="Create account"
               onPress={() => signUpWithEmail()}
               disabled={!isFormValid || loading}
+              loading={loading}
               variant="primary"
               size="lg"
             />
