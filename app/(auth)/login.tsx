@@ -56,11 +56,11 @@ const LoginScreen = () => {
         >
           <View className="items-center mb-4">
             <View className="flex-row items-center justify-center">
-              <AppText variant="title" className="dark:text-gray-50 pb-2">
+              <AppText variant="title" className="text-black-50 pb-2">
                 Shelf
               </AppText>
               <Icons.logo width={100} height={100} color="#000" />
-              <AppText variant="title" className="dark:text-gray-50 pb-2">
+              <AppText variant="title" className="text-black 50 pb-2">
                 Space
               </AppText>
             </View>
@@ -101,6 +101,14 @@ const LoginScreen = () => {
             </View>
 
             <Buttons title="Sign in" loading={loading} onPress={() => signInWithEmail()} />
+
+            <View className="mt-4 flex-row justify-center">
+              <Link href="/(auth)/forgot-password" asChild>
+                <AppText className="font-semibold text-zinc-500">
+                  Forgot password?
+                </AppText>
+              </Link>
+            </View>
 
             <View className="mt-4 flex-row justify-center">
               <AppText className="text-zinc-500">
