@@ -14,6 +14,7 @@ const mockBook: Book = {
     pageCount: 1007,
     source: "Google Books",
     coverImage: "https://covers.openlibrary.org/b/isbn/9780765326355-L.jpg", 
+    releaseDate: "2010-08-31",
 };
 
 export default function Home() {

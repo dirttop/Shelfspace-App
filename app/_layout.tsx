@@ -17,6 +17,27 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 
+import { BookInfoModal } from '@/components/modals/BookInfoModal';
+import { BookModalProvider, useBookModal } from '@/contexts/BookModalContext';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import React, { useRef } from 'react';
+
+// Wrapper component to manage the modal strictly within the provider context
+const GlobalBookModal = () => {
+  const { selectedBook } = useBookModal();
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  useEffect(() => {
+    if (selectedBook) {
+      bottomSheetModalRef.current?.present();
+    } else {
+      bottomSheetModalRef.current?.dismiss();
+    }
+  }, [selectedBook]);
+
+  return <BookInfoModal ref={bottomSheetModalRef} />;
+};
+
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     Sono_400Regular,
@@ -40,11 +61,14 @@ export default function RootLayout() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
           <BottomSheetModalProvider>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(main)" options={{ headerShown: false }} />
-            </Stack>
+            <BookModalProvider>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="(main)" options={{ headerShown: false }} />
+              </Stack>
+              <GlobalBookModal />
+            </BookModalProvider>
           </BottomSheetModalProvider>
         </SafeAreaProvider>
       </GestureHandlerRootView>
