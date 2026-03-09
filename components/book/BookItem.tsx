@@ -4,17 +4,29 @@ import { PressableScale } from 'pressto';
 import React from "react";
 import { View } from "react-native";
 
+import { useBookModal } from "@/contexts/BookModalContext";
+
 type BookItemProps = {
     book: Book;
-    onPress: () => void;
+    onPress?: () => void;
     className?: string;
 };
 
 const BookItem = ({ book, onPress, className = "" }: BookItemProps) => {
+  const { openBookModal } = useBookModal();
+
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+    } else {
+      openBookModal(book);
+    }
+  };
+
   return (
     <View className={`bg-gray-200 rounded-md overflow-hidden border border-gray-300 shadow-sm ${className || 'w-32 h-48'}`}>
         <PressableScale 
-          onPress={onPress}
+          onPress={handlePress}
           style={{ flex: 1, width: '100%', height: '100%' }}
         >
             <Image 

@@ -21,10 +21,13 @@ export type DropdownProps = {
     bottom?: number;
     left?: number;
     right?: number;
+    width?: number;
   };
 };
 
 export const Dropdown = ({ isVisible, onClose, items, position }: DropdownProps) => {
+  const hasIcons = items.some(item => item.icon !== undefined || item.selected !== undefined);
+
   return (
     <BaseModal
       isVisible={isVisible}
@@ -35,11 +38,10 @@ export const Dropdown = ({ isVisible, onClose, items, position }: DropdownProps)
       <View
         className="absolute bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden"
         style={{
-          width: 220,
+          width: position?.width ?? 220,
           ...(position?.top !== undefined ? { top: position.top } : {}),
           ...(position?.bottom !== undefined ? { bottom: position.bottom } : {}),
           ...(position?.left !== undefined ? { left: position.left } : {}),
-          ...(position?.right !== undefined ? { right: position.right } : {}),
         }}
       >
         {items.map((item, index) => (
@@ -52,14 +54,16 @@ export const Dropdown = ({ isVisible, onClose, items, position }: DropdownProps)
               }}
               className="flex-row items-center px-4 py-3 active:bg-gray-50 transition-colors"
             >
-              <View className="w-6 mr-2 items-center justify-center">
-                {item.selected && (
-                  <Check size={18} color="#000" strokeWidth={2.5} />
-                )}
-                {!item.selected && item.icon && (
-                   <View className="items-center justify-center">{item.icon}</View>
-                )}
-              </View>
+              {hasIcons && (
+                <View className="w-6 mr-2 items-center justify-center">
+                  {item.selected && (
+                    <Check size={18} color="#000" strokeWidth={2.5} />
+                  )}
+                  {!item.selected && item.icon && (
+                     <View className="items-center justify-center">{item.icon}</View>
+                  )}
+                </View>
+              )}
               <AppText className="text-base text-gray-900 font-medium">{item.label}</AppText>
             </Pressable>
           </React.Fragment>
