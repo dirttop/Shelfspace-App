@@ -1,7 +1,8 @@
 import { supabase } from "@/app/lib/supabase";
+import BookItem from "@/components/book/BookItem";
 import ProfileCard from "@/components/card/ProfileCard";
-import BookListRow, { type BookRecord } from "@/components/book/BookListRow";
 import AppText from "@/components/common/AppText";
+import type { Book } from "@/types/book";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -14,13 +15,74 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// Remove this fake data after testing is complete
+const USE_MOCK_BOOKS = true;
+
+const mockBooks: Book[] = [
+  {
+    title: "The Midnight Library",
+    authors: ["Matt Haig"],
+    description: "Between life and death there is a library.",
+    coverImage:
+      "https://images.pexels.com/photos/46274/pexels-photo-46274.jpeg?auto=compress&cs=tinysrgb&w=400",
+    pageCount: 304,
+    publisher: "Canongate",
+    isbn: "9780525559474",
+    source: "Cache",
+  },
+  {
+    title: "Project Hail Mary",
+    authors: ["Andy Weir"],
+    description: "A lone astronaut must save the earth.",
+    coverImage:
+      "https://images.pexels.com/photos/256450/pexels-photo-256450.jpeg?auto=compress&cs=tinysrgb&w=400",
+    pageCount: 496,
+    publisher: "Ballantine Books",
+    isbn: "9780593135204",
+    source: "Cache",
+  },
+  {
+    title: "The Song of Achilles",
+    authors: ["Madeline Miller"],
+    description: "A retelling of the legend of Achilles.",
+    coverImage:
+      "https://images.pexels.com/photos/46274/pexels-photo-46274.jpeg?auto=compress&cs=tinysrgb&w=400",
+    pageCount: 378,
+    publisher: "Ecco",
+    isbn: "9780062060624",
+    source: "Cache",
+  },
+  {
+    title: "Atomic Habits",
+    authors: ["James Clear"],
+    description: "Tiny changes, remarkable results.",
+    coverImage:
+      "https://images.pexels.com/photos/590493/pexels-photo-590493.jpeg?auto=compress&cs=tinysrgb&w=400",
+    pageCount: 320,
+    publisher: "Avery",
+    isbn: "9780735211292",
+    source: "Cache",
+  },
+  {
+    title: "Circe",
+    authors: ["Madeline Miller"],
+    description: "The story of the witch of Aiaia.",
+    coverImage:
+      "https://images.pexels.com/photos/46274/pexels-photo-46274.jpeg?auto=compress&cs=tinysrgb&w=400",
+    pageCount: 400,
+    publisher: "Little, Brown and Company",
+    isbn: "9780316556347",
+    source: "Cache",
+  },
+];
+//end of fake data
 
 export default function Profile() {
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [books, setBooks] = useState<BookRecord[]>([]);
+  const [books, setBooks] = useState<Book[]>([]);
   const [booksLoading, setBooksLoading] = useState(true);
   const [booksError, setBooksError] = useState<string | null>(null);
 
@@ -72,7 +134,16 @@ export default function Profile() {
     async function loadBooks() {
       setBooksLoading(true);
       setBooksError(null);
+//remove this if statement after testing is complete
+      if (USE_MOCK_BOOKS) {
+        if (mounted) {
+          setBooks(mockBooks);
+          setBooksLoading(false);
+        }
+        return;
+      }
 
+// delete this after testing mock book data 
       const { data: userData, error: userErr } = await supabase.auth.getUser();
       if (userErr || !userData?.user) {
         if (mounted) setBooksLoading(false);
@@ -90,7 +161,18 @@ export default function Profile() {
       if (booksErr) {
         if (mounted) setBooksError(booksErr.message);
       } else {
-        if (mounted) setBooks((data ?? []) as BookRecord[]);
+        const rows = (data ?? []) as { id: string; title: string; author?: string | null; cover_url?: string | null }[];
+        if (mounted) {
+          setBooks(
+            rows.map((row) => ({
+              title: row.title,
+              authors: row.author ? [row.author] : [],
+              description: "",
+              coverImage: row.cover_url ?? undefined,
+              source: "Cache" as const,
+            }))
+          );
+        }
       }
 
       if (mounted) setBooksLoading(false);
@@ -155,9 +237,14 @@ export default function Profile() {
                 ) : (
                   <FlatList
                     data={books}
-                    keyExtractor={(item) => item.id}
+                    numColumns={2}
+                    keyExtractor={(item, index) => `${item.title}-${index}`}
+                    columnWrapperStyle={{ flexDirection: "row", gap: 12, marginBottom: 12 }}
+                    contentContainerStyle={{ gap: 12 }}
                     renderItem={({ item }) => (
-                      <BookListRow book={item} onPress={() => {}} />
+                      <View className="flex-1 min-w-0">
+                        <BookItem book={item} onPress={() => {}} />
+                      </View>
                     )}
                     scrollEnabled={false}
                     ListEmptyComponent={
