@@ -3,6 +3,7 @@ import DropdownButton from "@/components/button/DropdownButton";
 import ProfileCard from "@/components/card/ProfileCard";
 import ProfileBookList from "@/components/profile/ProfileBookList";
 import React, { useEffect, useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -91,7 +92,7 @@ export default function Profile() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : undefined}
-      className="flex-1 bg-white"
+      className="flex-1 bg-background"
       keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
     >
       {loading ? (
@@ -103,7 +104,7 @@ export default function Profile() {
         </View>
       ) : (
         <ScrollView
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
           style={{ paddingTop: insets.top }}
         >
@@ -123,17 +124,26 @@ export default function Profile() {
             followCount={profile?.follow_count}
           />
 
-          <View className="mt-2 px-4 items-start">
+          <View className="mt-4 ml-4 px-4 items-start">
             <DropdownButton
-              title="Add to Shelf"
+              title={
+                selectedShelfId
+                  ? shelves.find((shelf) => shelf.id === selectedShelfId)?.name
+                  : "Shelves"
+              }
               dropdownItems={shelfOptions}
-              variant="outline"
+              variant="secondary"
               size="sm"
               dropdownPosition="right"
             />
           </View>
 
-          <View className="mt-4">
+          <View className="flex-1 mt-4 bg-[#E5E3DB] pt-4 relative">
+            <LinearGradient
+              colors={['rgba(0,0,0,0.1)', 'transparent']}
+              style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 18 }}
+              pointerEvents="none"
+            />
             {profile?.id && selectedShelfId && (
               <ProfileBookList userId={profile.id} shelfId={selectedShelfId} />
             )}

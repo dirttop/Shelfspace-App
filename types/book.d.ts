@@ -8,5 +8,5 @@ export type Book = {
     isbn?: string;
     source: 'Cache' | 'Google Books' | 'Open Library';
     globalRating?: number;
-    releaseDate?: string;
+    releaseYear?: string;
 };

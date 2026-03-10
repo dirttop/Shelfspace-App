@@ -7,7 +7,7 @@ import {
   containerVariantStyles,
   textSizeStyles,
   textVariantStyles,
-} from "../common/Buttons";
+} from "./buttonStyles";
 import { Dropdown, DropdownItemType } from "../modals/Dropdown";
 
 export interface DropdownButtonProps {

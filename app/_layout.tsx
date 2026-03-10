@@ -10,9 +10,21 @@ import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
 
+import Constants from 'expo-constants';
+
+const uri = process.env.EXPO_PUBLIC_GRAPHQL_API_URL;
+let apiUrl = uri || 'http://localhost:4000/graphql';
+
+if (!uri) {
+  const debuggerHost = Constants.expoConfig?.hostUri;
+  if (debuggerHost) {
+    apiUrl = `http://${debuggerHost.split(':')[0]}:4000/graphql`;
+  }
+}
+
 const client = new ApolloClient({
   link: new HttpLink({
-    uri: process.env.EXPO_PUBLIC_GRAPHQL_API_URL || 'http://localhost:4000/graphql',
+    uri: apiUrl,
   }),
   cache: new InMemoryCache()
 });

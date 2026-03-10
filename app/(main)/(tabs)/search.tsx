@@ -53,8 +53,11 @@ export default function SearchTab() {
         <FlatList
           data={books}
           keyExtractor={(item, index) => item.isbn ? item.isbn : `${item.title}-${index}`}
+          numColumns={3}
+          contentContainerStyle={{ padding: 16 }}
+          columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 16 }}
           renderItem={({ item }) => (
-            <BookItem book={item} className="w-24 h-36"/>
+            <BookItem book={item}/>
           )}
           ListEmptyComponent={() => (
             !isLoading && debouncedQuery ? (

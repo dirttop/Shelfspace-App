@@ -20,7 +20,7 @@ export const SEARCH_BOOKS_QUERY = gql`
       publisher
       isbn
       source
-      releaseDate
+      releaseYear
     }
   }
 `;
@@ -33,6 +33,10 @@ export function useBookSearch(query: string) {
       skip: !query || query.trim().length === 0,
     }
   );
+
+  if (error) {
+    console.error("Apollo Error in useBookSearch:", JSON.stringify(error, null, 2));
+  }
 
   const books: Book[] = 
     data?.searchBooks?.map((book) => {

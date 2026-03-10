@@ -20,7 +20,7 @@ const mockBook: Book = {
     source: "Google Books",
     coverImage: "https://covers.openlibrary.org/b/isbn/9780765326355-L.jpg", 
     globalRating: 4.5,
-    releaseDate: "2010-08-31",
+    releaseYear: "2010",
 };
 export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
     const { selectedBook, closeBookModal } = useBookModal();
@@ -49,7 +49,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
     }, [book?.isbn]);
 
     const displayRating = userRating !== null ? userRating : (book?.globalRating || 0);
-    const releaseYear = book?.releaseDate ? new Date(book.releaseDate).getFullYear() : null;
+    const releaseYear = book?.releaseYear || null;
 
     const infoText = [
         book?.publisher,
