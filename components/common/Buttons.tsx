@@ -2,13 +2,15 @@ import { cssInterop } from "nativewind";
 import { PressableScale } from "pressto";
 import React from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
+import DropdownButton from "../button/DropdownButton";
+import { DropdownItemType } from "../modals/Dropdown";
 import AppText from "./AppText";
 
 const StyledPressable = cssInterop(PressableScale, {
   className: "style",
 });
 
-interface ButtonProps {
+export interface ButtonProps {
   title: string;
   onPress?: () => void | Promise<void>;
   disabled?: boolean;
@@ -16,27 +18,29 @@ interface ButtonProps {
   variant?: "primary" | "secondary" | "outline";
   size?: "sm" | "md" | "lg";
   className?: string;
+  dropdownItems?: DropdownItemType[];
+  dropdownPosition?: "left" | "right";
 }
 
-const containerVariantStyles = {
+export const containerVariantStyles = {
   primary: "bg-primary ",
   secondary: "bg-secondary",
   outline: "bg-transparent border-2 border-primary",
 };
 
-const containerSizeStyles = {
+export const containerSizeStyles = {
   sm: "py-1 px-3 rounded-xl",
-  md: "py-1 px-6 rounded-2xl",
-  lg: "py-2 px-8 rounded-3xl",
+  md: "py-2 px-6 rounded-2xl",
+  lg: "py-3 px-8 rounded-3xl",
 };
 
-const textVariantStyles = {
+export const textVariantStyles = {
   primary: "text-primary-foreground",
   secondary: "text-secondary-foreground",
   outline: "text-primary",
 };
 
-const textSizeStyles = {
+export const textSizeStyles = {
   sm: "text-sm",
   md: "text-lg",
   lg: "text-xl",
@@ -50,14 +54,35 @@ const Buttons = ({
   variant = "primary",
   size = "md",
   className = "",
+  dropdownItems,
+  dropdownPosition = "right",
 }: ButtonProps) => {
-  const containerClasses = disabled
+const containerClasses = disabled
     ? `bg-[#1e656d] ${containerSizeStyles[size]} ${className}`
     : `${containerVariantStyles[variant]} ${containerSizeStyles[size]} ${className}`;
-
   const textClasses = disabled
     ? `text-white/60 dark:text-zinc-300 ${textSizeStyles[size]}`
     : `${textVariantStyles[variant]} ${textSizeStyles[size]}`;
+
+  if (dropdownItems && dropdownItems.length > 0) {
+    return (
+      <DropdownButton
+        title={title}
+        onPress={onPress}
+        disabled={disabled}
+        loading={loading}
+        variant={variant}
+        size={size}
+        className={className}
+        dropdownItems={dropdownItems}
+        dropdownPosition={dropdownPosition}
+      />
+    );
+  }
+
+  const defaultContainerClasses = disabled
+    ? `bg-[#1e656d] ${containerSizeStyles[size]} ${className}`
+    : `${containerVariantStyles[variant]} ${containerSizeStyles[size]} ${className}`;
 
   return (
     <Pressable

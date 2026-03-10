@@ -108,7 +108,7 @@ const ReviewCard = ({
 
         {book && (
           <View className="justify-start pt-1 pl-0.5">
-            <BookItem book={book} onPress={() => {}} className="w-20 h-32" />
+            <BookItem book={book} className="w-20 h-32" />
           </View>
         )}
       </View>

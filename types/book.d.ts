@@ -7,4 +7,6 @@ export type Book = {
     publisher?: string;
     isbn?: string;
     source: 'Cache' | 'Google Books' | 'Open Library';
+    globalRating?: number;
+    releaseDate?: string;
 };

@@ -20,6 +20,7 @@ export const SEARCH_BOOKS_QUERY = gql`
       publisher
       isbn
       source
+      releaseDate
     }
   }
 `;
