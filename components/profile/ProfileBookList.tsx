@@ -7,7 +7,7 @@ import { ActivityIndicator, FlatList, View } from 'react-native';
 
 type ProfileBookListProps = {
   userId: string;
-  shelfId: number;
+  shelfId: string; // Changed from number to string to match UUID
   title?: string;
 };
 
@@ -23,12 +23,12 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
       setLoading(true);
       setError(null);
 
-      // Fetch from userBooks, join with books
-      // Assuming 'books' is the name of the foreign table
+      // Fetch from shelf_books, join with books
       const { data, error: fetchError } = await supabase
-        .from('userBooks')
+        .from('shelf_books')
         .select('*, books(*)')
-        .eq('user_id', userId)
+        // Note: shelf_books only stores the shelf_id and book_isbn,
+        // and user_id is implicit via the shelf, but we already filter by shelf_id.
         .eq('shelf_id', shelfId);
 
       if (fetchError) {
@@ -36,9 +36,7 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
         if (mounted) setError(fetchError.message);
       } else if (data) {
         console.log("ProfileBookList fetched data:", data);
-        // Map the result assuming it returns { ..., books: { ...bookData } }
         const mappedBooks = data.map((item: any) => {
-           // Handle case where relation might be plural or singular
            const bookData = item.books || item.book;
            if (!bookData) return null;
            

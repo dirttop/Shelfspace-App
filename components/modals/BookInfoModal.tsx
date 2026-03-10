@@ -1,32 +1,61 @@
 import AppText from "@/components/common/AppText";
 import Buttons from "@/components/common/Buttons";
+import DropdownButton from "@/components/button/DropdownButton";
 import { useBookModal } from '@/contexts/BookModalContext';
 import { Book } from "@/types/book";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Rating } from '@kolking/react-native-rating';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
-import { Image, View } from "react-native";
+import { Alert, Image, View } from "react-native";
 import { supabase } from '@/app/lib/supabase';
+import { gql, useMutation } from '@apollo/client';
 
-// Temporary mock data for boilerplating
-const mockBook: Book = {
-    isbn: "9780765326355",
-    title: "The Way of Kings",
-    authors: ["Brandon Sanderson"],
-    description: "Set on the storm-ravaged world of Roshar, The Way of Kings is a massive epic fantasy that follows three converging destinies: Kaladin, a brilliant soldier turned broken slave; Shallan, a scholar seeking to save her family through a daring heist; and Dalinar, a highprince haunted by visions of an ancient, holy war. As a decade-long conflict grinds on at the Shattered Plains, these characters must navigate a world where social caste is determined by eye color and legendary artifacts like Shardblades grant god-like power. The story serves as a slow-burn exploration of leadership and trauma, ultimately building toward the rediscovery of the Knights Radiant—an extinct order of heroes whose return may be the only thing standing against a looming, world-ending apocalypse.",
-    publisher: "Tor Books",
-    pageCount: 1007,
+const SAVE_BOOK_MUTATION = gql`
+  mutation SaveBook(
+    $title: String!
+    $authors: [String!]!
+    $description: String
+    $coverImage: String
+    $pageCount: Int
+    $publisher: String
+    $isbn: String!
+    $releaseYear: String
+    $source: String!
+  ) {
+    saveBook(
+      title: $title
+      authors: $authors
+      description: $description
+      coverImage: $coverImage
+      pageCount: $pageCount
+      publisher: $publisher
+      isbn: $isbn
+      releaseYear: $releaseYear
+      source: $source
+    ) {
+      isbn
+    }
+  }
+`;
+
+const placeholderBook: Book = {
+    isbn: "0000000000000",
+    title: "Title Placeholder",
+    authors: ["Author Placeholder"],
+    description: "Description Placeholder",
+    publisher: "Publisher Placeholder",
+    pageCount: 0,
     source: "Google Books",
-    coverImage: "https://covers.openlibrary.org/b/isbn/9780765326355-L.jpg", 
-    globalRating: 4.5,
-    releaseYear: "2010",
+    coverImage: "", 
+    globalRating: 0,
+    releaseYear: "",
 };
 export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
     const { selectedBook, closeBookModal } = useBookModal();
-    const book = selectedBook || mockBook; // Fallback to mockBook
+    const book = selectedBook || placeholderBook;
     
-    const snapPoints = useMemo(() => ['95%'], []);
+    const snapPoints = useMemo(() => ['90%'], []);
 
     const renderBackdrop = useCallback(
       (props: any) => (
@@ -42,8 +71,8 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
     );
 
     const [userRating, setUserRating] = useState<number | null>(null);
+    const [saveBookMutation] = useMutation(SAVE_BOOK_MUTATION);
 
-    // Reset user rating if book changes
     useEffect(() => {
         setUserRating(null);
     }, [book?.isbn]);
@@ -68,10 +97,62 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    const [bookOnShelf, setBookOnShelf] = useState<boolean>(false);
+
+    const handleAddToShelf = async (shelfId: string) => {
+        if (!book?.isbn) {
+            Alert.alert("Error", "This book cannot be added because it is missing an ISBN.");
+            return;
+        }
+
+        try {
+            try {
+                await saveBookMutation({
+                    variables: {
+                        title: book.title || "",
+                        authors: book.authors || [],
+                        description: book.description || "",
+                        coverImage: book.coverImage || "",
+                        pageCount: book.pageCount || 0,
+                        publisher: book.publisher || "",
+                        isbn: book.isbn,
+                        releaseYear: book.releaseYear || "",
+                        source: book.source || "Unknown"
+                    }
+                });
+            } catch (bookErr: any) {
+                console.error("Book upsert error:", bookErr);
+                Alert.alert("Error", "Failed to save book details.");
+                return;
+            }
+
+            const { error: shelfErr } = await supabase.from('shelf_books').insert({
+                shelf_id: shelfId,
+                book_isbn: book.isbn,
+            });
+
+            if (shelfErr) {
+                if (shelfErr.code === '23505') {
+                    Alert.alert("In Shelf", "This book is already in the selected shelf.");
+                } else {
+                    console.error("Shelf addition error:", shelfErr);
+                    Alert.alert("Error", "Failed to add book to shelf.");
+                }
+            } else {
+                Alert.alert("Success", "Book added to shelf!");
+            }
+        } catch (e: any) {
+            console.error("Error adding to shelf:", e);
+            Alert.alert("Error", e.message || "An unexpected error occurred.");
+        }
+    };
+
     useEffect(() => {
         let mounted = true;
 
         async function fetchData() {
+            if (!selectedBook) return; // Only fetch when the modal is opened
+
             setLoading(true);
             setError(null);
 
@@ -87,7 +168,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
             const { data: shelvesData, error: shelvesErr } = await supabase
                 .from("shelves")
                 .select(
-                  "id, name, created_at, updated_at",
+                  "id, name, created_at",
                 )
                 .eq("user_id", userId);
 
@@ -105,7 +186,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
         return () => {
             mounted = false;
         };
-    }, []);
+    }, [selectedBook]);
 
     return (
         <BottomSheetModal
@@ -129,7 +210,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
             <View className="flex-1 bg-background overflow-hidden rounded-t-2xl">
                 <View className="absolute top-0 w-full h-[35vh]">
                     <LinearGradient 
-                        colors={["#78C0A8", "#F9F8F2"]}
+                        colors={["#B2D3C2", "#F9F8F2"]}
                         className="flex-1"
                     />
                 </View>
@@ -169,14 +250,15 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                 </View>
                             </View>
                             <View className="items-start">
-                                <Buttons 
+                                <DropdownButton 
                                     title="Add to Shelf"
-                                    onPress={() => console.log('pressed')}
+                                    variant="secondary"
                                     dropdownPosition="right"
+                                    menuOnly={true}
                                     dropdownItems={[
                                         ...shelves.map(shelf => ({
                                             label: shelf.name,
-                                            onPress: () => console.log(shelf.id)
+                                            onPress: () => handleAddToShelf(shelf.id)
                                         }))
                                     ]}
                                 />

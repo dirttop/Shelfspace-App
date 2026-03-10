@@ -20,6 +20,7 @@ export interface DropdownButtonProps {
   className?: string;
   dropdownItems: DropdownItemType[];
   dropdownPosition?: "left" | "right";
+  menuOnly?: boolean;
 }
 
 const DropdownButton = ({
@@ -32,6 +33,7 @@ const DropdownButton = ({
   className = "",
   dropdownItems,
   dropdownPosition = "right",
+  menuOnly = false,
 }: DropdownButtonProps) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [currentAction, setCurrentAction] = useState({ title, onPress });
@@ -69,7 +71,9 @@ const DropdownButton = ({
   };
 
   const handleDropdownItemSelect = (item: DropdownItemType) => {
-    setCurrentAction({ title: item.label, onPress: item.onPress });
+    if (!menuOnly) {
+      setCurrentAction({ title: item.label, onPress: item.onPress });
+    }
   };
 
   const isLeft = dropdownPosition === "left";
@@ -90,7 +94,6 @@ const DropdownButton = ({
     ? `bg-[#1e656d] ${className}`
     : `${containerVariantStyles[variant]} ${className}`;
 
-  // remove padding classes from size styles to use them on inner containers
   const roundedClasses = containerSizeStyles[size]
     .replace(/py-\d+|px-\d+/g, "")
     .trim();
@@ -111,7 +114,7 @@ const DropdownButton = ({
       )}
 
       <Pressable
-        onPress={currentAction.onPress}
+        onPress={menuOnly ? handleDropdownPress : currentAction.onPress}
         disabled={disabled || loading}
         className={`flex-row items-center justify-center active:opacity-80 ${verticalPadding} ${mainPadding}`}
       >

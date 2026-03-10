@@ -20,7 +20,7 @@ export default function Profile() {
   const [shelves, setShelves] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   
-  const [selectedShelfId, setSelectedShelfId] = useState<number | null>(null);
+  const [selectedShelfId, setSelectedShelfId] = useState<string | null>(null);
 
   const shelfOptions = shelves.map(shelf => ({
     label: shelf.name,
@@ -69,7 +69,7 @@ export default function Profile() {
       const { data: shelvesData, error: shelvesErr } = await supabase
         .from("shelves")
         .select(
-          "id, name, created_at, updated_at",
+          "id, name, created_at",
         )
         .eq("user_id", userId);
 

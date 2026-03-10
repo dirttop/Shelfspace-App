@@ -11,15 +11,20 @@ import "../global.css";
 SplashScreen.preventAutoHideAsync();
 
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
-const uri = process.env.EXPO_PUBLIC_GRAPHQL_API_URL;
-let apiUrl = uri || 'http://localhost:4000/graphql';
+let apiUrl = process.env.EXPO_PUBLIC_GRAPHQL_API_URL;
 
-if (!uri) {
+if (!apiUrl) {
   const debuggerHost = Constants.expoConfig?.hostUri;
-  if (debuggerHost) {
-    apiUrl = `http://${debuggerHost.split(':')[0]}:4000/graphql`;
+  let host = debuggerHost?.split(':')[0];
+
+  // If there's no host, or the host is localhost/127.0.0.1, we must use 10.0.2.2 on Android
+  if (!host || host === 'localhost' || host === '127.0.0.1') {
+    host = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
   }
+
+  apiUrl = `http://${host}:4000/graphql`;
 }
 
 const client = new ApolloClient({
