@@ -1,3 +1,4 @@
+import BookItem from '@/components/book/BookItem';
 import AppText from '@/components/common/AppText';
 import Input from '@/components/common/Input';
 import { useBookSearch } from '@/hooks/useBookSearch';
@@ -53,13 +54,7 @@ export default function SearchTab() {
           data={books}
           keyExtractor={(item, index) => item.isbn ? item.isbn : `${item.title}-${index}`}
           renderItem={({ item }) => (
-            <TouchableOpacity 
-              className="p-4 border-b border-zinc-200"
-              onPress={() => router.push(`/books/${item.isbn || encodeURIComponent(item.title)}` as any)} // Route to details
-            >
-              <AppText variant="body" className="font-semibold text-lg">{item.title}</AppText>
-              <AppText variant="caption" className="text-zinc-500">{item.authors?.join(', ') || 'Unknown Author'}</AppText>
-            </TouchableOpacity>
+            <BookItem book={item} className="w-24 h-36"/>
           )}
           ListEmptyComponent={() => (
             !isLoading && debouncedQuery ? (

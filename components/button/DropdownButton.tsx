@@ -58,10 +58,10 @@ const DropdownButton = ({
 
   const handleDropdownPress = () => {
     buttonRef.current?.measureInWindow((x, y, width, height) => {
-      const popupWidth = Math.max(width, 150);
+      const popupWidth = Math.max(width, 220);
       setDropdownCoords({
         top: y + height + 6, // 6px gap below button
-        left: dropdownPosition === "right" ? x + width - popupWidth : x,
+        left: Math.max(16, dropdownPosition === "right" ? x + width - popupWidth : x),
         width: popupWidth,
       });
       setDropdownVisible(true);

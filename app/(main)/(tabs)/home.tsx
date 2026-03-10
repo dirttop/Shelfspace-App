@@ -1,6 +1,5 @@
+import DropdownButton from "@/components/button/DropdownButton";
 import ReviewCard from "@/components/card/ReviewCard";
-import Buttons from "@/components/common/Buttons";
-import { Dropdown } from "@/components/modals/Dropdown";
 import { Book } from "@/types/book";
 import { useState } from "react";
 import { View } from "react-native";
@@ -18,7 +17,6 @@ const mockBook: Book = {
 };
 
 export default function Home() {
-  const [dropdownVisible, setDropdownVisible] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('Following');
 
   const navItems = [
@@ -31,19 +29,14 @@ export default function Home() {
   return (
     <View className="flex-1 bg-background p-4 pt-12">
       <View className="flex-row items-center mt-6 mb-6 z-20">
-        <Buttons
-        variant="secondary"
-        title = {selectedFilter}
-        onPress={() => setDropdownVisible(true)}
+        <DropdownButton
+          title={selectedFilter}
+          dropdownItems={navItems}
+          variant="secondary"
+          size="md"
+          dropdownPosition="left"
         />
       </View>
-
-      <Dropdown
-        isVisible={dropdownVisible}
-        onClose={() => setDropdownVisible(false)}
-        items={navItems}
-        position={{ top: 45, left: 16 }} // Anchored right below the button
-      />
 
       <ReviewCard 
         book={mockBook} 

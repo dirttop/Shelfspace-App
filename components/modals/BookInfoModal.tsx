@@ -7,6 +7,8 @@ import { Rating } from '@kolking/react-native-rating';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, View } from "react-native";
+import { supabase } from '@/app/lib/supabase';
+
 // Temporary mock data for boilerplating
 const mockBook: Book = {
     isbn: "9780765326355",
@@ -61,6 +63,49 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
         },
         [],
     );
+
+    const [shelves, setShelves] = useState<any[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let mounted = true;
+
+        async function fetchData() {
+            setLoading(true);
+            setError(null);
+
+            const { data: userData, error: userErr } = await supabase.auth.getUser();
+            if (userErr || !userData?.user) {
+                if (mounted) setError(userErr?.message ?? "Not signed in");
+                if (mounted) setLoading(false);
+                return;
+            }
+
+            const userId = userData.user.id;
+
+            const { data: shelvesData, error: shelvesErr } = await supabase
+                .from("shelves")
+                .select(
+                  "id, name, created_at, updated_at",
+                )
+                .eq("user_id", userId);
+
+            if (shelvesErr) {
+                if (mounted) setError(shelvesErr.message);
+            } else {
+                if (mounted) setShelves(shelvesData ?? []);
+            }
+
+            if (mounted) setLoading(false);
+        }
+
+        fetchData();
+
+        return () => {
+            mounted = false;
+        };
+    }, []);
 
     return (
         <BottomSheetModal
@@ -129,18 +174,10 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                     onPress={() => console.log('pressed')}
                                     dropdownPosition="right"
                                     dropdownItems={[
-                                        {
-                                            label: 'Reading',
-                                            onPress: () => console.log('Reading')
-                                        },
-                                        {
-                                            label: 'Read',
-                                            onPress: () => console.log('Read')
-                                        },
-                                        {
-                                            label: 'Shelf 1',
-                                            onPress: () => console.log('Shelf 1')
-                                        }
+                                        ...shelves.map(shelf => ({
+                                            label: shelf.name,
+                                            onPress: () => console.log(shelf.id)
+                                        }))
                                     ]}
                                 />
                             </View>
