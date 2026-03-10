@@ -4,13 +4,19 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
-import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { useBookModal } from "@/contexts/BookModalContext";
+import { useLazyQuery } from '@apollo/client';
+import { SEARCH_BOOKS_QUERY } from '@/hooks/useBookSearch';
 
 export default function BookScan() {
   const [permission, requestPermission] = useCameraPermissions();
   const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
   const cameraRef = useRef<CameraView>(null);
+
+  const { openBookModal } = useBookModal();
+  const [searchBooks] = useLazyQuery(SEARCH_BOOKS_QUERY);
 
   if (!permission) {
     return <View className="flex-1 bg-black" />; // Loading
@@ -28,21 +34,87 @@ export default function BookScan() {
     );
   }
 
+  const AZURE_FUNCTION_URL = process.env.EXPO_PUBLIC_VISION_API_URL || "https://cover-vision-api-cafxebaee4ahhxb4.canadacentral-01.azurewebsites.net/api/Cover_Process";
+
+  const processImage = async (uri: string) => {
+    try {
+      setIsProcessing(true);
+
+      let filename = uri.split('/').pop() || `upload.${Date.now()}.jpg`;
+
+      const formData = new FormData();
+      // React Native requires this specific object structure to upload files via FormData
+      formData.append('image', {
+        uri: uri,
+        name: filename,
+        type: 'image/jpeg',
+      } as any);
+
+      const response = await fetch(AZURE_FUNCTION_URL, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Server Error: ${response.status} - ${errText}`);
+      }
+
+      const data = await response.json();
+      if (!data.metadata) {
+        throw new Error("Invalid response from server: 'metadata' missing.");
+      }
+
+      console.log('Success! Metadata:', data.metadata);
+
+      if (data.metadata.title || data.metadata.author) {
+        const searchQuery = [data.metadata.title, data.metadata.author]
+          .filter(Boolean)
+          .join(' ');
+
+        try {
+          const result = await searchBooks({ variables: { query: searchQuery } });
+          const books = result.data?.searchBooks || [];
+
+          if (books.length > 0) {
+            let validSource = 'Google Books';
+            if (books[0].source === 'Cache' || books[0].source === 'Google Books' || books[0].source === 'Open Library') {
+              validSource = books[0].source;
+            }
+            openBookModal({ ...books[0], source: validSource });
+          } else {
+            Alert.alert('Scan Result', 'Could not find a matching book in our database.');
+          }
+        } catch (searchErr) {
+          console.error('Book Search Error:', searchErr);
+          Alert.alert('Search Failed', 'Failed to retrieve book details from the database.');
+        } finally {
+          setIsProcessing(false);
+        }
+      } else {
+        Alert.alert('Scan Result', 'Could not detect book details. Please try again.');
+        setIsProcessing(false);
+      }
+    } catch (err) {
+      console.error('Error processing image:', err);
+      Alert.alert("Scan Failed", (err instanceof Error) ? err.message : "An unknown error occurred.");
+      setIsProcessing(false);
+    }
+  };
+
   const handleCapture = async () => {
     if (!cameraRef.current || isProcessing) return;
     try {
       setIsProcessing(true);
       const photo = await cameraRef.current.takePictureAsync({
         quality: 0.8,
-        base64: true,
+        base64: false, // Don't need base64 if we are uploading the file
       });
-      // TODO: Call AI/OCR API with photo.uri or photo.base64
-      console.log('Took photo:', photo?.uri);
-
-      // Navigate or show processing state
+      if (photo?.uri) {
+        await processImage(photo.uri);
+      }
     } catch (error) {
       console.error('Failed to take picture:', error);
-    } finally {
       setIsProcessing(false);
     }
   };
@@ -64,31 +136,48 @@ export default function BookScan() {
 
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: false,
+        allowsEditing: false, // or true if you want users to crop the cover
         quality: 0.8,
-        base64: true,
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const image = result.assets[0];
-        // TODO: Call AI/OCR API with image.uri or image.base64
-        console.log('Selected photo from gallery:', image.uri);
+        await processImage(image.uri);
+      } else {
+        setIsProcessing(false);
       }
     } catch (error) {
       console.error('Failed to pick image:', error);
-    } finally {
       setIsProcessing(false);
     }
   };
 
-  const handleBarcodeScanned = (scanningResult: any) => {
+  const handleBarcodeScanned = async (scanningResult: any) => {
     if (isProcessing) return;
     setIsProcessing(true);
-    // TODO: Look up book by ISBN (data)
     console.log('Scanned barcode:', scanningResult.type, scanningResult.data);
 
-    // reset after short delay or navigate
-    setTimeout(() => setIsProcessing(false), 2000);
+    try {
+      // For barcode, the data is the ISBN, so we can search directly
+      const result = await searchBooks({ variables: { query: scanningResult.data } });
+      const books = result.data?.searchBooks || [];
+
+      if (books.length > 0) {
+        let validSource = 'Google Books';
+        if (books[0].source === 'Cache' || books[0].source === 'Google Books' || books[0].source === 'Open Library') {
+          validSource = books[0].source;
+        }
+        openBookModal({ ...books[0], source: validSource });
+      } else {
+        Alert.alert('Scan Result', 'Could not find a matching book for this barcode in our database.');
+      }
+    } catch (searchErr) {
+      console.error('Barcode Search Error:', searchErr);
+      Alert.alert('Search Failed', 'Failed to retrieve book details for this barcode.');
+    } finally {
+      // reset after short delay
+      setTimeout(() => setIsProcessing(false), 2000);
+    }
   };
 
   return (
@@ -115,10 +204,21 @@ export default function BookScan() {
 
           {/* Scanning Overlay (Target Guide) */}
           <View className="flex-1 flex items-center justify-center" pointerEvents="none">
-            <View className="w-64 h-80 border-2 border-white/50 rounded-2xl bg-white/10" />
-            <AppText variant="body" className="text-white mt-6 bg-black/50 px-4 py-2 rounded-full font-medium">
-              Line up book cover or barcode
-            </AppText>
+            {isProcessing ? (
+              <View className="w-64 h-80 border-2 border-white/50 rounded-2xl bg-black/60 flex items-center justify-center">
+                <ActivityIndicator size="large" color="#ffffff" />
+                <AppText variant="body" className="text-white mt-4 font-medium">
+                  Scanning book...
+                </AppText>
+              </View>
+            ) : (
+              <>
+                <View className="w-64 h-80 border-2 border-white/50 rounded-2xl bg-white/10" />
+                <AppText variant="body" className="text-white mt-6 bg-black/50 px-4 py-2 rounded-full font-medium">
+                  Line up book cover or barcode
+                </AppText>
+              </>
+            )}
           </View>
 
           {/* Controls */}

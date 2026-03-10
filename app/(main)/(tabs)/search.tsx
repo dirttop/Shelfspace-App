@@ -2,15 +2,15 @@ import BookItem from '@/components/book/BookItem';
 import AppText from '@/components/common/AppText';
 import Input from '@/components/common/Input';
 import { useBookSearch } from '@/hooks/useBookSearch';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { 
-  ActivityIndicator, 
-  FlatList, 
-  TouchableOpacity, 
-  View, 
-  KeyboardAvoidingView, 
-  Platform 
+import {
+  ActivityIndicator,
+  FlatList,
+  TouchableOpacity,
+  View,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 import {
   SafeAreaView,
@@ -22,9 +22,15 @@ import {
 
 export default function SearchTab() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
-  const insets = useSafeAreaInsets();
+  const { q } = useLocalSearchParams();
+  const [searchQuery, setSearchQuery] = useState((q as string) || '');
+  const [debouncedQuery, setDebouncedQuery] = useState((q as string) || '');
+
+  useEffect(() => {
+    if (q) {
+      setSearchQuery(q as string);
+    }
+  }, [q]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(searchQuery), 500);
@@ -46,9 +52,9 @@ export default function SearchTab() {
       {isLoading && <ActivityIndicator className="mt-5" size="large" />}
       {error && <AppText className="text-maroon-500 text-center mt-4">Error loading books.</AppText>}
       <KeyboardAvoidingView
-              behavior={Platform.OS === "ios" ? "padding" : undefined}
-              className="flex-1"
-              keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        className="flex-1"
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
         <FlatList
           data={books}
@@ -57,7 +63,7 @@ export default function SearchTab() {
           contentContainerStyle={{ padding: 16 }}
           columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 16 }}
           renderItem={({ item }) => (
-            <BookItem book={item}/>
+            <BookItem book={item} />
           )}
           ListEmptyComponent={() => (
             !isLoading && debouncedQuery ? (
