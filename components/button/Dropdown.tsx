@@ -1,8 +1,8 @@
 import { Check } from 'lucide-react-native';
 import React from 'react';
 import { Pressable, View } from 'react-native';
-import AppText from '../common/AppText';
-import { BaseModal } from './BaseModal';
+import AppText from '@/components/common/AppText';
+import { BaseModal } from '@/components/modals/BaseModal';
 
 export type DropdownItemType = {
   label: string;

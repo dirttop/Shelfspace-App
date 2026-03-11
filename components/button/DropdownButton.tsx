@@ -1,14 +1,14 @@
 import { ChevronDown } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
-import AppText from "../common/AppText";
+import AppText from "@/components/common/AppText";
 import {
   containerSizeStyles,
   containerVariantStyles,
   textSizeStyles,
   textVariantStyles,
-} from "./buttonStyles";
-import { Dropdown, DropdownItemType } from "../modals/Dropdown";
+} from "@/components/button/styles/buttonStyles";
+import { Dropdown, DropdownItemType } from "@/components/button/Dropdown";
 
 export interface DropdownButtonProps {
   title: string;

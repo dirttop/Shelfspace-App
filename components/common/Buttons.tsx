@@ -2,9 +2,9 @@ import { cssInterop } from "nativewind";
 import { PressableScale } from "pressto";
 import React from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
-import DropdownButton from "../button/DropdownButton";
-import { DropdownItemType } from "../modals/Dropdown";
-import AppText from "./AppText";
+import DropdownButton from "@/components/button/DropdownButton";
+import { DropdownItemType } from "@/components/button/Dropdown";
+import AppText from "@/components/common/AppText";
 
 const StyledPressable = cssInterop(PressableScale, {
   className: "style",
@@ -27,7 +27,7 @@ import {
   containerVariantStyles,
   textSizeStyles,
   textVariantStyles,
-} from "../button/buttonStyles";
+} from "@/components/button/styles/buttonStyles";
 
 export {
   containerSizeStyles,

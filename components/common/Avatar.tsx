@@ -9,19 +9,7 @@ interface AvatarProps {
     onPress?: () => void;
 }
 
-const sizeMap = {
-  sm: 'w-10 h-10',
-  md: 'w-16 h-16',
-  lg: 'w-20 h-20',
-  xl: 'w-24 h-24',
-};
-
-const textMap = {
-  sm: 'text-2xl',
-  md: 'text-3xl',
-  lg: 'text-4xl',
-  xl: 'text-5xl',
-};
+import { avatarSizeMap, avatarTextMap } from "@/components/common/styles/avatarStyles";
 
 const Avatar = ({uri, name, size = 'md'}: AvatarProps) => {
 
@@ -40,7 +28,7 @@ const Avatar = ({uri, name, size = 'md'}: AvatarProps) => {
     return (
     <View
         className={`
-        ${sizeMap[size]} 
+        ${avatarSizeMap[size]} 
         rounded-full 
         bg-slate-200 
         items-center 
@@ -48,7 +36,7 @@ const Avatar = ({uri, name, size = 'md'}: AvatarProps) => {
         overflow-hidden
         `}
     >
-        <AppText className={`${textMap[size]}`}>
+        <AppText className={`${avatarTextMap[size]}`}>
             {getInitials(name)}
         </AppText>
 

@@ -14,16 +14,7 @@ export interface AppTextProps extends TextProps {
   charLimit?: number;
 }
 
-const baseClasses = "text-zinc-900";
-
-const variantClasses = {
-  title: "text-4xl font-sono-bold",
-  subtitle: "text-xl font-sono-semibold",
-  body: "text-base font-sans",
-  caption: "text-xs font-sans",
-  label: "text-sm font-sono-medium",
-  collapsible: "text-base font-sans",
-};
+import { appTextBaseClasses, appTextVariantClasses } from "@/components/common/styles/appTextStyles";
 
 const CollapsibleTextContent = ({
   children,
@@ -41,7 +32,7 @@ const CollapsibleTextContent = ({
     return text.slice(0, charLimit).trim() + "...";
   }, [text, isExpanded, shouldCollapse, charLimit]);
 
-  const combinedClasses = `${baseClasses} ${variantClasses.collapsible} ${
+  const combinedClasses = `${appTextBaseClasses} ${appTextVariantClasses.collapsible} ${
     className || ""
   }`;
 
@@ -55,7 +46,7 @@ const CollapsibleTextContent = ({
           className="flex-row items-center mt-1"
           onPress={() => setIsExpanded(!isExpanded)}
         >
-          <Text className={`${baseClasses} ${variantClasses.label} text-zinc-500 mr-1`}>
+          <Text className={`${appTextBaseClasses} ${appTextVariantClasses.label} text-zinc-500 mr-1`}>
             {isExpanded ? "Show Less" : "Read More"}
           </Text>
           {isExpanded ? (
@@ -90,7 +81,7 @@ const AppText = ({
     );
   }
 
-  const combinedClasses = `${baseClasses} ${variantClasses[variant]} ${
+  const combinedClasses = `${appTextBaseClasses} ${appTextVariantClasses[variant]} ${
     className || ""
   }`;
 
