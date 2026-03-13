@@ -191,7 +191,7 @@ export default function BookScan() {
         }}
         onBarcodeScanned={handleBarcodeScanned}
       >
-        <View className="flex-1 flex-col justify-between p-6 pb-12 pt-16">
+        <View className={`flex-1 flex-col justify-between p-6 pb-12 pt-16 ${isProcessing ? 'bg-black/30' : ''}`}>
           {/* Header */}
           <View className="w-full flex-row" style={{ justifyContent: 'flex-start' }}>
             <TouchableOpacity
@@ -205,16 +205,16 @@ export default function BookScan() {
           {/* Scanning Overlay (Target Guide) */}
           <View className="flex-1 flex items-center justify-center" pointerEvents="none">
             {isProcessing ? (
-              <View className="w-64 h-80 border-2 border-white/50 rounded-2xl bg-black/60 flex items-center justify-center">
+              <View className="w-72 h-96 border-2 border-white/50 rounded-2xl flex items-center justify-center">
                 <ActivityIndicator size="large" color="#ffffff" />
-                <AppText variant="body" className="text-white mt-4 font-medium">
+                <AppText variant="body" className="text-white mt-4 font-medium" style={{ color: 'white' }}>
                   Scanning book...
                 </AppText>
               </View>
             ) : (
               <>
-                <View className="w-64 h-80 border-2 border-white/50 rounded-2xl bg-white/10" />
-                <AppText variant="body" className="text-white mt-6 bg-black/50 px-4 py-2 rounded-full font-medium">
+                <View className="w-72 h-96 border-2 border-white/50 rounded-2xl bg-white/10" />
+                <AppText variant="body" className="text-white mt-6 bg-black/50 px-4 py-2 rounded-full font-medium" style={{ color: 'white' }}>
                   Line up book cover or barcode
                 </AppText>
               </>
