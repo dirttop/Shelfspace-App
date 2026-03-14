@@ -78,7 +78,7 @@ const ProfileCard = ({
           <View className="flex-1 flex-row justify-around">
             <ShelfStat label="Reading" value={readingCount} />
             <ShelfStat label="Read" value={readCount} />
-            <ShelfStat label="Shelved" value={shelvedCount} />
+            <ShelfStat label="Followers" value={followCount} />
           </View>
         </View>
       </View>

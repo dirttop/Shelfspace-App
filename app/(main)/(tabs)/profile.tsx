@@ -19,6 +19,8 @@ export default function Profile() {
   const [profile, setProfile] = useState<any | null>(null);
   const [shelves, setShelves] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [readCount, setReadCount] = useState<number>(0);
+  const [readingCount, setReadingCount] = useState<number>(0);
   
   const [selectedShelfId, setSelectedShelfId] = useState<string | null>(null);
 
@@ -77,6 +79,35 @@ export default function Profile() {
         if (mounted) setError(shelvesErr.message);
       } else {
         if (mounted) setShelves(shelvesData ?? []);
+        
+        let computedReadCount = 0;
+        let computedReadingCount = 0;
+        
+        if (shelvesData) {
+          const readShelf = shelvesData.find(s => s.name?.toLowerCase() === 'read');
+          const readingShelf = shelvesData.find(s => s.name?.toLowerCase() === 'reading');
+          
+          if (readShelf) {
+             const { count } = await supabase
+               .from('shelf_books')
+               .select('*', { count: 'exact', head: true })
+               .eq('shelf_id', readShelf.id);
+             computedReadCount = count || 0;
+          }
+          
+          if (readingShelf) {
+             const { count } = await supabase
+               .from('shelf_books')
+               .select('*', { count: 'exact', head: true })
+               .eq('shelf_id', readingShelf.id);
+             computedReadingCount = count || 0;
+          }
+        }
+        
+        if (mounted) {
+          setReadCount(computedReadCount);
+          setReadingCount(computedReadingCount);
+        }
       }
 
       if (mounted) setLoading(false);
@@ -116,8 +147,8 @@ export default function Profile() {
             username={profile?.username}
             bio={profile?.bio}
             uriAvatar={profile?.avatar_url}
-            readCount={profile?.read_count}
-            readingCount={profile?.reading_count}
+            readCount={readCount}
+            readingCount={readingCount}
             shelvedCount={profile?.shelved_count}
             postCount={profile?.post_count}
             friendCount={profile?.friend_count}

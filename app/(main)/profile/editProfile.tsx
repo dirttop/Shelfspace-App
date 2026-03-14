@@ -1,4 +1,4 @@
-
+// NOT IN USE
 import { supabase } from "@/app/lib/supabase";
 import AppText from "@/components/common/AppText";
 import Avatar from "@/components/common/Avatar";
