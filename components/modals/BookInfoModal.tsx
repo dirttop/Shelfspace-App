@@ -139,6 +139,40 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                     Alert.alert("Error", "Failed to add book to shelf.");
                 }
             } else {
+                // Determine if we need to update reading/read counts in the profiles table
+                const targetShelf = shelves.find(s => s.id === shelfId);
+                if (targetShelf) {
+                    const shelfNameStr = targetShelf.name?.toLowerCase();
+                    let counterField: 'read_count' | 'reading_count' | null = null;
+                    if (shelfNameStr === 'read') counterField = 'read_count';
+                    else if (shelfNameStr === 'reading') counterField = 'reading_count';
+
+                    if (counterField) {
+                        try {
+                            const { data: userData } = await supabase.auth.getUser();
+                            if (userData?.user) {
+                                // fetch current count
+                                const { data: currentProfile } = await supabase
+                                    .from('profiles')
+                                    .select(counterField)
+                                    .eq('id', userData.user.id)
+                                    .single();
+                                
+                                if (currentProfile) {
+                                    // increment
+                                    const currentCount = (currentProfile as any)[counterField] || 0;
+                                    await supabase
+                                        .from('profiles')
+                                        .update({ [counterField]: currentCount + 1 })
+                                        .eq('id', userData.user.id);
+                                }
+                            }
+                        } catch (err) {
+                            console.error("Failed to increment profile count", err);
+                        }
+                    }
+                }
+
                 Alert.alert("Success", "Book added to shelf!");
             }
         } catch (e: any) {
