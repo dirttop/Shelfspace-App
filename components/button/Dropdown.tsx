@@ -64,7 +64,7 @@ export const Dropdown = ({ isVisible, onClose, items, position }: DropdownProps)
                   )}
                 </View>
               )}
-              <AppText className="text-base text-gray-900 font-medium whitespace-nowrap" numberOfLines={1}>{item.label}</AppText>
+              <AppText className="text-base text-gray-900 font-fraunces-bold whitespace-nowrap" numberOfLines={1}>{item.label}</AppText>
             </Pressable>
           </React.Fragment>
         ))}

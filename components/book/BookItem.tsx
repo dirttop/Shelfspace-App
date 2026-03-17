@@ -32,8 +32,9 @@ const BookItem = ({ book, onPress, className = "" }: BookItemProps) => {
             <Image 
                 source={{ uri: book.coverImage || 'https://via.placeholder.com/150x220.png?text=No+Cover' }} 
                 className="w-full h-full absolute"
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: '100%', height: '100%', transform: [{ scale: 1.05 }] }}
                 contentFit="cover"
+                contentPosition="center" 
                 transition={200}
             />
         </PressableScale>

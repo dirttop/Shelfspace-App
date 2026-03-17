@@ -7,6 +7,10 @@ import HeartOutline from './icons/heart-line.svg';
 import Logo from './icons/logo.svg';
 import ShareFill from './icons/share-fill.svg';
 import ShareOutline from './icons/share-line.svg';
+import BellFill from './icons/bell-fill.svg';
+import BellOutline from './icons/bell-line.svg';
+import Add from './icons/add.svg';
+
 
 export const icons = {
   logo: Logo,
@@ -18,6 +22,9 @@ export const icons = {
   shareFill: ShareFill,
   gearOutline: GearOutline,
   gearFill: GearFill,
+  bellFill: BellFill,
+  bellOutline: BellOutline,
+  add: Add,
 };
 
 export type IconName = keyof typeof icons;

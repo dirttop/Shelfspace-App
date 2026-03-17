@@ -1,10 +1,10 @@
 export const appTextBaseClasses = "text-zinc-900";
 
 export const appTextVariantClasses = {
-  title: "text-4xl font-sono-bold",
-  subtitle: "text-xl font-sono-semibold",
+  title: "text-4xl font-fraunces-bold",
+  subtitle: "text-xl font-fraunces-semibold",
   body: "text-base font-sans",
   caption: "text-xs font-sans",
-  label: "text-sm font-sono-medium",
+  label: "text-sm font-sans-medium",
   collapsible: "text-base font-sans",
 };

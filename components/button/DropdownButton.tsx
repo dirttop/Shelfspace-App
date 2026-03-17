@@ -124,12 +124,12 @@ const DropdownButton = ({
               size="small"
               color={variant === "primary" ? "#fff" : "#000"}
             />
-            <AppText className={`font-sono-bold ${textClasses} ml-2`}>
+            <AppText className={`font-fraunces-bold ${textClasses} ml-2`}>
               {currentAction.title}
             </AppText>
           </View>
         ) : (
-          <AppText className={`font-sono-bold ${textClasses}`}>
+          <AppText className={`font-fraunces-bold ${textClasses}`}>
             {currentAction.title}
           </AppText>
         )}

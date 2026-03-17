@@ -19,7 +19,7 @@ const UserHeader = ({
     return (
         <View className = "flex-row items-center justify-center gap-2">
             <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="sm"/>
-            <AppText>@{username}</AppText>
+            <AppText variant = "label">@{username}</AppText>
         </View>
     )
 };
