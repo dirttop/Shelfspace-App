@@ -4,6 +4,8 @@ import { Book } from "@/types/book";
 import { useState } from "react";
 import { View } from "react-native";
 import Icons from '@/components/common/Icons';
+import PostCard from "@/components/card/PostCard";
+import IconButton from "@/components/button/IconButton";
 
 const mockBook: Book = {
     isbn: "9780765326355",
@@ -30,14 +32,32 @@ export default function Home() {
   return (
     <View className="flex-1 bg-background p-4 pt-12">
       <View className="flex-row items-center mt-6 mb-6 z-20">
-        <Icons.logo color="#000" className="mr-2"/>
-        <DropdownButton
-          title={selectedFilter}
-          dropdownItems={navItems}
-          variant="outline"
-          size="md"
-          dropdownPosition="right"
+        <View className="flex-row items-center justify-start">
+           <Icons.logo color="#000" className="mr-2"/>
+           <DropdownButton
+             title={selectedFilter}
+             dropdownItems={navItems}
+             variant="outline"
+             size="md"
+             dropdownPosition="right"
         />
+        </View>
+        <View className="flex-row items-center justify-end">
+          <IconButton
+            icon="bellFill"
+            color="#333333"
+            onPress={() => console.log('Notifications')}
+            size="lg"
+            className="justify-end"
+          />
+          <IconButton
+            icon="add"
+            color="#333333"
+            onPress={() => console.log('Add')}
+            size="md"
+            className="justify-end"
+          />
+        </View>
       </View>
 
       <ReviewCard 
@@ -48,6 +68,13 @@ export default function Home() {
         username="johndoe"
         postType="progress"
         progress={50}
+      />
+
+      <PostCard
+        firstName = "John"
+        lastName = "Doe"
+        username = "johndoe"
+        postText = "This is a sample post!"
       />
     </View>
   );

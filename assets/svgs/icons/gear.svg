@@ -17,7 +17,7 @@
   <sodipodi:namedview
      id="namedview1"
      pagecolor="#ffffff"
-     bordercolor="#000000"
+     bordercolor="currentColor"
      borderopacity="0.25"
      inkscape:showpageshadow="2"
      inkscape:pageopacity="0.0"
@@ -55,7 +55,7 @@
        style="display:none">
       <path
          id="rect1"
-         style="display:inline;fill:#000000;stroke:#000000;stroke-width:2.75917;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:currentColor;stroke:currentColor;stroke-width:2.75917;stroke-dasharray:none;stroke-opacity:1"
          d="m 16.584802,10.083174 a 8.6958913,8.6958422 0 0 0 -6.148266,2.546237 l -0.0185,0.0185 a 8.6958913,8.6958422 0 0 0 10e-7,12.298073 l 1.265411,1.265412 11.100479,11.100479 a 1.7193245,1.7193147 0 0 1 0.0015,0.0015 l 0.186499,0.186497 a 1.4544498,1.4544417 0 0 0 2.056102,0 l 0.188042,-0.18804 11.100477,-11.100481 1.265412,-1.265411 a 8.6958913,8.6958422 0 0 0 1e-6,-12.298074 l -0.0185,-0.0185 a 8.6958913,8.6958422 0 0 0 -12.298075,2e-6 l -1.26534,1.265474 -1.265414,-1.265412 a 8.6958913,8.6958422 0 0 0 -6.149829,-2.546258 z"
          inkscape:label="Heart"
          inkscape:export-filename="heart-line.svg"
@@ -73,7 +73,7 @@
        inkscape:export-ydpi="96">
       <path
          id="path4"
-         style="display:inline;fill:#000000;stroke:#000000;stroke-width:4.00521"
+         style="display:inline;fill:currentColor;stroke:currentColor;stroke-width:4.00521"
          d="M 22.617356,3.8375007 C 11.508428,3.8378336 2.5029447,12.843318 2.5026118,23.952245 2.5029432,35.004884 11.419219,44.063442 22.450473,44.154393 l 0.08084,0.0026 c 0,0 23.777985,0.03888 23.069109,-0.09 L 40.103676,33.88967 C 41.821409,30.86676 42.731945,27.442903 42.7321,23.952247 42.731766,12.843318 33.726285,3.8378338 22.617356,3.8375007 Z"
          sodipodi:nodetypes="cccccccc"
          inkscape:label="Comment"
@@ -91,7 +91,7 @@
          inkscape:label="Logo"
          transform="translate(4.5246161e-8,-5.4554189)">
         <circle
-           style="fill:#000000;stroke:#000000;stroke-width:4.01365;stroke-dasharray:none;stroke-opacity:1"
+           style="fill:currentColor;stroke:currentColor;stroke-width:4.01365;stroke-dasharray:none;stroke-opacity:1"
            id="path6"
            cx="24"
            cy="15.674343"

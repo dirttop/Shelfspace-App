@@ -124,7 +124,7 @@ export default function Profile() {
             followCount={profile?.follow_count}
           />
 
-          <View className="mt-4 ml-4 px-4 items-start">
+          <View className="mt-4 px-4 items-start">
             <DropdownButton
               title={
                 selectedShelfId

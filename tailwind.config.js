@@ -5,10 +5,12 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Sono_400Regular', 'sans-serif'],
-        'sono-medium': ['Sono_500Medium', 'sans-serif'],
-        'sono-semibold': ['Sono_600SemiBold', 'sans-serif'],
-        'sono-bold': ['Sono_700Bold', 'sans-serif'],
+        sans: ['DMSans_400Regular', 'sans-serif'],
+        'sans-medium': ['DMSans_500Medium', 'sans-serif'],
+        'sans-semibold': ['DMSans_600SemiBold', 'sans-serif'],
+        'sans-bold': ['DMSans_700Bold', 'sans-serif'],
+        'fraunces-semibold': ['Fraunces_600SemiBold', 'serif'],
+        'fraunces-bold': ['Fraunces_700Bold', 'serif'],
       },
       colors: {
         background: "var(--background)",

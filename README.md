@@ -1,2 +1,3 @@
-# ShelfSpace
-## Social Media Book Application
+# ShelfSpace App
+## Technical Documentation
+

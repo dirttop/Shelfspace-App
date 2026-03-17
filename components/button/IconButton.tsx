@@ -37,7 +37,7 @@ const IconButton = ({
   toggledIcon,
   pressedIcon,
   isToggled = false,
-  color = "white",
+  color = "#71717a",
   toggledColor,
   pressedColor,
   size = "md",
@@ -49,11 +49,11 @@ const IconButton = ({
   let currentIconName = icon;
   let currentColor = color;
 
-  if (isToggled && toggledIcon) currentIconName = toggledIcon;
-  else if (isPressed && pressedIcon) currentIconName = pressedIcon;
+  if (isPressed && pressedIcon) currentIconName = pressedIcon;
+  else if (isToggled && toggledIcon) currentIconName = toggledIcon;
 
-  if (isToggled && toggledColor) currentColor = toggledColor;
-  else if (isPressed && pressedColor) currentColor = pressedColor;
+  if (isPressed && pressedColor) currentColor = pressedColor;
+  else if (isToggled && toggledColor) currentColor = toggledColor;
 
   const IconComponent = Icons[currentIconName];
 

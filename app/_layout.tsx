@@ -1,5 +1,6 @@
 import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
-import { Sono_400Regular, Sono_500Medium, Sono_600SemiBold, Sono_700Bold, useFonts } from '@expo-google-fonts/sono';
+import { DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSans_700Bold, useFonts as useDMSansFonts } from '@expo-google-fonts/dm-sans';
+import { Fraunces_600SemiBold, Fraunces_700Bold, useFonts as useFrauncesFonts } from '@expo-google-fonts/fraunces';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -56,12 +57,20 @@ const GlobalBookModal = () => {
 };
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    Sono_400Regular,
-    Sono_500Medium,
-    Sono_600SemiBold,
-    Sono_700Bold,
+  const [dmSansLoaded, dmSansError] = useDMSansFonts({
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_600SemiBold,
+    DMSans_700Bold,
   });
+
+  const [frauncesLoaded, frauncesError] = useFrauncesFonts({
+    Fraunces_600SemiBold,
+    Fraunces_700Bold,
+  });
+
+  const loaded = dmSansLoaded && frauncesLoaded;
+  const error = dmSansError || frauncesError;
 
   useEffect(() => {
     if (loaded || error) {

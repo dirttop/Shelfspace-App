@@ -89,12 +89,12 @@ const containerClasses = disabled
             size="small"
             color={variant === "primary" ? "#fff" : "#000"}
           />
-          <AppText className={`font-sono-bold ${textClasses} ml-2`}>
+          <AppText className={`font-sans-bold ${textClasses} ml-2`}>
             {title}
           </AppText>
         </View>
       ) : (
-        <AppText className={`font-sono-bold ${textClasses}`}>{title}</AppText>
+        <AppText className={`font-sans-bold ${textClasses}`}>{title}</AppText>
       )}
     </Pressable>
   );
