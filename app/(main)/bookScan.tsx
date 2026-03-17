@@ -1,5 +1,5 @@
 import AppText from '@/components/common/AppText';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
@@ -198,7 +198,7 @@ export default function BookScan() {
               onPress={() => router.back()}
               className="w-10 h-10 rounded-full bg-black/40 flex items-center justify-center"
             >
-              <MaterialCommunityIcons name="close" size={24} color="white" />
+              <Feather name="x" size={24} color="white" />
             </TouchableOpacity>
           </View>
 
@@ -229,7 +229,7 @@ export default function BookScan() {
               disabled={isProcessing}
               className={`absolute left-4 w-12 h-12 rounded-full bg-black/40 flex items-center justify-center ${isProcessing ? 'opacity-50' : 'opacity-100'}`}
             >
-              <MaterialCommunityIcons name="image-multiple" size={24} color="white" />
+              <Feather name="image" size={24} color="white" />
             </TouchableOpacity>
 
             {/* Shutter Button */}

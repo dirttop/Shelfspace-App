@@ -72,8 +72,8 @@ const IconButton = ({
         disabled ? "opacity-50" : "active:opacity-75"
       }`}
     >
-      <View className={`${sizeMap[size]}`}>
-        <IconComponent color={currentColor} width="100%" height="100%" />
+      <View className={`${sizeMap[size]} items-center justify-center`}>
+        <IconComponent color={currentColor} size={size === 'xs' ? 16 : size === 'sm' ? 20 : size === 'md' ? 24 : size === 'lg' ? 28 : 32} />
       </View>
     </StyledPressable>
   );

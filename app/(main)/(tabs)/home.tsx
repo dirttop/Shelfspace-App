@@ -33,11 +33,10 @@ export default function Home() {
     <View className="flex-1 bg-background p-4 pt-12">
       <View className="flex-row items-center mt-6 mb-6 z-20">
         <View className="flex-row items-center justify-start">
-           <Icons.logo color="#000" className="mr-2"/>
            <DropdownButton
              title={selectedFilter}
              dropdownItems={navItems}
-             variant="outline"
+             variant="secondary"
              size="md"
              dropdownPosition="right"
         />

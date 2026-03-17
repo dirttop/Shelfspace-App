@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react-native';
+import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, View } from 'react-native';
 import AppText from '@/components/common/AppText';
@@ -57,7 +57,7 @@ export const Dropdown = ({ isVisible, onClose, items, position }: DropdownProps)
               {hasIcons && (
                 <View className="w-6 mr-2 items-center justify-center">
                   {item.selected && (
-                    <Check size={18} color="#000" strokeWidth={2.5} />
+                    <Feather name="check" size={18} color="#000" />
                   )}
                   {!item.selected && item.icon && (
                      <View className="items-center justify-center">{item.icon}</View>

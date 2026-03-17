@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { cssInterop } from "nativewind";
 import { PressableScale } from "pressto";
@@ -23,7 +23,7 @@ export default function Search() {
       <AppText >
         Search...
       </AppText>
-      <MaterialCommunityIcons name="magnify" size={20} color="gray" />
+      <Feather name="search" size={20} color="gray" />
     </Pressable>
   );
 };

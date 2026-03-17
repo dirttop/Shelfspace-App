@@ -1,15 +1,19 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { Tabs, useRouter } from "expo-router";
+import { useRouter, withLayoutContext } from "expo-router";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import React from "react";
 import { Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AddBookModal } from "../../../components/modals/AddBookModal";
+
+const TopTabs = withLayoutContext(createMaterialTopTabNavigator().Navigator);
 
 export default function TabLayout() {
   const addBookModalRef = React.useRef<BottomSheetModal>(null);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
-  // Handlers for AddBookModal actions
   const handleScan = () => {
     addBookModalRef.current?.dismiss();
     router.push("/bookScan");
@@ -22,29 +26,41 @@ export default function TabLayout() {
 
   return (
     <>
-      <Tabs
+      <TopTabs
+        tabBarPosition="bottom"
         screenOptions={{
-          tabBarActiveTintColor: "#007AFF",
+          tabBarActiveTintColor: "#73BDA8",
           tabBarInactiveTintColor: "#8E8E93",
-          headerShown: false,
+          tabBarShowIcon: true,
+          tabBarShowLabel: false,
+          tabBarIndicatorStyle: {
+            backgroundColor: "#73BDA8",
+            top: 0,
+          },
           tabBarStyle: Platform.select({
             ios: {
               position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              paddingBottom: insets.bottom,
+              height: 55 + insets.bottom,
             },
             default: {
               backgroundColor: "white",
               elevation: 8,
+              paddingBottom: insets.bottom,
+              height: 55 + insets.bottom,
             },
           }),
         }}
       >
-        <Tabs.Screen
+        <TopTabs.Screen
           name="home"
           options={{
-            title: "Home",
-            tabBarIcon: ({ color, focused }) => (
-              <MaterialCommunityIcons
-                name={focused ? "home" : "home-outline"}
+            tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
+              <Feather
+                name="home"
                 size={28}
                 color={color}
               />
@@ -52,47 +68,40 @@ export default function TabLayout() {
           }}
         />
 
-        <Tabs.Screen
+        <TopTabs.Screen
           name="search"
           options={{
-            title: "Search",
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="magnify" size={28} color={color} />
+            tabBarIcon: ({ color }: { color: string }) => (
+              <Feather name="search" size={28} color={color} />
             ),
           }}
         />
 
-        <Tabs.Screen
+        <TopTabs.Screen
           name="add"
           options={{
-            title: "Add",
-            tabBarIcon: ({ color, focused }) => (
-              <MaterialCommunityIcons
-                name={focused ? "book-plus" : "book-plus-outline"}
+            tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
+              <Feather
+                name="plus-circle"
                 size={28}
                 color={color}
               />
             ),
           }}
           listeners={{
-            tabPress: (e) => {
+            tabPress: (e: any) => {
               e.preventDefault();
               addBookModalRef.current?.present();
             },
           }}
         />
 
-        <Tabs.Screen
+        <TopTabs.Screen
           name="club"
           options={{
-            title: "Club",
-            tabBarIcon: ({ color, focused }) => (
-              <MaterialCommunityIcons
-                name={
-                  focused
-                    ? "book-open-page-variant"
-                    : "book-open-page-variant-outline"
-                }
+            tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
+              <Feather
+                name="users"
                 size={28}
                 color={color}
               />
@@ -100,20 +109,19 @@ export default function TabLayout() {
           }}
         />
 
-        <Tabs.Screen
+        <TopTabs.Screen
           name="profile"
           options={{
-            title: "Profile",
-            tabBarIcon: ({ color, focused }) => (
-              <MaterialCommunityIcons
-                name={focused ? "account" : "account-outline"}
+            tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
+              <Feather
+                name="user"
                 size={28}
                 color={color}
               />
             ),
           }}
         />
-      </Tabs>
+      </TopTabs>
       <AddBookModal
         ref={addBookModalRef}
         onScan={handleScan}

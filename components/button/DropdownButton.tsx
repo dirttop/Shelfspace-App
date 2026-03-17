@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react-native";
+import { Feather } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
 import AppText from "@/components/common/AppText";
@@ -109,7 +109,7 @@ const DropdownButton = ({
           disabled={disabled || loading}
           className={`justify-center items-center active:opacity-80 ${verticalPadding} ${dropPadding} ${dividerClasses}`}
         >
-          <ChevronDown color={iconColor} size={size === "sm" ? 16 : 20} />
+          <Feather name="chevron-down" color={iconColor} size={size === "sm" ? 16 : 20} />
         </Pressable>
       )}
 
@@ -141,7 +141,7 @@ const DropdownButton = ({
           disabled={disabled || loading}
           className={`justify-center items-center active:opacity-80 ${verticalPadding} ${dropPadding} ${dividerClasses}`}
         >
-          <ChevronDown color={iconColor} size={size === "sm" ? 16 : 20} />
+          <Feather name="chevron-down" color={iconColor} size={size === "sm" ? 16 : 20} />
         </Pressable>
       )}
 

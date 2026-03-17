@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp } from "lucide-react-native";
+import { Feather } from "@expo/vector-icons";
 import { memo, useMemo, useState } from "react";
 import type { TextProps } from "react-native";
 import { Pressable, Text, View } from "react-native";
@@ -50,9 +50,9 @@ const CollapsibleTextContent = ({
             {isExpanded ? "Show Less" : "Read More"}
           </Text>
           {isExpanded ? (
-            <ChevronUp size={16} color="#71717a" />
+            <Feather name="chevron-up" size={16} color="#71717a" />
           ) : (
-            <ChevronDown size={16} color="#71717a" />
+            <Feather name="chevron-down" size={16} color="#71717a" />
           )}
         </Pressable>
       )}

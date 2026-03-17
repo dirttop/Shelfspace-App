@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react-native';
+import { Feather } from '@expo/vector-icons';
 import { memo } from 'react';
 import { Pressable, View } from "react-native";
 
@@ -15,7 +15,7 @@ const Checkbox = (props: { value: boolean, label: string, onValueChange: (value:
                 ? 'bg-zinc-900 border-zinc-900'
                 : 'border-zinc-200 bg-white'
                 }`}>
-                {props.value && <Check size={16} color={'#fafafa'} strokeWidth={3} />}
+                {props.value && <Feather name="check" size={16} color={'#fafafa'} />}
             </View>
             <AppText className="ml-3">
                 {props.label}
