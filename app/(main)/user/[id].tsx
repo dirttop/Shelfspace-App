@@ -4,6 +4,7 @@ import ProfileCard from "@/components/card/ProfileCard";
 import ProfileBookList from "@/components/profile/ProfileBookList";
 import React, { useEffect, useState, useCallback } from "react";
 import { LinearGradient } from "expo-linear-gradient";
+import { useLocalSearchParams, useFocusEffect } from "expo-router";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -12,16 +13,18 @@ import {
   View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useFocusEffect } from "expo-router";
 
-export default function Profile() {
+export default function UserProfile() {
+  const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
+  
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any | null>(null);
   const [shelves, setShelves] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [readCount, setReadCount] = useState<number>(0);
   const [readingCount, setReadingCount] = useState<number>(0);
+  const [isOwner, setIsOwner] = useState(false);
   
   const [selectedShelfId, setSelectedShelfId] = useState<string | null>(null);
 
@@ -41,26 +44,24 @@ export default function Profile() {
     let mounted = true;
 
     async function fetchData() {
+      if (!id) return;
+      
       setLoading(true);
       setError(null);
 
-      // get current user
-      const { data: userData, error: userErr } = await supabase.auth.getUser();
-      if (userErr || !userData?.user) {
-        if (mounted) setError(userErr?.message ?? "Not signed in");
-        if (mounted) setLoading(false);
-        return;
+      // Check if current logged in user is viewing their own profile via this route
+      const { data: userData } = await supabase.auth.getUser();
+      if (mounted && userData?.user?.id === id) {
+        setIsOwner(true);
       }
 
-      const userId = userData.user.id;
-
-      // fetch profile data
+      // fetch profile data for the requested user
       const { data: profileData, error: profileErr } = await supabase
         .from("profiles")
         .select(
           "id, first_name, last_name, username, bio, avatar_url, read_count, reading_count, shelved_count, post_count, friend_count, follow_count",
         )
-        .eq("id", userId)
+        .eq("id", id)
         .single();
 
       if (profileErr) {
@@ -69,13 +70,13 @@ export default function Profile() {
         if (mounted) setProfile(profileData ?? null);
       }
 
-      // fetch shelves data
+      // fetch shelves data for the requested user
       const { data: shelvesData, error: shelvesErr } = await supabase
         .from("shelves")
         .select(
           "id, name, created_at",
         )
-        .eq("user_id", userId);
+        .eq("user_id", id);
 
       if (shelvesErr) {
         if (mounted) setError(shelvesErr.message);
@@ -110,19 +111,6 @@ export default function Profile() {
           setReadCount(computedReadCount);
           setReadingCount(computedReadingCount);
         }
-
-        // Self-healing database sync for the current user: 
-        // If the true count in their shelves differs from the number saved in their profile mapping, sync it back to the database.
-        if (profileData && (profileData.read_count !== computedReadCount || profileData.reading_count !== computedReadingCount)) {
-            try {
-                await supabase.from("profiles").update({
-                    read_count: computedReadCount,
-                    reading_count: computedReadingCount
-                }).eq("id", userId);
-            } catch (syncErr) {
-                console.error("Failed to sync profile read counts:", syncErr);
-            }
-        }
       }
 
       if (mounted) setLoading(false);
@@ -133,7 +121,7 @@ export default function Profile() {
     return () => {
       mounted = false;
     };
-  }, [])
+  }, [id])
   );
 
   return (
@@ -153,9 +141,7 @@ export default function Profile() {
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
-          style={{ paddingTop: insets.top }}
         >
-
           <ProfileCard
             className="mt-5 mx-4"
             firstName={profile?.first_name}
@@ -169,6 +155,7 @@ export default function Profile() {
             postCount={profile?.post_count}
             friendCount={profile?.friend_count}
             followCount={profile?.follow_count}
+            isOwner={isOwner}
           />
 
           <View className="mt-4 px-4 items-start">
@@ -185,7 +172,7 @@ export default function Profile() {
             />
           </View>
 
-          <View className="flex-1 mt-4 bg-[#F2F0E9] pt-4 relative">
+          <View className="flex-1 mt-4 bg-[#E5E3DB] pt-4 relative">
             <LinearGradient
               colors={['rgba(0,0,0,0.1)', 'transparent']}
               style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 18 }}

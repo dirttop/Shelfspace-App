@@ -21,6 +21,7 @@ interface ProfileProps extends ViewProps {
   postCount?: number;
   friendCount?: number;
   followCount?: number;
+  isOwner?: boolean;
 }
 
 const ShelfStat = ({ label, value }: { label: string; value: number }) => (
@@ -50,6 +51,7 @@ const ProfileCard = ({
   postCount = 0,
   friendCount = 0,
   followCount = 0,
+  isOwner = true,
   className = "",
   ...props
 }: ProfileProps) => {
@@ -88,27 +90,29 @@ const ProfileCard = ({
           <AppText variant="label">{bio}</AppText>
         )}
       </View>
-      <View className="flex-row gap-x-3 justify-between items-center">
-        <View className="flex-1">
-          <Buttons
-            title="Edit Profile"
-            size="sm"
-            className="mb-0"
-            onPress={() => router.push("/(main)/editProfile")}
-          />
+      {isOwner && (
+        <View className="flex-row gap-x-3 justify-between items-center">
+          <View className="flex-1">
+            <Buttons
+              title="Edit Profile"
+              size="sm"
+              className="mb-0"
+              onPress={() => router.push("/(main)/editProfile")}
+            />
+          </View>
+          <View className="flex-row justify-end items-center mr-2">
+            <IconButton 
+              icon="gearOutline"
+              pressedIcon="gearFill"
+              onPress={handlePresentModalPress}
+              size="md"
+            />
+            <UserSettingsModal
+              ref={bottomSheetModalRef}
+            />
+          </View>
         </View>
-        <View className="flex-row justify-end items-center mr-2">
-          <IconButton 
-            icon="gearOutline"
-            pressedIcon="gearFill"
-            onPress={handlePresentModalPress}
-            size="md"
-          />
-          <UserSettingsModal
-            ref={bottomSheetModalRef}
-          />
-        </View>
-      </View>
+      )}
     </Card>
   );
 };

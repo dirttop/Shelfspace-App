@@ -2,8 +2,9 @@ import { supabase } from '@/app/lib/supabase';
 import BookItem from '@/components/book/BookItem';
 import AppText from '@/components/common/AppText';
 import { Book } from '@/types/book';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ActivityIndicator, FlatList, View } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 
 type ProfileBookListProps = {
   userId: string;
@@ -16,7 +17,8 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  useFocusEffect(
+    useCallback(() => {
     let mounted = true;
 
     async function fetchBooks() {
@@ -59,7 +61,8 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
     return () => {
       mounted = false;
     };
-  }, [userId, shelfId]);
+  }, [userId, shelfId])
+  );
 
   if (loading) {
     return (
