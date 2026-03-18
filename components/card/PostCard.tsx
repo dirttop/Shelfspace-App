@@ -2,13 +2,15 @@ import AppText from "@/components/common/AppText";
 import Card from "@/components/common/Card";
 import { supabase } from "@/app/lib/supabase";
 import { useRouter } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { View, ViewProps, Alert, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { EllipsisVertical, Trash2, Flag } from "lucide-react-native";
 import UserHeader from "../common/UserHeader";
 import CardActions from "./CardActions";
 import { Dropdown } from "@/components/button/Dropdown";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import CommentsModal from "../modals/CommentsModal";
 
 interface ReviewProps extends ViewProps {
   firstName?: string;
@@ -45,10 +47,31 @@ const PostCard = ({
   ...props
 }: ReviewProps) => {
   const router = useRouter();
-  const [isLiked, setIsLiked] = React.useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [localLikesCount, setLocalLikesCount] = useState(likesCount);
+  const [localCommentsCount, setLocalCommentsCount] = useState(commentsCount);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [dropdownCoords, setDropdownCoords] = useState<{ top?: number; left?: number; width?: number }>({});
   const moreButtonRef = useRef<View>(null);
+  const commentsModalRef = useRef<BottomSheetModal>(null);
+
+  // Keep local counts in sync if parent refreshes
+  useEffect(() => { setLocalLikesCount(likesCount); }, [likesCount]);
+  useEffect(() => { setLocalCommentsCount(commentsCount); }, [commentsCount]);
+
+  // Fetch initial like state for current user
+  useEffect(() => {
+    if (!postId || !currentUserId) return;
+    supabase
+      .from('postLikes')
+      .select('id')
+      .eq('postId', postId)
+      .eq('userId', currentUserId)
+      .maybeSingle()
+      .then(({ data }) => {
+        setIsLiked(!!data);
+      });
+  }, [postId, currentUserId]);
 
   const isOwner = !!currentUserId && currentUserId === userId;
 
@@ -57,7 +80,6 @@ const PostCard = ({
     const date = new Date(dateString);
     const now = new Date();
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    
     let interval = seconds / 31536000;
     if (interval > 1) return Math.floor(interval) + "y ago";
     interval = seconds / 2592000;
@@ -70,14 +92,43 @@ const PostCard = ({
     if (interval > 1) return Math.floor(interval) + "m ago";
     return Math.floor(seconds) + "s ago";
   };
-  
+
   const timeElapsed = getTimeElapsed(timestamp);
+
+  const handleLikePress = async () => {
+    if (!postId || !currentUserId) return;
+    // Optimistic update
+    const wasLiked = isLiked;
+    setIsLiked(!wasLiked);
+    setLocalLikesCount(prev => wasLiked ? Math.max(0, prev - 1) : prev + 1);
+
+    if (wasLiked) {
+      const { error } = await supabase
+        .from('postLikes')
+        .delete()
+        .eq('postId', postId)
+        .eq('userId', currentUserId);
+      if (error) {
+        // Revert on failure
+        setIsLiked(wasLiked);
+        setLocalLikesCount(prev => wasLiked ? prev + 1 : Math.max(0, prev - 1));
+      }
+    } else {
+      const { error } = await supabase
+        .from('postLikes')
+        .insert({ postId, userId: currentUserId });
+      if (error) {
+        setIsLiked(wasLiked);
+        setLocalLikesCount(prev => wasLiked ? prev + 1 : Math.max(0, prev - 1));
+      }
+    }
+  };
 
   const handleMorePress = () => {
     moreButtonRef.current?.measureInWindow((x, y, width, height) => {
       setDropdownCoords({
         top: y + height + 4,
-        left: x + width - 180, // right-align the 180px-wide dropdown
+        left: x + width - 180,
         width: 180,
       });
       setDropdownVisible(true);
@@ -108,20 +159,16 @@ const PostCard = ({
   };
 
   const dropdownItems = isOwner
-    ? [
-        {
-          label: "Delete Post",
-          icon: <Trash2 size={16} color="#ef4444" />,
-          onPress: handleDelete,
-        },
-      ]
-    : [
-        {
-          label: "Report Post",
-          icon: <Flag size={16} color="#64748b" />,
-          onPress: () => Alert.alert("Reported", "Thank you for your report."),
-        },
-      ];
+    ? [{ label: "Delete Post", icon: <Trash2 size={16} color="#ef4444" />, onPress: handleDelete }]
+    : [{ label: "Report Post", icon: <Flag size={16} color="#64748b" />, onPress: () => Alert.alert("Reported", "Thank you for your report.") }];
+
+  const handleCommentAdded = useCallback(() => {
+    setLocalCommentsCount(prev => prev + 1);
+  }, []);
+
+  const handleCommentDeleted = useCallback(() => {
+    setLocalCommentsCount(prev => Math.max(0, prev - 1));
+  }, []);
 
   return (
     <Card className={`p-2 w-full ${className}`} {...props}>
@@ -129,12 +176,12 @@ const PostCard = ({
         <View className="flex-row w-full mb-2">
           <View className="flex-1 flex-row items-center justify-between">
             <View className="flex-row items-center mt-2 mb-2 gap-x-2">
-              <UserHeader 
+              <UserHeader
                 userId={userId}
-                firstName={firstName} 
-                lastName={lastName} 
-                username={username} 
-                uriAvatar={uriAvatar} 
+                firstName={firstName}
+                lastName={lastName}
+                username={username}
+                uriAvatar={uriAvatar}
               />
             </View>
             <View className="flex-row items-center gap-x-2">
@@ -151,7 +198,7 @@ const PostCard = ({
             </View>
           </View>
         </View>
-          
+
         {!!postText && (
           <AppText variant="collapsible" className="mb-2 mt-2">
             {postText}
@@ -166,11 +213,12 @@ const PostCard = ({
           />
         )}
 
-        <CardActions 
+        <CardActions
           isLiked={isLiked}
-          likesCount={likesCount}
-          commentsCount={commentsCount}
-          onLikePress={() => setIsLiked(!isLiked)}
+          likesCount={localLikesCount}
+          commentsCount={localCommentsCount}
+          onLikePress={handleLikePress}
+          onCommentPress={() => commentsModalRef.current?.present()}
         />
 
         {!!children && (
@@ -188,6 +236,14 @@ const PostCard = ({
           items={dropdownItems}
         />
       )}
+
+      <CommentsModal
+        ref={commentsModalRef}
+        postId={postId}
+        currentUserId={currentUserId}
+        onCommentAdded={handleCommentAdded}
+        onCommentDeleted={handleCommentDeleted}
+      />
     </Card>
   );
 };

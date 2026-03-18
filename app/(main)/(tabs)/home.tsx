@@ -43,8 +43,8 @@ export default function Home() {
             last_name,
             avatar_url
           ),
-          postLikes:postLikes!postId(count),
-          comments:comments!postId(count)
+          postLikes:postLikes(count),
+          comments:comments(count)
         `)
         .order('created_at', { ascending: false });
         
