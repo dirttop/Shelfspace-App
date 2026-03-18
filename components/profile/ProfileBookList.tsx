@@ -67,7 +67,7 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
   if (loading) {
     return (
       <View className="mb-6 px-4">
-        {title && <AppText variant="subtitle" className="mb-3 font-semibold">{title}</AppText>}
+        {title && <AppText variant="subtitle" className="mb-3">{title}</AppText>}
         <ActivityIndicator size="small" />
       </View>
     );
@@ -76,8 +76,8 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
   if (error) {
     return (
       <View className="mb-6 px-4">
-        {title && <AppText variant="subtitle" className="mb-3 font-semibold">{title}</AppText>}
-        <AppText className="text-red-500 text-sm">Error loading books: {error}</AppText>
+        {title && <AppText variant="subtitle" className="mb-3">{title}</AppText>}
+        <AppText variant="label" className="text-red-500">Error loading books: {error}</AppText>
       </View>
     );
   }
@@ -90,7 +90,7 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
     <View className="mb-6">
       {title && (
         <View className="px-4 mb-3">
-          <AppText variant="subtitle" className="font-semibold">{title}</AppText>
+          <AppText variant="subtitle">{title}</AppText>
         </View>
       )}
       <FlatList

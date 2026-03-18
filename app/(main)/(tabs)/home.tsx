@@ -57,7 +57,7 @@ export default function Home() {
             icon="add"
             color="#333333"
             onPress={() => {}}
-            size="lg"
+            size="xl"
             className="justify-end"
           />
         </View>
@@ -73,13 +73,13 @@ export default function Home() {
          />
       </View>
 
-      <View className="flex-1 bg-[#F2F0E9] pt-4 relative px-4">
+      <View className="flex-1 bg-[#F2F0E9] relative">
         <LinearGradient
           colors={['rgba(0,0,0,0.1)', 'transparent']}
-          style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 18 }}
+          style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 18, zIndex: 10 }}
           pointerEvents="none"
         />
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24, gap: 16 }}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24, paddingTop: 16, paddingHorizontal: 16, gap: 16 }}>
           <ReviewCard 
             book={mockBook} 
             postText="This is a sample review! We love reviews!"

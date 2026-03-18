@@ -99,7 +99,7 @@ const ReviewCard = ({
                     shadowRadius: 3
                   }}
                 >
-                  <AppText variant="caption" className="font-bold" style={{ color: '#1f2937' }}>
+                  <AppText variant="caption" style={{ color: '#1f2937' }}>
                     {progress}%
                   </AppText>
                 </View>

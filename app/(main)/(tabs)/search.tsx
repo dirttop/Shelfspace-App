@@ -128,7 +128,6 @@ export default function SearchTab() {
         inactiveColor="#71717a" // zinc-500
         renderLabel={({ route, focused, color }: { route: { title: string }, focused: boolean, color: string }) => (
           <AppText 
-            className={focused ? "font-bold" : ""} 
             style={{ color }}
           >
             {route.title}
