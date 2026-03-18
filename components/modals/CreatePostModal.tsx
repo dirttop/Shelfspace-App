@@ -1,10 +1,13 @@
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
-import { View, Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Alert } from 'react-native';
+import { View, Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Alert, Image, TouchableOpacity } from 'react-native';
 import AppText from '../common/AppText';
 import Buttons from '../common/Buttons';
 import { supabase } from '@/app/lib/supabase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+import { X, Image as ImageIcon } from 'lucide-react-native';
+// Replaced above
 
 export type CreatePostModalProps = {
   onPostCreated?: () => void;
@@ -13,6 +16,7 @@ export type CreatePostModalProps = {
 export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps>(
   (props, ref) => {
     const [postText, setPostText] = useState('');
+    const [imageUri, setImageUri] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const insets = useSafeAreaInsets();
 
@@ -33,8 +37,21 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
 
     const handleDismiss = useCallback(() => {
       setPostText('');
+      setImageUri(null);
       Keyboard.dismiss();
     }, []);
+
+    const pickImage = async () => {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setImageUri(result.assets[0].uri);
+      }
+    };
 
     const handleSubmit = async () => {
       if (!postText.trim()) return;
@@ -46,20 +63,35 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
           throw new Error('You must be logged in to post.');
         }
 
+        let fileUrl = null;
+        if (imageUri) {
+          const fileExt = imageUri.split('.').pop() || 'jpeg';
+          const filePath = `${userData.user.id}/${Date.now()}.${fileExt}`;
+          
+          const res = await fetch(imageUri);
+          const blob = await res.blob();
+          
+          const { error: uploadError } = await supabase.storage.from('posts').upload(filePath, blob);
+          if (uploadError) throw new Error('Failed to upload image: ' + uploadError.message);
+          
+          const { data } = supabase.storage.from('posts').getPublicUrl(filePath);
+          fileUrl = data.publicUrl;
+        }
+
         // Insert into posts table
         const { error: insertErr } = await supabase
           .from('posts')
           .insert({
-            user_id: userData.user.id,
-            content: postText,
-            // Assuming the schema has a 'type' or something if it's a progress update vs standard post,
-            // but for now we just insert the content. Add book_isbn here when that feature is ready!
+            userId: userData.user.id,
+            body: postText,
+            file: fileUrl,
           });
 
         if (insertErr) throw insertErr;
         
         // Clear text and dismiss modal
         setPostText('');
+        setImageUri(null);
         if (ref && 'current' in ref && ref.current) {
           ref.current.dismiss();
         }
@@ -105,7 +137,25 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
                 value={postText}
                 onChangeText={setPostText}
               />
+              {imageUri && (
+                <View className="mb-4 relative">
+                  <Image source={{ uri: imageUri }} className="w-full h-48 rounded-xl" resizeMode="cover" />
+                  <TouchableOpacity 
+                    className="absolute top-2 right-2 bg-black/50 p-1.5 rounded-full"
+                    onPress={() => setImageUri(null)}
+                  >
+                    <X size={16} color="white" />
+                  </TouchableOpacity>
+                </View>
+              )}
               
+              <View className="flex-row items-center gap-4 mb-4">
+                <TouchableOpacity onPress={pickImage} className="flex-row items-center gap-2 p-2 bg-slate-100 rounded-lg">
+                  <ImageIcon size={20} color="#64748b" />
+                  <AppText variant="caption" className="text-slate-600">Attach Image</AppText>
+                </TouchableOpacity>
+              </View>
+
               {/* Future Book Selection area */}
               <View className="bg-slate-50 p-4 rounded-xl border border-slate-200 border-dashed mb-4 items-center justify-center">
                 <AppText variant="caption" className="text-slate-500">

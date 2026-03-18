@@ -1,8 +1,9 @@
 import DropdownButton from "@/components/button/DropdownButton";
 import ReviewCard from "@/components/card/ReviewCard";
 import { Book } from "@/types/book";
-import { useState } from "react";
-import { View } from "react-native";
+import { useState, useEffect } from "react";
+import { View, FlatList } from "react-native";
+import { supabase } from '@/app/lib/supabase';
 import Icons from '@/components/common/Icons';
 import PostCard from "@/components/card/PostCard";
 import IconButton from "@/components/button/IconButton";
@@ -25,6 +26,41 @@ const mockBook: Book = {
 export default function Home() {
   const [selectedFilter, setSelectedFilter] = useState('Following');
   const createPostModalRef = useRef<BottomSheetModal>(null);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchPosts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select(`
+          *,
+          profiles!userId(
+            id,
+            username,
+            first_name,
+            last_name,
+            avatar_url
+          )
+        `)
+        .order('created_at', { ascending: false });
+        
+      if (error) throw error;
+      setPosts(data || []);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchPosts();
+    setRefreshing(false);
+  };
 
   const handlePresentCreatePost = useCallback(() => {
     createPostModalRef.current?.present();
@@ -67,24 +103,32 @@ export default function Home() {
         </View>
       </View>
 
-      <ReviewCard 
-        book={mockBook} 
-        postText="This is a sample review! We love reviews!"
-        firstName="John"
-        lastName="Doe"
-        username="johndoe"
-        postType="progress"
-        progress={50}
+      <FlatList
+        data={posts}
+        keyExtractor={(item) => item.id?.toString()}
+        renderItem={({ item }) => (
+          <PostCard
+            key={item.id}
+            userId={item.profiles?.id}
+            firstName={item.profiles?.first_name || "Unknown"}
+            lastName={item.profiles?.last_name || ""}
+            username={item.profiles?.username || "unknown"}
+            uriAvatar={item.profiles?.avatar_url}
+            postText={item.body}
+            postImage={item.file}
+            timestamp={item.created_at}
+            likesCount={item.likes_count || 0}
+            commentsCount={item.comments_count || 0}
+            className="mb-4"
+          />
+        )}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
       />
 
-      <PostCard
-        firstName = "John"
-        lastName = "Doe"
-        username = "johndoe"
-        postText = "This is a sample post!"
-      />
-
-      <CreatePostModal ref={createPostModalRef} />
+      <CreatePostModal ref={createPostModalRef} onPostCreated={fetchPosts} />
     </View>
   );
 }
