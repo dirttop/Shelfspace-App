@@ -44,23 +44,20 @@ const ReviewCard = ({
       <View className="flex-col w-full">
         <View className="flex-row w-full mb-2">
           <View className="flex-1 pr-4 justify-start">
-            <View className="flex-row items-center mt-2 mb-2 gap-x-2">
+            <View className="flex-row items-center mt-2 mb-2 gap-x-1">
               <UserHeader 
                 firstName={firstName} 
                 lastName={lastName} 
                 username={username} 
                 uriAvatar={uriAvatar} 
+                rightText={
+                  postType === "review"
+                    ? " finished reading"
+                    : postType === "progress"
+                    ? " is reading"
+                    : undefined
+                }
               />
-              {postType === "review" && (
-                <AppText variant="caption" className="text-gray-500">
-                  finished reading
-                </AppText>
-              )}
-              {postType === "progress" && progress !== undefined && (
-                <AppText variant="caption" className="text-gray-500">
-                  is reading ◦ {progress}%
-                </AppText>
-              )}
             </View>
 
             {book && (
@@ -75,7 +72,7 @@ const ReviewCard = ({
               <Rating 
                 disabled={true}
                 variant="stars-outline"
-                size={20}
+                size={24}
                 rating={userRating}
                 spacing={.5}
                 baseSymbol={require('@/assets/images/icons/star-line.png')}
@@ -87,8 +84,26 @@ const ReviewCard = ({
           </View>
 
           {book && (
-            <View className="justify-start pt-1 pl-0.5">
-              <BookItem book={book} className="w-20 h-32" />
+            <View className="justify-start pt-1 pl-0.5 relative">
+              <BookItem book={book} className="w-24 h-36" />
+              {postType === "progress" && progress !== undefined && (
+                <View 
+                  className="absolute px-2 py-1 rounded-2xl shadow-sm z-10"
+                  style={{ 
+                    top: 12, 
+                    left: -18, 
+                    backgroundColor: '#B1D5AD',
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 3
+                  }}
+                >
+                  <AppText variant="caption" className="font-bold" style={{ color: '#1f2937' }}>
+                    {progress}%
+                  </AppText>
+                </View>
+              )}
             </View>
           )}
         </View>

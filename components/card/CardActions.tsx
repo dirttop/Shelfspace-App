@@ -25,14 +25,14 @@ const CardActions = ({
         toggledColor="red"
         isToggled={isLiked}
         onPress={onLikePress}
-        size="sm"
+        size="md"
       />
       <IconButton
         icon="commentOutline"
         pressedIcon="commentFill"
         pressedColor="blue"
         onPress={onCommentPress || (() => {})}
-        size="sm"
+        size="md"
         className="-ml-2"
       />
       <IconButton
@@ -40,7 +40,7 @@ const CardActions = ({
         pressedIcon="shareFill"
         pressedColor="blue"
         onPress={onSharePress || (() => {})}
-        size="sm"
+        size="md"
         className="-ml-2"
       />
     </View>

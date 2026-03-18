@@ -2,10 +2,13 @@ import DropdownButton from "@/components/button/DropdownButton";
 import ReviewCard from "@/components/card/ReviewCard";
 import { Book } from "@/types/book";
 import { useState } from "react";
-import { View } from "react-native";
+import { View, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 import Icons from '@/components/common/Icons';
 import PostCard from "@/components/card/PostCard";
 import IconButton from "@/components/button/IconButton";
+import AppText from "@/components/common/AppText";
 
 const mockBook: Book = {
     isbn: "9780765326355",
@@ -26,55 +29,75 @@ export default function Home() {
     { label: 'ShelfSpace', onPress: () => setSelectedFilter('ShelfSpace'), selected: selectedFilter === 'ShelfSpace' },
     { label: 'Following', onPress: () => setSelectedFilter('Following'), selected: selectedFilter === 'Following' },
     { label: 'Favorites', onPress: () => setSelectedFilter('Favorites'), selected: selectedFilter === 'Favorites' },
-    { label: 'Manage favorites', onPress: () => console.log('Manage'), separatorBefore: true },
+    { label: 'Manage favorites', onPress: () => {}, separatorBefore: true },
   ];
 
   return (
-    <View className="flex-1 bg-background p-4 pt-12">
-      <View className="flex-row items-center mt-6 mb-6 z-20">
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+      <View className="flex-row items-center justify-between mb-4 mt-4 ml-2 px-4">
         <View className="flex-row items-center justify-start">
-           <DropdownButton
-             title={selectedFilter}
-             dropdownItems={navItems}
-             variant="secondary"
-             size="md"
-             dropdownPosition="right"
-        />
+          <AppText variant="title" className="pb-2">
+            Shelf
+          </AppText>
+          <Icons.logo width={100} height={100} color="#000" />
+          <AppText variant="title" className="pb-2">
+            Space
+          </AppText>
         </View>
+
         <View className="flex-row items-center justify-end">
           <IconButton
             icon="bellFill"
             color="#333333"
-            onPress={() => console.log('Notifications')}
+            onPress={() => {}}
             size="lg"
             className="justify-end"
           />
           <IconButton
             icon="add"
             color="#333333"
-            onPress={() => console.log('Add')}
-            size="md"
+            onPress={() => {}}
+            size="lg"
             className="justify-end"
           />
         </View>
       </View>
 
-      <ReviewCard 
-        book={mockBook} 
-        postText="This is a sample review! We love reviews!"
-        firstName="John"
-        lastName="Doe"
-        username="johndoe"
-        postType="progress"
-        progress={50}
-      />
+      <View className="flex-row items-center justify-start mb-6 z-20 px-4">
+         <DropdownButton
+           title={selectedFilter}
+           dropdownItems={navItems}
+           variant="secondary"
+           size="md"
+           dropdownPosition="right"
+         />
+      </View>
 
-      <PostCard
-        firstName = "John"
-        lastName = "Doe"
-        username = "johndoe"
-        postText = "This is a sample post!"
-      />
-    </View>
+      <View className="flex-1 bg-[#F2F0E9] pt-4 relative px-4">
+        <LinearGradient
+          colors={['rgba(0,0,0,0.1)', 'transparent']}
+          style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 18 }}
+          pointerEvents="none"
+        />
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24, gap: 16 }}>
+          <ReviewCard 
+            book={mockBook} 
+            postText="This is a sample review! We love reviews!"
+            firstName="John"
+            lastName="Doe"
+            username="johndoe"
+            postType="progress"
+            progress={50}
+          />
+
+          <PostCard
+            firstName = "John"
+            lastName = "Doe"
+            username = "johndoe"
+            postText = "This is a sample post!"
+          />
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }

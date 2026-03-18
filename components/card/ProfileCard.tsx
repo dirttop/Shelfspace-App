@@ -25,14 +25,14 @@ interface ProfileProps extends ViewProps {
 
 const ShelfStat = ({ label, value }: { label: string; value: number }) => (
   <View className="items-center">
-    <AppText className="text-lg font-bold text-slate-900">{value}</AppText>
-    <AppText className="text-xs text-slate-500">{label}</AppText>
+    <AppText variant="body">{value}</AppText>
+    <AppText variant="caption">{label}</AppText>
   </View>
 );
 
 const SocialStat = ({ label, value }: { label: string; value: number }) => (
   <View className="items-center">
-    <AppText className="text-lg font-bold text-slate-900">
+    <AppText variant="body">
       {value} {label}
     </AppText>
   </View>
@@ -70,12 +70,12 @@ const ProfileCard = ({
           <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="xl" />
         </View>
 
-        <View className="flex-1 gap-y-.5 mt-2">
-          <AppText variant="subtitle" className="text-slate-900">
+        <View className="flex-1 gap-y.5 mt-2">
+          <AppText variant="subtitle">
             {firstName + " " + lastName}
           </AppText>
-          <AppText variant="body" className="text-slate-500 mb-2">@{username}</AppText>
-          <View className="flex-1 flex-row justify-around">
+          <AppText variant="body">@{username}</AppText>
+          <View className="flex-1 flex-row justify-around mt-4">
             <ShelfStat label="Reading" value={readingCount} />
             <ShelfStat label="Read" value={readCount} />
             <ShelfStat label="Followers" value={followCount} />
@@ -85,7 +85,7 @@ const ProfileCard = ({
 
       <View className="mb-4 p-2">
         {bio && (
-          <AppText variant="caption" className="text-slate-700 leading-5">{bio}</AppText>
+          <AppText variant="label">{bio}</AppText>
         )}
       </View>
       <View className="flex-row gap-x-3 justify-between items-center">

@@ -32,10 +32,8 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
         .eq('shelf_id', shelfId);
 
       if (fetchError) {
-        console.error("ProfileBookList fetch error:", fetchError);
         if (mounted) setError(fetchError.message);
       } else if (data) {
-        console.log("ProfileBookList fetched data:", data);
         const mappedBooks = data.map((item: any) => {
            const bookData = item.books || item.book;
            if (!bookData) return null;
@@ -97,7 +95,7 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
         keyExtractor={(item, index) => item.isbn || index.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 24, gap: 16 }}
         renderItem={({ item }) => (
           <BookItem book={item} className="w-24 h-36" />
         )}

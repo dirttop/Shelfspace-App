@@ -1,5 +1,5 @@
 export const DevConfig = {
     enableDevRouting: true,
 
-    initialRoute: '/(auth)/login',
+    initialRoute: '/(main)/(tabs)/home',
 };

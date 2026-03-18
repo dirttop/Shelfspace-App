@@ -32,7 +32,7 @@ const PostCard = ({
       <View className="flex-col w-full">
         <View className="flex-row w-full mb-2">
           <View className="flex-1 pr-4 justify-start">
-            <View className="flex-row items-center mt-2 mb-2 gap-x-2">
+            <View className="flex-row items-center mt-2 mb-2 gap-x-1">
               <UserHeader 
                 firstName={firstName} 
                 lastName={lastName} 

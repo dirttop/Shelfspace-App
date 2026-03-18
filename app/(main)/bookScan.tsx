@@ -155,7 +155,6 @@ export default function BookScan() {
   const handleBarcodeScanned = async (scanningResult: any) => {
     if (isProcessing) return;
     setIsProcessing(true);
-    console.log('Scanned barcode:', scanningResult.type, scanningResult.data);
 
     try {
       // For barcode, the data is the ISBN, so we can search directly

@@ -1,13 +1,12 @@
-import { cssInterop } from "nativewind";
-import { PressableScale } from "pressto";
-import React from "react";
-import { View } from "react-native";
+import React, { useCallback } from "react";
+import { Pressable, View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
 import { IconName } from "../../assets/svgs";
 import Icons from "../common/Icons";
-
-const StyledPressable = cssInterop(PressableScale, {
-  className: "style",
-});
 
 interface IconButtonProps {
   onPress?: () => void;
@@ -45,6 +44,31 @@ const IconButton = ({
   className = "",
 }: IconButtonProps) => {
   const [isPressed, setIsPressed] = React.useState(false);
+  const scale = useSharedValue(1);
+
+  const handlePressIn = useCallback(() => {
+    setIsPressed(true);
+    scale.value = withSpring(0.85, {
+      damping: 15,
+      mass: 0.5,
+      stiffness: 400,
+    });
+  }, [scale]);
+
+  const handlePressOut = useCallback(() => {
+    setIsPressed(false);
+    scale.value = withSpring(1, {
+      damping: 15,
+      mass: 0.5,
+      stiffness: 400,
+    });
+  }, [scale]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
 
   let currentIconName = icon;
   let currentColor = color;
@@ -63,19 +87,19 @@ const IconButton = ({
   }
 
   return (
-    <StyledPressable
+    <Pressable
       onPress={disabled ? undefined : onPress}
-      onPressIn={disabled ? undefined : () => setIsPressed(true)}
-      onPressOut={disabled ? undefined : () => setIsPressed(false)}
+      onPressIn={disabled ? undefined : handlePressIn}
+      onPressOut={disabled ? undefined : handlePressOut}
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       className={`items-center justify-center rounded-full p-2 ${className} ${
-        disabled ? "opacity-50" : "active:opacity-75"
+        disabled ? "opacity-50" : ""
       }`}
     >
-      <View className={`${sizeMap[size]} items-center justify-center`}>
+      <Animated.View style={[animatedStyle]} className={`${sizeMap[size]} items-center justify-center`}>
         <IconComponent color={currentColor} size={size === 'xs' ? 16 : size === 'sm' ? 20 : size === 'md' ? 24 : size === 'lg' ? 28 : 32} />
-      </View>
-    </StyledPressable>
+      </Animated.View>
+    </Pressable>
   );
 };
 

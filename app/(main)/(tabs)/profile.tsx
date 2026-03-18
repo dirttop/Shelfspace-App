@@ -169,7 +169,7 @@ export default function Profile() {
             />
           </View>
 
-          <View className="flex-1 mt-4 bg-[#E5E3DB] pt-4 relative">
+          <View className="flex-1 mt-4 bg-[#F2F0E9] pt-4 relative">
             <LinearGradient
               colors={['rgba(0,0,0,0.1)', 'transparent']}
               style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 18 }}

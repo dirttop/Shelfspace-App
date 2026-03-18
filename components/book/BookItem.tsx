@@ -1,7 +1,7 @@
 import { Book } from "@/types/book";
 import { Image } from "expo-image";
 import React from "react";
-import { Pressable, View } from "react-native";
+import { Platform, Pressable, View } from "react-native";
 
 import { useBookModal } from "@/contexts/BookModalContext";
 
@@ -9,9 +9,10 @@ type BookItemProps = {
     book: Book;
     onPress?: () => void;
     className?: string;
+    style?: any;
 };
 
-const BookItem = ({ book, onPress, className = "" }: BookItemProps) => {
+const BookItem = ({ book, onPress, className = "", style }: BookItemProps) => {
   const { openBookModal } = useBookModal();
 
   const handlePress = () => {
@@ -24,13 +25,16 @@ const BookItem = ({ book, onPress, className = "" }: BookItemProps) => {
 
   return (
     <View 
-      className={`shadow-md shadow-zinc-900/40 rounded-md bg-white ${className || 'w-32 h-48'}`}
-      style={{
+      className={`rounded-md ${className || 'w-32 h-48'}`}
+      style={[{
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
-        elevation: 4
-      }}
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        elevation: 6,
+        backgroundColor: Platform.OS === 'android' ? 'white' : 'transparent',
+        borderRadius: 6
+      }, style]}
     >
       <View className="rounded-md overflow-hidden border border-gray-300 w-full h-full bg-gray-200">
           <Pressable 
