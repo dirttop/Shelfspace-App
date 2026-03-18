@@ -41,7 +41,9 @@ export default function Home() {
             first_name,
             last_name,
             avatar_url
-          )
+          ),
+          postLikes:postLikes!postId(count),
+          comments:comments!postId(count)
         `)
         .order('created_at', { ascending: false });
         
@@ -117,8 +119,8 @@ export default function Home() {
             postText={item.body}
             postImage={item.file}
             timestamp={item.created_at}
-            likesCount={item.likes_count || 0}
-            commentsCount={item.comments_count || 0}
+            likesCount={item.postLikes?.[0]?.count || 0}
+            commentsCount={item.comments?.[0]?.count || 0}
             className="mb-4"
           />
         )}

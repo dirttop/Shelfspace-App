@@ -6,6 +6,7 @@ import Buttons from '../common/Buttons';
 import { supabase } from '@/app/lib/supabase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system/legacy';
 import { X, Image as ImageIcon } from 'lucide-react-native';
 // Replaced above
 
@@ -65,13 +66,26 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
 
         let fileUrl = null;
         if (imageUri) {
-          const fileExt = imageUri.split('.').pop() || 'jpeg';
+          const extMatch = imageUri.match(/\.(\w+)(?:\?|$)/);
+          const fileExt = extMatch ? extMatch[1].toLowerCase() : 'jpeg';
+          const mimeType = fileExt === 'png' ? 'image/png' : fileExt === 'gif' ? 'image/gif' : fileExt === 'webp' ? 'image/webp' : 'image/jpeg';
           const filePath = `${userData.user.id}/${Date.now()}.${fileExt}`;
-          
-          const res = await fetch(imageUri);
-          const blob = await res.blob();
-          
-          const { error: uploadError } = await supabase.storage.from('posts').upload(filePath, blob);
+
+          // Read file as base64 via expo-file-system (React Native blob can't be read by Supabase JS)
+          const base64 = await FileSystem.readAsStringAsync(imageUri, {
+            encoding: 'base64',
+          });
+          const binaryStr = atob(base64);
+          const bytes = new Uint8Array(binaryStr.length);
+          for (let i = 0; i < binaryStr.length; i++) {
+            bytes[i] = binaryStr.charCodeAt(i);
+          }
+
+          const { error: uploadError } = await supabase.storage.from('posts').upload(filePath, bytes, {
+            contentType: mimeType,
+            cacheControl: '3600',
+            upsert: false,
+          });
           if (uploadError) throw new Error('Failed to upload image: ' + uploadError.message);
           
           const { data } = supabase.storage.from('posts').getPublicUrl(filePath);

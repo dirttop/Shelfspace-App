@@ -2,7 +2,8 @@ import AppText from "@/components/common/AppText";
 import Card from "@/components/common/Card";
 import { useRouter } from "expo-router";
 import React from "react";
-import { View, ViewProps, Image } from "react-native";
+import { View, ViewProps } from "react-native";
+import { Image } from "expo-image";
 import UserHeader from "../common/UserHeader";
 import CardActions from "./CardActions";
 
@@ -85,10 +86,10 @@ const PostCard = ({
         )}
 
         {!!postImage && (
-          <Image 
-            source={{ uri: postImage }} 
-            className="w-full h-64 rounded-xl mb-4" 
-            resizeMode="cover" 
+          <Image
+            source={postImage}
+            style={{ width: '100%', height: 256, borderRadius: 12, marginBottom: 16 }}
+            contentFit="cover"
           />
         )}
 
