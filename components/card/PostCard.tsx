@@ -1,11 +1,14 @@
 import AppText from "@/components/common/AppText";
 import Card from "@/components/common/Card";
+import { supabase } from "@/app/lib/supabase";
 import { useRouter } from "expo-router";
-import React from "react";
-import { View, ViewProps } from "react-native";
+import React, { useRef, useState } from "react";
+import { View, ViewProps, Alert, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
+import { EllipsisVertical, Trash2, Flag } from "lucide-react-native";
 import UserHeader from "../common/UserHeader";
 import CardActions from "./CardActions";
+import { Dropdown } from "@/components/button/Dropdown";
 
 interface ReviewProps extends ViewProps {
   firstName?: string;
@@ -15,9 +18,12 @@ interface ReviewProps extends ViewProps {
   postText?: string;
   postImage?: string;
   userId?: string;
+  postId?: number;
+  currentUserId?: string;
   timestamp?: string;
   likesCount?: number;
   commentsCount?: number;
+  onDelete?: () => void;
 }
 
 const PostCard = ({
@@ -30,13 +36,21 @@ const PostCard = ({
   postText,
   postImage,
   userId,
+  postId,
+  currentUserId,
   timestamp,
   likesCount = 0,
   commentsCount = 0,
+  onDelete,
   ...props
 }: ReviewProps) => {
   const router = useRouter();
   const [isLiked, setIsLiked] = React.useState(false);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [dropdownCoords, setDropdownCoords] = useState<{ top?: number; left?: number; width?: number }>({});
+  const moreButtonRef = useRef<View>(null);
+
+  const isOwner = !!currentUserId && currentUserId === userId;
 
   const getTimeElapsed = (dateString?: string) => {
     if (!dateString) return '';
@@ -54,10 +68,60 @@ const PostCard = ({
     if (interval > 1) return Math.floor(interval) + "h ago";
     interval = seconds / 60;
     if (interval > 1) return Math.floor(interval) + "m ago";
-    return Math.floor(seconds) + "s ago"; // Fallback to seconds
+    return Math.floor(seconds) + "s ago";
   };
   
   const timeElapsed = getTimeElapsed(timestamp);
+
+  const handleMorePress = () => {
+    moreButtonRef.current?.measureInWindow((x, y, width, height) => {
+      setDropdownCoords({
+        top: y + height + 4,
+        left: x + width - 180, // right-align the 180px-wide dropdown
+        width: 180,
+      });
+      setDropdownVisible(true);
+    });
+  };
+
+  const handleDelete = () => {
+    setDropdownVisible(false);
+    Alert.alert(
+      "Delete Post",
+      "Are you sure? This cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            const { error } = await supabase.from("posts").delete().eq("id", postId);
+            if (error) {
+              Alert.alert("Error", "Failed to delete post.");
+            } else {
+              onDelete?.();
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const dropdownItems = isOwner
+    ? [
+        {
+          label: "Delete Post",
+          icon: <Trash2 size={16} color="#ef4444" />,
+          onPress: handleDelete,
+        },
+      ]
+    : [
+        {
+          label: "Report Post",
+          icon: <Flag size={16} color="#64748b" />,
+          onPress: () => Alert.alert("Reported", "Thank you for your report."),
+        },
+      ];
 
   return (
     <Card className={`p-2 w-full ${className}`} {...props}>
@@ -73,9 +137,18 @@ const PostCard = ({
                 uriAvatar={uriAvatar} 
               />
             </View>
-            {!!timeElapsed && (
-              <AppText variant="caption" className="text-slate-400 text-right">{timeElapsed}</AppText>
-            )}
+            <View className="flex-row items-center gap-x-2">
+              {!!timeElapsed && (
+                <AppText variant="caption" className="text-slate-400">{timeElapsed}</AppText>
+              )}
+              <TouchableOpacity
+                ref={moreButtonRef}
+                onPress={handleMorePress}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <EllipsisVertical size={18} color="#94a3b8" />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
           
@@ -106,6 +179,15 @@ const PostCard = ({
           </View>
         )}
       </View>
+
+      {dropdownVisible && (
+        <Dropdown
+          isVisible={dropdownVisible}
+          onClose={() => setDropdownVisible(false)}
+          position={dropdownCoords}
+          items={dropdownItems}
+        />
+      )}
     </Card>
   );
 };

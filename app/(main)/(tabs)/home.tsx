@@ -28,6 +28,7 @@ export default function Home() {
   const createPostModalRef = useRef<BottomSheetModal>(null);
   const [posts, setPosts] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   const fetchPosts = async () => {
     try {
@@ -49,6 +50,10 @@ export default function Home() {
         
       if (error) throw error;
       setPosts(data || []);
+
+      // Fetch current user id for ownership checks
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user) setCurrentUserId(userData.user.id);
     } catch (error) {
       console.error('Error fetching posts:', error);
     }
@@ -111,6 +116,8 @@ export default function Home() {
         renderItem={({ item }) => (
           <PostCard
             key={item.id}
+            postId={item.id}
+            currentUserId={currentUserId ?? undefined}
             userId={item.profiles?.id}
             firstName={item.profiles?.first_name || "Unknown"}
             lastName={item.profiles?.last_name || ""}
@@ -121,6 +128,7 @@ export default function Home() {
             timestamp={item.created_at}
             likesCount={item.postLikes?.[0]?.count || 0}
             commentsCount={item.comments?.[0]?.count || 0}
+            onDelete={fetchPosts}
             className="mb-4"
           />
         )}
