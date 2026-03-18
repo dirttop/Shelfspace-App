@@ -6,6 +6,9 @@ import { View } from "react-native";
 import Icons from '@/components/common/Icons';
 import PostCard from "@/components/card/PostCard";
 import IconButton from "@/components/button/IconButton";
+import { CreatePostModal } from "@/components/modals/CreatePostModal";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import React, { useCallback, useRef } from "react";
 
 const mockBook: Book = {
     isbn: "9780765326355",
@@ -21,6 +24,11 @@ const mockBook: Book = {
 
 export default function Home() {
   const [selectedFilter, setSelectedFilter] = useState('Following');
+  const createPostModalRef = useRef<BottomSheetModal>(null);
+
+  const handlePresentCreatePost = useCallback(() => {
+    createPostModalRef.current?.present();
+  }, []);
 
   const navItems = [
     { label: 'ShelfSpace', onPress: () => setSelectedFilter('ShelfSpace'), selected: selectedFilter === 'ShelfSpace' },
@@ -52,7 +60,7 @@ export default function Home() {
           <IconButton
             icon="add"
             color="#333333"
-            onPress={() => console.log('Add')}
+            onPress={handlePresentCreatePost}
             size="md"
             className="justify-end"
           />
@@ -75,6 +83,8 @@ export default function Home() {
         username = "johndoe"
         postText = "This is a sample post!"
       />
+
+      <CreatePostModal ref={createPostModalRef} />
     </View>
   );
 }
