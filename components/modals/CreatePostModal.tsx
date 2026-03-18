@@ -1,4 +1,4 @@
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, BottomSheetScrollView, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
 import { View, Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Alert, Image, TouchableOpacity } from 'react-native';
 import AppText from '../common/AppText';
@@ -7,7 +7,7 @@ import { supabase } from '@/app/lib/supabase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
-import { X, Image as ImageIcon } from 'lucide-react-native';
+import { X, Image as ImageIcon, ChevronDown, Keyboard as KeyboardIcon } from 'lucide-react-native';
 // Replaced above
 
 export type CreatePostModalProps = {
@@ -20,6 +20,17 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
     const [imageUri, setImageUri] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const insets = useSafeAreaInsets();
+
+    const MAX_CHARS = 500;
+    const charsRemaining = MAX_CHARS - postText.length;
+    const isOverLimit = charsRemaining < 0;
+    const counterColor = isOverLimit
+      ? '#ef4444'   // red
+      : charsRemaining <= 25
+      ? '#f97316'   // orange
+      : charsRemaining <= 100
+      ? '#eab308'   // yellow
+      : '#a1a1aa';  // default gray
 
     const snapPoints = useMemo(() => ['50%', '90%'], []);
 
@@ -36,10 +47,15 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
       []
     );
 
+    // Only dismiss keyboard on swipe-away — preserve draft content
     const handleDismiss = useCallback(() => {
+      Keyboard.dismiss();
+    }, []);
+
+    // Called only on successful post or explicit close
+    const clearDraft = useCallback(() => {
       setPostText('');
       setImageUri(null);
-      Keyboard.dismiss();
     }, []);
 
     const pickImage = async () => {
@@ -134,11 +150,32 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <BottomSheetView style={{ flex: 1, backgroundColor: 'white' }} className="px-6 pt-2 pb-8 flex-1">
-            <AppText variant="title" className="mb-4">
-              Create a Post
-            </AppText>
+            {/* Header row: title, char counter, keyboard-dismiss button */}
+            <View className="flex-row items-center justify-between mb-4">
+              <AppText variant="title">Create a Post</AppText>
+              <View className="flex-row items-center gap-3">
+                <AppText
+                  variant="caption"
+                  style={{ color: counterColor, fontVariant: ['tabular-nums'], minWidth: 30, textAlign: 'right' }}
+                >
+                  {charsRemaining}
+                </AppText>
+                <TouchableOpacity
+                  onPress={Keyboard.dismiss}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  className="bg-slate-100 rounded-full p-1.5 flex-row items-center gap-1"
+                >
+                  <KeyboardIcon size={14} color="#64748b" />
+                  <ChevronDown size={14} color="#64748b" />
+                </TouchableOpacity>
+              </View>
+            </View>
 
-            <View className="flex-1">
+            <BottomSheetScrollView
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
+            >
               <BottomSheetTextInput
                 className="bg-muted p-4 rounded-xl text-base mb-4 text-foreground custom-font-regular"
                 style={{
@@ -149,8 +186,11 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
                 placeholderTextColor="#A1A1AA"
                 multiline
                 value={postText}
-                onChangeText={setPostText}
+                onChangeText={(text) => {
+                  if (text.length <= MAX_CHARS + 50) setPostText(text); // allow slight overage so the counter turns red
+                }}
               />
+              {/* Counter row removed — now in header */}
               {imageUri && (
                 <View className="mb-4 relative">
                   <Image source={{ uri: imageUri }} className="w-full h-48 rounded-xl" resizeMode="cover" />
@@ -170,19 +210,14 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
                 </TouchableOpacity>
               </View>
 
-              {/* Future Book Selection area */}
-              <View className="bg-slate-50 p-4 rounded-xl border border-slate-200 border-dashed mb-4 items-center justify-center">
-                <AppText variant="caption" className="text-slate-500">
-                  + Associate a Book (Coming Soon)
-                </AppText>
-              </View>
-            </View>
+
+            </BottomSheetScrollView>
 
             <View className="mt-auto" style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
               <Buttons
                 title={isSubmitting ? "Posting..." : "Post"}
                 onPress={handleSubmit}
-                disabled={!postText.trim() || isSubmitting}
+                disabled={!postText.trim() || isSubmitting || isOverLimit}
               />
             </View>
           </BottomSheetView>
