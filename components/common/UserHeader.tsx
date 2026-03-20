@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, Pressable } from "react-native";
 import AppText from "./AppText";
 import Avatar from "./Avatar";
 import { Link } from "expo-router";
@@ -20,10 +20,10 @@ const UserHeader = ({
   ...props
 }: UserHeaderProps) => {
     const content = (
-        <View className = "flex-row items-center justify-center gap-2">
+        <Pressable className = "flex-row items-center justify-center gap-2">
             <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="sm"/>
             <AppText variant = "label">@{username}</AppText>
-        </View>
+        </Pressable>
     );
 
     if (userId) {

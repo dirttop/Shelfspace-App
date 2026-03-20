@@ -1,5 +1,5 @@
 import React, { forwardRef, useCallback, useMemo, useState, useEffect } from 'react';
-import { View, FlatList, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard, TouchableOpacity, Alert } from 'react-native';
+import { View, FlatList, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { BottomSheetModal, BottomSheetView, BottomSheetTextInput, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { supabase } from '@/app/lib/supabase';
 import AppText from '../common/AppText';
@@ -208,13 +208,23 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
           style={{ paddingBottom: Math.max(insets.bottom, 12) }}
         >
           <View className="flex-row items-center gap-x-2">
-            <BottomSheetTextInput
-              className="flex-1 bg-slate-100 px-4 py-2.5 rounded-full text-slate-900"
-              placeholder="Write a comment..."
-              value={newComment}
-              onChangeText={setNewComment}
-              multiline
-            />
+            {Platform.OS === 'web' ? (
+              <TextInput
+                className="flex-1 bg-slate-100 px-4 py-2.5 rounded-full text-slate-900"
+                placeholder="Write a comment..."
+                value={newComment}
+                onChangeText={setNewComment}
+                multiline
+              />
+            ) : (
+              <BottomSheetTextInput
+                className="flex-1 bg-slate-100 px-4 py-2.5 rounded-full text-slate-900"
+                placeholder="Write a comment..."
+                value={newComment}
+                onChangeText={setNewComment}
+                multiline
+              />
+            )}
             <TouchableOpacity
               onPress={handlePostComment}
               disabled={!newComment.trim() || isSubmitting}

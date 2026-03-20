@@ -1,6 +1,6 @@
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, BottomSheetScrollView, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
-import { View, Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Alert, Image, TouchableOpacity } from 'react-native';
+import { View, Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Alert, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import AppText from '../common/AppText';
 import Buttons from '../common/Buttons';
 import { supabase } from '@/app/lib/supabase';
@@ -136,6 +136,119 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
       }
     };
 
+    const content = (
+      <BottomSheetView style={{ flex: 1, backgroundColor: 'white' }} className="px-6 pt-2 pb-8 flex-1">
+        {/* Header row: title, char counter, keyboard-dismiss button */}
+        <View className="flex-row items-center justify-between mb-4">
+          <AppText variant="title">Create a Post</AppText>
+          <View className="flex-row items-center gap-3">
+            <AppText
+              variant="caption"
+              style={{ color: counterColor, fontVariant: ['tabular-nums'], minWidth: 30, textAlign: 'right' }}
+            >
+              {charsRemaining}
+            </AppText>
+            <TouchableOpacity
+              onPress={Keyboard.dismiss}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              className="bg-slate-100 rounded-full p-1.5 flex-row items-center gap-1"
+            >
+              <KeyboardIcon size={14} color="#64748b" />
+              <ChevronDown size={14} color="#64748b" />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {Platform.OS === 'web' ? (
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
+          >
+            <TextInput
+              className="bg-muted p-4 rounded-xl text-base mb-4 text-foreground custom-font-regular"
+              style={{
+                minHeight: 120,
+                textAlignVertical: 'top'
+              }}
+              placeholder="What are your thoughts?"
+              placeholderTextColor="#A1A1AA"
+              multiline
+              value={postText}
+              onChangeText={(text) => {
+                if (text.length <= MAX_CHARS + 50) setPostText(text);
+              }}
+            />
+            {imageUri && (
+              <View className="mb-4 relative">
+                <Image source={{ uri: imageUri }} className="w-full h-48 rounded-xl" resizeMode="cover" />
+                <TouchableOpacity 
+                  className="absolute top-2 right-2 bg-black/50 p-1.5 rounded-full"
+                  onPress={() => setImageUri(null)}
+                >
+                  <X size={16} color="white" />
+                </TouchableOpacity>
+              </View>
+            )}
+            
+            <View className="flex-row items-center gap-4 mb-4">
+              <TouchableOpacity onPress={pickImage} className="flex-row items-center gap-2 p-2 bg-slate-100 rounded-lg">
+                <ImageIcon size={20} color="#64748b" />
+                <AppText variant="caption" className="text-slate-600">Attach Image</AppText>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        ) : (
+          <BottomSheetScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
+          >
+            <BottomSheetTextInput
+              className="bg-muted p-4 rounded-xl text-base mb-4 text-foreground custom-font-regular"
+              style={{
+                minHeight: 120,
+                textAlignVertical: 'top'
+              }}
+              placeholder="What are your thoughts?"
+              placeholderTextColor="#A1A1AA"
+              multiline
+              value={postText}
+              onChangeText={(text) => {
+                if (text.length <= MAX_CHARS + 50) setPostText(text);
+              }}
+            />
+            {imageUri && (
+              <View className="mb-4 relative">
+                <Image source={{ uri: imageUri }} className="w-full h-48 rounded-xl" resizeMode="cover" />
+                <TouchableOpacity 
+                  className="absolute top-2 right-2 bg-black/50 p-1.5 rounded-full"
+                  onPress={() => setImageUri(null)}
+                >
+                  <X size={16} color="white" />
+                </TouchableOpacity>
+              </View>
+            )}
+            
+            <View className="flex-row items-center gap-4 mb-4">
+              <TouchableOpacity onPress={pickImage} className="flex-row items-center gap-2 p-2 bg-slate-100 rounded-lg">
+                <ImageIcon size={20} color="#64748b" />
+                <AppText variant="caption" className="text-slate-600">Attach Image</AppText>
+              </TouchableOpacity>
+            </View>
+          </BottomSheetScrollView>
+        )}
+
+        <View className="mt-auto" style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
+          <Buttons
+            title={isSubmitting ? "Posting..." : "Post"}
+            onPress={handleSubmit}
+            disabled={!postText.trim() || isSubmitting || isOverLimit}
+          />
+        </View>
+      </BottomSheetView>
+    );
+
     return (
       <BottomSheetModal
         ref={ref}
@@ -148,80 +261,13 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
         keyboardBehavior="extend"
         keyboardBlurBehavior="restore"
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <BottomSheetView style={{ flex: 1, backgroundColor: 'white' }} className="px-6 pt-2 pb-8 flex-1">
-            {/* Header row: title, char counter, keyboard-dismiss button */}
-            <View className="flex-row items-center justify-between mb-4">
-              <AppText variant="title">Create a Post</AppText>
-              <View className="flex-row items-center gap-3">
-                <AppText
-                  variant="caption"
-                  style={{ color: counterColor, fontVariant: ['tabular-nums'], minWidth: 30, textAlign: 'right' }}
-                >
-                  {charsRemaining}
-                </AppText>
-                <TouchableOpacity
-                  onPress={Keyboard.dismiss}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                  className="bg-slate-100 rounded-full p-1.5 flex-row items-center gap-1"
-                >
-                  <KeyboardIcon size={14} color="#64748b" />
-                  <ChevronDown size={14} color="#64748b" />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <BottomSheetScrollView
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
-            >
-              <BottomSheetTextInput
-                className="bg-muted p-4 rounded-xl text-base mb-4 text-foreground custom-font-regular"
-                style={{
-                  minHeight: 120,
-                  textAlignVertical: 'top'
-                }}
-                placeholder="What are your thoughts?"
-                placeholderTextColor="#A1A1AA"
-                multiline
-                value={postText}
-                onChangeText={(text) => {
-                  if (text.length <= MAX_CHARS + 50) setPostText(text); // allow slight overage so the counter turns red
-                }}
-              />
-              {/* Counter row removed — now in header */}
-              {imageUri && (
-                <View className="mb-4 relative">
-                  <Image source={{ uri: imageUri }} className="w-full h-48 rounded-xl" resizeMode="cover" />
-                  <TouchableOpacity 
-                    className="absolute top-2 right-2 bg-black/50 p-1.5 rounded-full"
-                    onPress={() => setImageUri(null)}
-                  >
-                    <X size={16} color="white" />
-                  </TouchableOpacity>
-                </View>
-              )}
-              
-              <View className="flex-row items-center gap-4 mb-4">
-                <TouchableOpacity onPress={pickImage} className="flex-row items-center gap-2 p-2 bg-slate-100 rounded-lg">
-                  <ImageIcon size={20} color="#64748b" />
-                  <AppText variant="caption" className="text-slate-600">Attach Image</AppText>
-                </TouchableOpacity>
-              </View>
-
-
-            </BottomSheetScrollView>
-
-            <View className="mt-auto" style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
-              <Buttons
-                title={isSubmitting ? "Posting..." : "Post"}
-                onPress={handleSubmit}
-                disabled={!postText.trim() || isSubmitting || isOverLimit}
-              />
-            </View>
-          </BottomSheetView>
-        </TouchableWithoutFeedback>
+        {Platform.OS === 'web' ? (
+          content
+        ) : (
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            {content}
+          </TouchableWithoutFeedback>
+        )}
       </BottomSheetModal>
     );
   }
