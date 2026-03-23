@@ -54,7 +54,7 @@ const CardActions = ({
         pressedIcon="shareFill"
         pressedColor="blue"
         onPress={onSharePress || (() => { })}
-        size="md"
+        size="sm"
         className="-ml-2"
       />
     </View>

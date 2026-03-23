@@ -184,18 +184,6 @@ const PostCard = ({
                 uriAvatar={uriAvatar}
               />
             </View>
-            <View className="flex-row items-center gap-x-2">
-              {!!timeElapsed && (
-                <AppText variant="caption" className="text-slate-400">{timeElapsed}</AppText>
-              )}
-              <TouchableOpacity
-                ref={moreButtonRef}
-                onPress={handleMorePress}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <EllipsisVertical size={18} color="#94a3b8" />
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
 
@@ -213,13 +201,27 @@ const PostCard = ({
           />
         )}
 
-        <CardActions
-          isLiked={isLiked}
-          likesCount={localLikesCount}
-          commentsCount={localCommentsCount}
-          onLikePress={handleLikePress}
-          onCommentPress={() => commentsModalRef.current?.present()}
-        />
+        <View className="flex-row items-center justify-between w-full mt-2">
+          <CardActions
+            isLiked={isLiked}
+            likesCount={localLikesCount}
+            commentsCount={localCommentsCount}
+            onLikePress={handleLikePress}
+            onCommentPress={() => commentsModalRef.current?.present()}
+          />
+          <View className="flex-row items-center gap-x-2 pr-2">
+            {!!timeElapsed && (
+              <AppText variant="caption" className="text-slate-400">{timeElapsed}</AppText>
+            )}
+            <TouchableOpacity
+              ref={moreButtonRef}
+              onPress={handleMorePress}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <EllipsisVertical size={18} color="#94a3b8" />
+            </TouchableOpacity>
+          </View>
+        </View>
 
         {!!children && (
           <View className="mt-2 pt-1">

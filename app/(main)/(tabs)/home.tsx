@@ -85,7 +85,7 @@ export default function Home() {
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
-      <View className="flex-row items-center justify-between mb-4 mt-4 ml-2 px-4">
+      <View className="flex-row items-center justify-between mb-4 mt-4 ml-2 px-4 z-20">
         <View className="flex-row items-center justify-start">
           <AppText variant="title" className="pb-2">
             Shelf
@@ -114,7 +114,7 @@ export default function Home() {
         </View>
       </View>
 
-      <View className="flex-row items-center justify-start mb-6 z-20 px-4">
+      <View className="flex-row items-center justify-start mb-4 z-20 px-4">
         <DropdownButton
           title={selectedFilter}
           dropdownItems={navItems}
@@ -124,33 +124,40 @@ export default function Home() {
         />
       </View>
 
-      <FlatList
-        data={posts}
-        keyExtractor={(item) => item.id?.toString()}
-        renderItem={({ item }) => (
-          <PostCard
-            key={item.id}
-            postId={item.id}
-            currentUserId={currentUserId ?? undefined}
-            userId={item.profiles?.id}
-            firstName={item.profiles?.first_name || "Unknown"}
-            lastName={item.profiles?.last_name || ""}
-            username={item.profiles?.username || "unknown"}
-            uriAvatar={item.profiles?.avatar_url}
-            postText={item.body}
-            postImage={item.file}
-            timestamp={item.created_at}
-            likesCount={item.postLikes?.[0]?.count || 0}
-            commentsCount={item.comments?.[0]?.count || 0}
-            onDelete={fetchPosts}
-            className="mb-4"
-          />
-        )}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
-      />
+      <View className="flex-1 bg-[#F2F0E9] relative z-10">
+        <LinearGradient
+          colors={['rgba(0,0,0,0.1)', 'transparent']}
+          style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 18, zIndex: 10 }}
+          pointerEvents="none"
+        />
+        <FlatList
+          data={posts}
+          keyExtractor={(item) => item.id?.toString()}
+          renderItem={({ item }) => (
+            <PostCard
+              key={item.id}
+              postId={item.id}
+              currentUserId={currentUserId ?? undefined}
+              userId={item.profiles?.id}
+              firstName={item.profiles?.first_name || "Unknown"}
+              lastName={item.profiles?.last_name || ""}
+              username={item.profiles?.username || "unknown"}
+              uriAvatar={item.profiles?.avatar_url}
+              postText={item.body}
+              postImage={item.file}
+              timestamp={item.created_at}
+              likesCount={item.postLikes?.[0]?.count || 0}
+              commentsCount={item.comments?.[0]?.count || 0}
+              onDelete={fetchPosts}
+              className="mb-4"
+            />
+          )}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 100, paddingTop: 16, paddingHorizontal: 16 }}
+        />
+      </View>
 
       <CreatePostModal ref={createPostModalRef} onPostCreated={fetchPosts} />
     </SafeAreaView>
