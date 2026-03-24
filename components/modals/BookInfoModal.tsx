@@ -6,10 +6,11 @@ import { Book } from "@/types/book";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Rating } from '@kolking/react-native-rating';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Image, View } from "react-native";
+import React, { forwardRef, useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import { Alert, Image, View, TouchableOpacity } from "react-native";
 import { supabase } from '@/app/lib/supabase';
 import { gql, useMutation } from '@apollo/client';
+import { CreateReviewModal } from './CreateReviewModal';
 
 const SAVE_BOOK_MUTATION = gql`
   mutation SaveBook(
@@ -54,6 +55,7 @@ const placeholderBook: Book = {
 export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
     const { selectedBook, closeBookModal } = useBookModal();
     const book = selectedBook || placeholderBook;
+    const createReviewModalRef = useRef<BottomSheetModal>(null);
     
     const snapPoints = useMemo(() => ['90%'], []);
 
@@ -283,10 +285,11 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                     />
                                 </View>
                             </View>
-                            <View className="items-start">
+                            <View className="flex-row items-center gap-2 pt-2">
                                 <DropdownButton 
                                     title="Add to Shelf"
                                     variant="secondary"
+                                    size="sm"
                                     dropdownPosition="right"
                                     menuOnly={true}
                                     dropdownItems={[
@@ -296,6 +299,12 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                         }))
                                     ]}
                                 />
+                                <TouchableOpacity 
+                                    className="bg-primary px-3 py-2 rounded-lg"
+                                    onPress={() => createReviewModalRef.current?.present()}
+                                >
+                                    <AppText className="text-white font-fraunces-bold text-sm">Review</AppText>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     </View>
@@ -312,6 +321,13 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                     </View>
                 </BottomSheetScrollView>
             </View>
+            <CreateReviewModal
+                ref={createReviewModalRef}
+                selectedBook={book}
+                onReviewCreated={() => {
+                    Alert.alert("Success", "Review created successfully!");
+                }}
+            />
         </BottomSheetModal>
     );
 });

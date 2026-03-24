@@ -10,7 +10,11 @@ import Icons from '@/components/common/Icons';
 import PostCard from "@/components/card/PostCard";
 import IconButton from "@/components/button/IconButton";
 import { CreatePostModal } from "@/components/modals/CreatePostModal";
+import { CreateReviewModal } from "@/components/modals/CreateReviewModal";
+import { SearchBookForReviewModal } from "@/components/modals/SearchBookForReviewModal";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { Dropdown } from "@/components/button/Dropdown";
+import { FileText, Star } from "lucide-react-native";
 import React, { useCallback, useRef } from "react";
 import AppText from "@/components/common/AppText";
 
@@ -29,6 +33,10 @@ const mockBook: Book = {
 export default function Home() {
   const [selectedFilter, setSelectedFilter] = useState('Following');
   const createPostModalRef = useRef<BottomSheetModal>(null);
+  const searchBookModalRef = useRef<BottomSheetModal>(null);
+  const createReviewModalRef = useRef<BottomSheetModal>(null);
+  const [reviewBook, setReviewBook] = useState<Book | null>(null);
+  const [isAddMenuVisible, setIsAddMenuVisible] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -45,6 +53,13 @@ export default function Home() {
             first_name,
             last_name,
             avatar_url
+          ),
+          books:book_isbn(
+            isbn,
+            title,
+            authors,
+            coverImage:cover_image,
+            pageCount:page_count
           ),
           postLikes:postLikes(count),
           comments:comments(count)
@@ -107,12 +122,36 @@ export default function Home() {
           <IconButton
             icon="add"
             color="#333333"
-            onPress={handlePresentCreatePost}
+            onPress={() => setIsAddMenuVisible(true)}
             size="md"
             className="justify-end"
           />
         </View>
       </View>
+
+      <Dropdown
+        isVisible={isAddMenuVisible}
+        onClose={() => setIsAddMenuVisible(false)}
+        position={{ top: 60, right: 16 }}
+        items={[
+          {
+            label: 'Create Post',
+            icon: <FileText size={18} color="#000" />,
+            onPress: () => {
+              setIsAddMenuVisible(false);
+              createPostModalRef.current?.present();
+            }
+          },
+          {
+            label: 'Create Review',
+            icon: <Star size={18} color="#000" />,
+            onPress: () => {
+              setIsAddMenuVisible(false);
+              searchBookModalRef.current?.present();
+            }
+          },
+        ]}
+      />
 
       <View className="flex-row items-center justify-start mb-4 z-20 px-4">
         <DropdownButton
@@ -133,25 +172,44 @@ export default function Home() {
         <FlatList
           data={posts}
           keyExtractor={(item) => item.id?.toString()}
-          renderItem={({ item }) => (
-            <PostCard
-              key={item.id}
-              postId={item.id}
-              currentUserId={currentUserId ?? undefined}
-              userId={item.profiles?.id}
-              firstName={item.profiles?.first_name || "Unknown"}
-              lastName={item.profiles?.last_name || ""}
-              username={item.profiles?.username || "unknown"}
-              uriAvatar={item.profiles?.avatar_url}
-              postText={item.body}
-              postImage={item.file}
-              timestamp={item.created_at}
-              likesCount={item.postLikes?.[0]?.count || 0}
-              commentsCount={item.comments?.[0]?.count || 0}
-              onDelete={fetchPosts}
-              className="mb-4"
-            />
-          )}
+          renderItem={({ item }) => {
+            if (item.post_type === 'review') {
+              return (
+                <ReviewCard
+                  key={`review-${item.id}`}
+                  postType="review"
+                  firstName={item.profiles?.first_name || "Unknown"}
+                  lastName={item.profiles?.last_name || ""}
+                  username={item.profiles?.username || "unknown"}
+                  uriAvatar={item.profiles?.avatar_url}
+                  postText={item.body}
+                  userRating={item.rating}
+                  book={item.books || { isbn: item.book_isbn, title: "Unknown Book" } as any}
+                  className="mb-4"
+                />
+              );
+            }
+
+            return (
+              <PostCard
+                key={`post-${item.id}`}
+                postId={item.id}
+                currentUserId={currentUserId ?? undefined}
+                userId={item.profiles?.id}
+                firstName={item.profiles?.first_name || "Unknown"}
+                lastName={item.profiles?.last_name || ""}
+                username={item.profiles?.username || "unknown"}
+                uriAvatar={item.profiles?.avatar_url}
+                postText={item.body}
+                postImage={item.file}
+                timestamp={item.created_at}
+                likesCount={item.postLikes?.[0]?.count || 0}
+                commentsCount={item.comments?.[0]?.count || 0}
+                onDelete={fetchPosts}
+                className="mb-4"
+              />
+            );
+          }}
           refreshing={refreshing}
           onRefresh={onRefresh}
           showsVerticalScrollIndicator={false}
@@ -160,6 +218,19 @@ export default function Home() {
       </View>
 
       <CreatePostModal ref={createPostModalRef} onPostCreated={fetchPosts} />
+      <SearchBookForReviewModal 
+        ref={searchBookModalRef} 
+        onBookSelected={(book) => {
+          setReviewBook(book);
+          // small delay for smooth transition
+          setTimeout(() => createReviewModalRef.current?.present(), 100);
+        }} 
+      />
+      <CreateReviewModal 
+        ref={createReviewModalRef} 
+        selectedBook={reviewBook} 
+        onReviewCreated={fetchPosts} 
+      />
     </SafeAreaView>
   );
 }
