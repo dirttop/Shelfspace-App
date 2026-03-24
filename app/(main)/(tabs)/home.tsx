@@ -108,7 +108,7 @@ export default function Home() {
             icon="add"
             color="#333333"
             onPress={handlePresentCreatePost}
-            size="md"
+            size="xl"
             className="justify-end"
           />
         </View>

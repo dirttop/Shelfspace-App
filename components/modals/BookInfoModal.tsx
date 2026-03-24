@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React, { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Image, View } from "react-native";
 import { supabase } from '@/app/lib/supabase';
-import { gql, useMutation } from '@apollo/client';
+import { gql, useMutation, useApolloClient } from '@apollo/client';
 
 const SAVE_BOOK_MUTATION = gql`
   mutation SaveBook(
@@ -54,6 +54,7 @@ const placeholderBook: Book = {
 export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
     const { selectedBook, closeBookModal } = useBookModal();
     const book = selectedBook || placeholderBook;
+    const client = useApolloClient();
     
     const snapPoints = useMemo(() => ['90%'], []);
 
@@ -107,7 +108,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
 
         try {
             try {
-                await saveBookMutation({
+                 await saveBookMutation({
                     variables: {
                         title: book.title || "",
                         authors: book.authors || [],
@@ -174,6 +175,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                 }
 
                 Alert.alert("Success", "Book added to shelf!");
+                client.refetchQueries({ include: ['GetRecommendations'] });
             }
         } catch (e: any) {
             console.error("Error adding to shelf:", e);
