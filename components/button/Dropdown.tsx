@@ -42,6 +42,7 @@ export const Dropdown = ({ isVisible, onClose, items, position }: DropdownProps)
           ...(position?.top !== undefined ? { top: position.top } : {}),
           ...(position?.bottom !== undefined ? { bottom: position.bottom } : {}),
           ...(position?.left !== undefined ? { left: position.left } : {}),
+          ...(position?.right !== undefined ? { right: position.right } : {}),
         }}
       >
         {items.map((item, index) => (

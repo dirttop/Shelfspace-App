@@ -37,6 +37,8 @@ export default function Home() {
   const createReviewModalRef = useRef<BottomSheetModal>(null);
   const [reviewBook, setReviewBook] = useState<Book | null>(null);
   const [isAddMenuVisible, setIsAddMenuVisible] = useState(false);
+  const [addMenuCoords, setAddMenuCoords] = useState<{ top?: number; right?: number }>({ top: 60, right: 16 });
+  const addButtonRef = useRef<View>(null);
   const [posts, setPosts] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -91,6 +93,16 @@ export default function Home() {
     createPostModalRef.current?.present();
   }, []);
 
+  const handleAddPress = () => {
+    addButtonRef.current?.measureInWindow((x, y, width, height) => {
+      setAddMenuCoords({
+        top: y + height + 8,
+        right: 16,
+      });
+      setIsAddMenuVisible(true);
+    });
+  };
+
   const navItems = [
     { label: 'ShelfSpace', onPress: () => setSelectedFilter('ShelfSpace'), selected: selectedFilter === 'ShelfSpace' },
     { label: 'Following', onPress: () => setSelectedFilter('Following'), selected: selectedFilter === 'Following' },
@@ -119,20 +131,21 @@ export default function Home() {
             size="lg"
             className="justify-end"
           />
-          <IconButton
-            icon="add"
-            color="#333333"
-            onPress={() => setIsAddMenuVisible(true)}
-            size="md"
-            className="justify-end"
-          />
+          <View ref={addButtonRef} className="justify-end ml-2">
+            <IconButton
+              icon="add"
+              color="#333333"
+              onPress={handleAddPress}
+              size="md"
+            />
+          </View>
         </View>
       </View>
 
       <Dropdown
         isVisible={isAddMenuVisible}
         onClose={() => setIsAddMenuVisible(false)}
-        position={{ top: 60, right: 16 }}
+        position={addMenuCoords}
         items={[
           {
             label: 'Create Post',

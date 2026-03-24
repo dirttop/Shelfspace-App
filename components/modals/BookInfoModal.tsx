@@ -11,6 +11,7 @@ import { Alert, Image, View, TouchableOpacity } from "react-native";
 import { supabase } from '@/app/lib/supabase';
 import { gql, useMutation } from '@apollo/client';
 import { CreateReviewModal } from './CreateReviewModal';
+import CondensedReviewCard from '../card/CondensedReviewCard';
 
 const SAVE_BOOK_MUTATION = gql`
   mutation SaveBook(
@@ -48,7 +49,7 @@ const placeholderBook: Book = {
     publisher: "Publisher Placeholder",
     pageCount: 0,
     source: "Google Books",
-    coverImage: "", 
+    coverImage: "",
     globalRating: 0,
     releaseYear: "",
 };
@@ -56,20 +57,20 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
     const { selectedBook, closeBookModal } = useBookModal();
     const book = selectedBook || placeholderBook;
     const createReviewModalRef = useRef<BottomSheetModal>(null);
-    
+
     const snapPoints = useMemo(() => ['90%'], []);
 
     const renderBackdrop = useCallback(
-      (props: any) => (
-        <BottomSheetBackdrop
-          {...props}
-          disappearsOnIndex={-1}
-          appearsOnIndex={0}
-          opacity={0.3}
-          onPress={closeBookModal}
-        />
-      ),
-      [closeBookModal]
+        (props: any) => (
+            <BottomSheetBackdrop
+                {...props}
+                disappearsOnIndex={-1}
+                appearsOnIndex={0}
+                opacity={0.3}
+                onPress={closeBookModal}
+            />
+        ),
+        [closeBookModal]
     );
 
     const [userRating, setUserRating] = useState<number | null>(null);
@@ -100,6 +101,45 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
     const [error, setError] = useState<string | null>(null);
 
     const [bookOnShelf, setBookOnShelf] = useState<boolean>(false);
+
+    // Reviews state
+    const [topReviews, setTopReviews] = useState<any[]>([]);
+    const [reviewsLoading, setReviewsLoading] = useState(false);
+    const [isReviewsExpanded, setIsReviewsExpanded] = useState(false);
+
+    useEffect(() => {
+        let mounted = true;
+        async function fetchReviews() {
+            if (!book?.isbn) return;
+            setReviewsLoading(true);
+
+            // Reset expansion state when changing books
+            setIsReviewsExpanded(false);
+
+            const { data, error } = await supabase
+                .from('posts')
+                .select(`
+                    id, body, rating, created_at, post_type,
+                    profiles!userId(id, username, first_name, last_name, avatar_url),
+                    postLikes(count)
+                `)
+                .eq('book_isbn', book.isbn)
+                .eq('post_type', 'review');
+                
+            if (!error && data) {
+                const sorted = data.sort((a, b) => {
+                    const likesA = a.postLikes?.[0]?.count || 0;
+                    const likesB = b.postLikes?.[0]?.count || 0;
+                    return likesB - likesA;
+                });
+                if (mounted) setTopReviews(sorted);
+            }
+            if (mounted) setReviewsLoading(false);
+        }
+
+        fetchReviews();
+        return () => { mounted = false; };
+    }, [book?.isbn]);
 
     const handleAddToShelf = async (shelfId: string) => {
         if (!book?.isbn) {
@@ -159,7 +199,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                     .select(counterField)
                                     .eq('id', userData.user.id)
                                     .single();
-                                
+
                                 if (currentProfile) {
                                     // increment
                                     const currentCount = (currentProfile as any)[counterField] || 0;
@@ -204,7 +244,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
             const { data: shelvesData, error: shelvesErr } = await supabase
                 .from("shelves")
                 .select(
-                  "id, name, created_at",
+                    "id, name, created_at",
                 )
                 .eq("user_id", userId);
 
@@ -235,7 +275,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
             onDismiss={closeBookModal}
             backgroundStyle={{ backgroundColor: 'transparent' }}
             handleIndicatorStyle={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.3 }}
-            handleStyle={{ 
+            handleStyle={{
                 position: 'absolute',
                 top: 0,
                 width: '100%',
@@ -245,7 +285,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
         >
             <View className="flex-1 bg-background overflow-hidden rounded-t-2xl">
                 <View className="absolute top-0 w-full h-[35vh]">
-                    <LinearGradient 
+                    <LinearGradient
                         colors={["#B2D3C2", "#F9F8F2"]}
                         className="flex-1"
                     />
@@ -253,8 +293,8 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                 <BottomSheetScrollView showsVerticalScrollIndicator={false} className="flex-1">
                     <View className="flex-row pt-[4vh] pb-6 px-4 gap-4">
                         {book?.coverImage ? (
-                            <Image 
-                                source={{ uri: book.coverImage }} 
+                            <Image
+                                source={{ uri: book.coverImage }}
                                 className="w-40 h-60 rounded-md"
                                 resizeMode="cover"
                             />
@@ -266,57 +306,98 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                         <View className="flex-1 flex-col justify-between py-1">
                             <View>
                                 <AppText variant="subtitle" numberOfLines={2}>{book?.title}</AppText>
-                                <AppText variant="body" numberOfLines={1}>{book?.authors?.join(', ')}</AppText> 
+                                <AppText variant="body" numberOfLines={1}>{book?.authors?.join(', ')}</AppText>
                                 {/* This should be turned into a link */}
                                 <AppText variant="label" className="pt-6">
                                     {infoText}
                                 </AppText>
-                                <View className="items-start pt-4">
-                                    <Rating 
-                                        variant="hearts-outline" 
-                                        size={30} 
-                                        rating={displayRating} 
-                                        onChange={handleChange}
-                                        spacing={.5}
-                                        baseSymbol={require('@/assets/images/icons/heart-line.png')}
-                                        fillSymbol={require('@/assets/images/icons/heart-fill.png')}
-                                        baseColor="#71717a"
-                                        fillColor="#FF2D55"
-                                    />
-                                </View>
                             </View>
-                            <View className="flex-row items-center gap-2 pt-2">
-                                <DropdownButton 
-                                    title="Add to Shelf"
-                                    variant="secondary"
-                                    size="sm"
-                                    dropdownPosition="right"
-                                    menuOnly={true}
-                                    dropdownItems={[
-                                        ...shelves.map(shelf => ({
-                                            label: shelf.name,
-                                            onPress: () => handleAddToShelf(shelf.id)
-                                        }))
-                                    ]}
+                            <View className="items-start">
+                                <Rating
+                                    variant="hearts-outline"
+                                    size={36}
+                                    rating={displayRating}
+                                    onChange={handleChange}
+                                    spacing={.5}
+                                    baseSymbol={require('@/assets/images/icons/heart-line.png')}
+                                    fillSymbol={require('@/assets/images/icons/heart-fill.png')}
+                                    baseColor="#71717a"
+                                    fillColor="#FF2D55"
                                 />
-                                <TouchableOpacity 
-                                    className="bg-primary px-3 py-2 rounded-lg"
-                                    onPress={() => createReviewModalRef.current?.present()}
-                                >
-                                    <AppText className="text-white font-fraunces-bold text-sm">Review</AppText>
-                                </TouchableOpacity>
                             </View>
                         </View>
+                    </View>
+
+                    <View className="items-center w-full px-4 pb-6 mt-2 gap-y-3">
+                        <DropdownButton
+                            title="Add to Shelf"
+                            variant="secondary"
+                            size="md"
+                            dropdownPosition="right"
+                            menuOnly={true}
+                            dropdownItems={[
+                                ...shelves.map(shelf => ({
+                                    label: shelf.name,
+                                    onPress: () => handleAddToShelf(shelf.id)
+                                }))
+                            ]}
+                            className="w-3/5"
+                        />
+                        <TouchableOpacity
+                            className="bg-primary flex-row items-center justify-center py-2 w-3/5 rounded-2xl"
+                            onPress={() => createReviewModalRef.current?.present()}
+                        >
+                            <AppText className="text-white font-fraunces-bold text-lg">Add a Review</AppText>
+                        </TouchableOpacity>
                     </View>
                     <View className="px-4 pt-2">
                         <AppText variant="collapsible" charLimit={150}>
                             {book?.description || ''}
                         </AppText>
                     </View>
+
                     <View className="px-4 pt-6">
                         <AppText variant="subtitle">Top Reviews</AppText>
                     </View>
-                    <View className="px-4 pt-6 pb-12">
+                    
+                    {reviewsLoading ? (
+                        <View className="px-4 py-8 items-center">
+                            <AppText variant="body" className="text-slate-500">Loading reviews...</AppText>
+                        </View>
+                    ) : topReviews.length === 0 ? (
+                        <View className="px-4 py-6">
+                            <AppText variant="body" className="text-slate-500 italic font-fraunces-italic">No reviews yet for this book. Be the first!</AppText>
+                        </View>
+                    ) : (
+                        <View className="px-4 pt-4 gap-y-3">
+                            {topReviews.slice(0, isReviewsExpanded ? undefined : 3).map((review) => (
+                                <CondensedReviewCard
+                                    key={`condensed-review-${review.id}`}
+                                    firstName={review.profiles?.first_name || "Unknown"}
+                                    lastName={review.profiles?.last_name || ""}
+                                    username={review.profiles?.username || "unknown"}
+                                    uriAvatar={review.profiles?.avatar_url}
+                                    userRating={review.rating}
+                                    postText={review.body}
+                                    timestamp={review.created_at}
+                                    likesCount={review.postLikes?.[0]?.count || 0}
+                                    userId={review.profiles?.id}
+                                />
+                            ))}
+                            {topReviews.length > 3 && (
+                                <TouchableOpacity 
+                                    className="py-3 items-center border border-slate-200 rounded-xl mt-2 active:bg-slate-50"
+                                    onPress={() => setIsReviewsExpanded(!isReviewsExpanded)}
+                                >
+                                    <AppText className="text-primary font-fraunces-bold">
+                                        {isReviewsExpanded ? "Show Less" : `Show All ${topReviews.length} Reviews`}
+                                    </AppText>
+                                </TouchableOpacity>
+                            )}
+                        </View>
+                    )}
+
+                    <View className="px-4 pt-8 pb-12">
                         <AppText variant="subtitle">More Like This</AppText>
                     </View>
                 </BottomSheetScrollView>

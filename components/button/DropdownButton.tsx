@@ -80,7 +80,7 @@ const DropdownButton = ({
   const mainPadding =
     size === "sm" ? "px-3" : size === "md" ? "px-4" : "px-6";
   const dropPadding =
-    size === "sm" ? "px-2" : size === "md" ? "px-2" : "px-4";
+    size === "sm" ? "px-1.5" : size === "md" ? "px-1.5" : "px-3";
   const verticalPadding = 
     size === "sm" ? "py-1" : size === "md" ? "py-2" : "py-3";
 
@@ -116,7 +116,7 @@ const DropdownButton = ({
       <Pressable
         onPress={menuOnly ? handleDropdownPress : currentAction.onPress}
         disabled={disabled || loading}
-        className={`flex-row items-center justify-center active:opacity-80 ${verticalPadding} ${mainPadding}`}
+        className={`flex-1 flex-row items-center justify-center active:opacity-80 ${verticalPadding} ${mainPadding}`}
       >
         {loading ? (
           <View className="flex-row items-center">
