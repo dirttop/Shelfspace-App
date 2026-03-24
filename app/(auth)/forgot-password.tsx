@@ -138,7 +138,7 @@ const ForgotPasswordScreen = () => {
 
             <View className="mt-4 flex-row justify-center">
               <Link href="/(auth)/login" asChild>
-                <AppText className="font-semibold text-zinc-500">
+                <AppText variant="label" className="text-zinc-500">
                   Back to Sign In
                 </AppText>
               </Link>
