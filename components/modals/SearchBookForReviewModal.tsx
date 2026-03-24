@@ -1,6 +1,6 @@
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, BottomSheetTextInput, BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo, useState, useEffect } from 'react';
-import { View, Keyboard, Platform, TouchableWithoutFeedback, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
+import { View, Keyboard, Platform, TouchableWithoutFeedback, ActivityIndicator, TouchableOpacity, Image, TextInput } from 'react-native';
 import AppText from '../common/AppText';
 import { useBookSearch } from '@/hooks/useBookSearch';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -58,16 +58,30 @@ export const SearchBookForReviewModal = forwardRef<BottomSheetModal, SearchBookF
           <AppText variant="title" className="mb-4">Find a Book to Review</AppText>
           <View className="flex-row items-center bg-muted rounded-xl px-4 py-2 border border-slate-200">
             <Search size={20} color="#a1a1aa" />
-            <BottomSheetTextInput
-              className="flex-1 ml-2 text-base text-foreground custom-font-regular py-2"
-              placeholder="Search by title, author, or ISBN..."
-              placeholderTextColor="#a1a1aa"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              autoCapitalize="none"
-              autoCorrect={false}
-              clearButtonMode="while-editing"
-            />
+            {Platform.OS === 'web' ? (
+              <TextInput
+                className="flex-1 ml-2 text-base text-foreground custom-font-regular py-2 outline-none"
+                placeholder="Search by title, author, or ISBN..."
+                placeholderTextColor="#a1a1aa"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                autoCapitalize="none"
+                autoCorrect={false}
+                clearButtonMode="while-editing"
+                style={{ outlineStyle: 'none' } as any}
+              />
+            ) : (
+              <BottomSheetTextInput
+                className="flex-1 ml-2 text-base text-foreground custom-font-regular py-2"
+                placeholder="Search by title, author, or ISBN..."
+                placeholderTextColor="#a1a1aa"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                autoCapitalize="none"
+                autoCorrect={false}
+                clearButtonMode="while-editing"
+              />
+            )}
             {searchQuery.length > 0 && Platform.OS !== 'ios' && (
               <TouchableOpacity onPress={() => setSearchQuery('')} className="p-1">
                 <X size={16} color="#a1a1aa" />

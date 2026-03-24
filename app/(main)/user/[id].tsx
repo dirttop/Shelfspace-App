@@ -4,12 +4,14 @@ import ProfileCard from "@/components/card/ProfileCard";
 import ProfileBookList from "@/components/profile/ProfileBookList";
 import React, { useEffect, useState, useCallback } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { useLocalSearchParams, useFocusEffect } from "expo-router";
+import { useLocalSearchParams, useFocusEffect, useRouter } from "expo-router";
+import { ChevronLeft } from "lucide-react-native";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TouchableOpacity,
   View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -17,6 +19,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function UserProfile() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any | null>(null);
@@ -142,8 +145,17 @@ export default function UserProfile() {
           contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         >
+          <View className="px-4" style={{ marginTop: Math.max(insets.top, 20) + 10 }}>
+            <TouchableOpacity 
+              onPress={() => router.back()} 
+              className="w-10 h-10 items-center justify-center rounded-full bg-slate-200"
+            >
+              <ChevronLeft size={24} color="#333333" />
+            </TouchableOpacity>
+          </View>
+
           <ProfileCard
-            className="mt-5 mx-4"
+            className="mt-4 mx-4"
             firstName={profile?.first_name}
             lastName={profile?.last_name}
             username={profile?.username}
