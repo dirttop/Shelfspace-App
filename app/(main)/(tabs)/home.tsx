@@ -9,6 +9,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import Icons from '@/components/common/Icons';
 import PostCard from "@/components/card/PostCard";
 import IconButton from "@/components/button/IconButton";
+import { CreatePostModal } from "@/components/modals/CreatePostModal";
+import { CreateReviewModal } from "@/components/modals/CreateReviewModal";
+import { SearchBookForReviewModal } from "@/components/modals/SearchBookForReviewModal";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { Dropdown } from "@/components/button/Dropdown";
+import { FileText, Star } from "lucide-react-native";
+import React, { useCallback, useRef } from "react";
 import AppText from "@/components/common/AppText";
 
 const mockBook: Book = {
@@ -25,6 +32,76 @@ const mockBook: Book = {
 
 export default function Home() {
   const [selectedFilter, setSelectedFilter] = useState('Following');
+  const createPostModalRef = useRef<BottomSheetModal>(null);
+  const searchBookModalRef = useRef<BottomSheetModal>(null);
+  const createReviewModalRef = useRef<BottomSheetModal>(null);
+  const [reviewBook, setReviewBook] = useState<Book | null>(null);
+  const [isAddMenuVisible, setIsAddMenuVisible] = useState(false);
+  const [addMenuCoords, setAddMenuCoords] = useState<{ top?: number; right?: number }>({ top: 60, right: 16 });
+  const addButtonRef = useRef<View>(null);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  const fetchPosts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select(`
+          *,
+          profiles!userId(
+            id,
+            username,
+            first_name,
+            last_name,
+            avatar_url
+          ),
+          books:book_isbn(
+            isbn,
+            title,
+            authors,
+            coverImage:cover_image,
+            pageCount:page_count
+          ),
+          postLikes:postLikes(count),
+          comments:comments(count)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPosts(data || []);
+
+      // Fetch current user id for ownership checks
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user) setCurrentUserId(userData.user.id);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchPosts();
+    setRefreshing(false);
+  };
+
+  const handlePresentCreatePost = useCallback(() => {
+    createPostModalRef.current?.present();
+  }, []);
+
+  const handleAddPress = () => {
+    addButtonRef.current?.measureInWindow((x, y, width, height) => {
+      setAddMenuCoords({
+        top: y + height + 8,
+        right: 16,
+      });
+      setIsAddMenuVisible(true);
+    });
+  };
 
   const navItems = [
     { label: 'ShelfSpace', onPress: () => setSelectedFilter('ShelfSpace'), selected: selectedFilter === 'ShelfSpace' },
@@ -54,24 +131,49 @@ export default function Home() {
             size="lg"
             className="justify-end"
           />
-          <IconButton
-            icon="add"
-            color="#333333"
-            onPress={() => {}}
-            size="lg"
-            className="justify-end"
-          />
+          <View ref={addButtonRef} className="justify-end ml-2">
+            <IconButton
+              icon="add"
+              color="#333333"
+              onPress={handleAddPress}
+              size="md"
+            />
+          </View>
         </View>
       </View>
 
-      <View className="flex-row items-center justify-start mb-6 z-20 px-4">
-         <DropdownButton
-           title={selectedFilter}
-           dropdownItems={navItems}
-           variant="secondary"
-           size="md"
-           dropdownPosition="right"
-         />
+      <Dropdown
+        isVisible={isAddMenuVisible}
+        onClose={() => setIsAddMenuVisible(false)}
+        position={addMenuCoords}
+        items={[
+          {
+            label: 'Create Post',
+            icon: <FileText size={18} color="#000" />,
+            onPress: () => {
+              setIsAddMenuVisible(false);
+              createPostModalRef.current?.present();
+            }
+          },
+          {
+            label: 'Create Review',
+            icon: <Star size={18} color="#000" />,
+            onPress: () => {
+              setIsAddMenuVisible(false);
+              searchBookModalRef.current?.present();
+            }
+          },
+        ]}
+      />
+
+      <View className="flex-row items-center justify-start mb-4 z-20 px-4">
+        <DropdownButton
+          title={selectedFilter}
+          dropdownItems={navItems}
+          variant="secondary"
+          size="md"
+          dropdownPosition="right"
+        />
       </View>
 
       <View className="flex-1 bg-[#F2F0E9] relative z-10">
@@ -80,25 +182,75 @@ export default function Home() {
           style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 18, zIndex: 10 }}
           pointerEvents="none"
         />
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24, gap: 16 }}>
-          <ReviewCard 
-            book={mockBook} 
-            postText="This is a sample review! We love reviews!"
-            firstName="John"
-            lastName="Doe"
-            username="johndoe"
-            postType="progress"
-            progress={50}
-          />
+        <FlatList
+          data={posts}
+          keyExtractor={(item) => item.id?.toString()}
+          renderItem={({ item }) => {
+            if (item.post_type === 'review') {
+              return (
+                <ReviewCard
+                  key={`review-${item.id}`}
+                  postType="review"
+                  postId={item.id}
+                  currentUserId={currentUserId ?? undefined}
+                  userId={item.profiles?.id}
+                  firstName={item.profiles?.first_name || "Unknown"}
+                  lastName={item.profiles?.last_name || ""}
+                  username={item.profiles?.username || "unknown"}
+                  uriAvatar={item.profiles?.avatar_url}
+                  postText={item.body}
+                  userRating={item.rating}
+                  timestamp={item.created_at}
+                  likesCount={item.postLikes?.[0]?.count || 0}
+                  commentsCount={item.comments?.[0]?.count || 0}
+                  onDelete={fetchPosts}
+                  book={item.books || { isbn: item.book_isbn, title: "Unknown Book" } as any}
+                  className="mb-4"
+                />
+              );
+            }
 
-          <PostCard
-            firstName = "John"
-            lastName = "Doe"
-            username = "johndoe"
-            postText = "This is a sample post!"
-          />
-        </ScrollView>
+            return (
+              <PostCard
+                key={`post-${item.id}`}
+                postId={item.id}
+                currentUserId={currentUserId ?? undefined}
+                userId={item.profiles?.id}
+                firstName={item.profiles?.first_name || "Unknown"}
+                lastName={item.profiles?.last_name || ""}
+                username={item.profiles?.username || "unknown"}
+                uriAvatar={item.profiles?.avatar_url}
+                postText={item.body}
+                postImage={item.file}
+                timestamp={item.created_at}
+                likesCount={item.postLikes?.[0]?.count || 0}
+                commentsCount={item.comments?.[0]?.count || 0}
+                onDelete={fetchPosts}
+                className="mb-4"
+              />
+            );
+          }}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 100, paddingTop: 16, paddingHorizontal: 16 }}
+        />
       </View>
+
+      <CreatePostModal ref={createPostModalRef} onPostCreated={fetchPosts} />
+      <SearchBookForReviewModal 
+        ref={searchBookModalRef} 
+        onBookSelected={(book) => {
+          setReviewBook(book);
+          // small delay for smooth transition
+          setTimeout(() => createReviewModalRef.current?.present(), 100);
+        }} 
+      />
+      <CreateReviewModal 
+        ref={createReviewModalRef} 
+        selectedBook={reviewBook} 
+        onReviewCreated={fetchPosts} 
+      />
     </SafeAreaView>
   );
 }
