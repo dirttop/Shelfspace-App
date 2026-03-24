@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React, { forwardRef, useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { Alert, Image, View, TouchableOpacity } from "react-native";
 import { supabase } from '@/app/lib/supabase';
-import { gql, useMutation } from '@apollo/client';
+import { gql, useMutation, useApolloClient } from '@apollo/client';
 import { CreateReviewModal } from './CreateReviewModal';
 import CondensedReviewCard from '../card/CondensedReviewCard';
 
@@ -58,6 +58,8 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
     const book = selectedBook || placeholderBook;
     const createReviewModalRef = useRef<BottomSheetModal>(null);
 
+    const client = useApolloClient();
+    
     const snapPoints = useMemo(() => ['90%'], []);
 
     const renderBackdrop = useCallback(
@@ -149,7 +151,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
 
         try {
             try {
-                await saveBookMutation({
+                 await saveBookMutation({
                     variables: {
                         title: book.title || "",
                         authors: book.authors || [],
@@ -216,6 +218,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                 }
 
                 Alert.alert("Success", "Book added to shelf!");
+                client.refetchQueries({ include: ['GetRecommendations'] });
             }
         } catch (e: any) {
             console.error("Error adding to shelf:", e);
@@ -311,6 +314,19 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                 <AppText variant="label" className="pt-6">
                                     {infoText}
                                 </AppText>
+                                <View className="items-start pt-4">
+                                    <Rating 
+                                        disabled={true}
+                                        variant="stars-outline" 
+                                        size={30} 
+                                        rating={displayRating} 
+                                        spacing={.5}
+                                        baseSymbol={require('@/assets/images/icons/star-line.png')}
+                                        fillSymbol={require('@/assets/images/icons/star-fill.png')}
+                                        baseColor="#71717a"
+                                        fillColor="#FF2D55"
+                                    />
+                                </View>
                             </View>
                             <View className="items-start">
                                 <Rating
