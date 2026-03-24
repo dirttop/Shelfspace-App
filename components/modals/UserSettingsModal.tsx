@@ -54,17 +54,17 @@ export const UserSettingsModal = forwardRef<BottomSheetModal, UserSettingsModalP
 
           <View className="gap-y-3">
             <View className="bg-muted p-4 rounded-2xl flex-row items-center justify-between">
-              <AppText variant="body" className="text-foreground">
+              <AppText variant="body" className="font-medium text-foreground">
                 Appearance
               </AppText>
             </View>
             <View className="bg-muted p-4 rounded-2xl flex-row items-center justify-between">
-              <AppText variant="body" className="text-foreground">
+              <AppText variant="body" className="font-medium text-foreground">
                 Account settings
               </AppText>
             </View>
             <Pressable onPress={handleSignOut} className="bg-muted p-4 rounded-2xl flex-row items-center justify-between">
-              <AppText variant="body" className="text-foreground">
+              <AppText variant="body" className="font-medium text-foreground">
                 Sign Out
               </AppText>
             </Pressable>

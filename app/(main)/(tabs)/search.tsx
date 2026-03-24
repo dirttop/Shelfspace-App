@@ -2,9 +2,8 @@ import BookItem from '@/components/book/BookItem';
 import AppText from '@/components/common/AppText';
 import Input from '@/components/common/Input';
 import { useBookSearch } from '@/hooks/useBookSearch';
-import { useBookRecommendations } from '@/hooks/useBookRecommendations';
-import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -19,25 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 const BooksTab = ({ searchQuery }: { searchQuery: string }) => {
-  const isSearchActive = !!searchQuery && searchQuery.trim().length > 0;
-  
-  const searchResult = useBookSearch(searchQuery);
-  const recResult = useBookRecommendations();
-
-  useFocusEffect(
-    useCallback(() => {
-      // Only refetch recommendations if we aren't actively searching
-      if (!isSearchActive && recResult.refetch) {
-        recResult.refetch({ offset: 0 });
-      }
-    }, [isSearchActive, recResult.refetch])
-  );
-
-  const isLoading = isSearchActive ? searchResult.loading : recResult.loading;
-  const error = isSearchActive ? searchResult.error : recResult.error;
-  const books = isSearchActive ? searchResult.books : recResult.books;
-  const loadMore = isSearchActive ? () => {} : recResult.loadMore;
-
+  const { books, loading: isLoading, error } = useBookSearch(searchQuery);
   const { width } = useWindowDimensions();
   const itemWidth = (width - 64) / 3;
 
@@ -57,8 +38,6 @@ const BooksTab = ({ searchQuery }: { searchQuery: string }) => {
           numColumns={3}
           contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 24, paddingBottom: 48 }}
           columnWrapperStyle={{ justifyContent: 'flex-start', marginBottom: 16, gap: 16 }}
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.5}
           renderItem={({ item }) => (
             <BookItem 
               book={item} 
@@ -149,6 +128,7 @@ export default function SearchTab() {
         inactiveColor="#71717a" // zinc-500
         renderLabel={({ route, focused, color }: { route: { title: string }, focused: boolean, color: string }) => (
           <AppText 
+            className={focused ? "font-bold" : ""} 
             style={{ color }}
           >
             {route.title}

@@ -42,12 +42,12 @@ export const AddBookModal = forwardRef<BottomSheetModal, AddBookModalProps>(
 
           <View className="gap-y-3">
             <TouchableOpacity onPress={props.onScan} className="bg-muted p-4 rounded-2xl flex-row items-center justify-between">
-              <AppText variant="body" className="text-foreground">
+              <AppText variant="body" className="font-medium text-foreground">
                 Scan Book
               </AppText>
             </TouchableOpacity>
             <TouchableOpacity onPress={props.onSearch} className="bg-muted p-4 rounded-2xl flex-row items-center justify-between">
-              <AppText variant="body" className="text-foreground">
+              <AppText variant="body" className="font-medium text-foreground">
                 Search Book
               </AppText>
             </TouchableOpacity>

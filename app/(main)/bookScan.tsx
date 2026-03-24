@@ -28,7 +28,7 @@ export default function BookScan() {
         <AppText variant="title" className="text-white text-center">Camera Permission needed</AppText>
         <AppText variant="body" className="text-gray-400 text-center">We need your permission to use the camera to scan book covers or ISBNs.</AppText>
         <TouchableOpacity onPress={requestPermission} className="bg-white/20 px-6 py-3 rounded-xl mt-4">
-          <AppText variant="label" className="text-white">Grant Permission</AppText>
+          <AppText variant="body" className="text-white font-bold">Grant Permission</AppText>
         </TouchableOpacity>
       </View>
     );
@@ -206,14 +206,14 @@ export default function BookScan() {
             {isProcessing ? (
               <View className="w-72 h-96 border-2 border-white/50 rounded-2xl flex items-center justify-center">
                 <ActivityIndicator size="large" color="#ffffff" />
-                <AppText variant="label" className="text-white mt-4" style={{ color: 'white' }}>
+                <AppText variant="body" className="text-white mt-4 font-medium" style={{ color: 'white' }}>
                   Scanning book...
                 </AppText>
               </View>
             ) : (
               <>
                 <View className="w-72 h-96 border-2 border-white/50 rounded-2xl bg-white/10" />
-                <AppText variant="label" className="text-white mt-6 bg-black/50 px-4 py-2 rounded-full" style={{ color: 'white' }}>
+                <AppText variant="body" className="text-white mt-6 bg-black/50 px-4 py-2 rounded-full font-medium" style={{ color: 'white' }}>
                   Line up book cover or barcode
                 </AppText>
               </>

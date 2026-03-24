@@ -156,7 +156,7 @@ export default function EditProfile() {
             size="sm"
             variant="secondary"
           />
-          <AppText variant="label" className="text-slate-500 text-center mb-2">
+          <AppText className="text-sm text-slate-500 text-center mb-2">
             Or paste a public image URL
           </AppText>
           <Input
@@ -169,10 +169,10 @@ export default function EditProfile() {
       </View>
 
       <View>
-        <AppText variant="label" className="mb-2">Full name</AppText>
+        <AppText className="text-sm font-semibold mb-2">Full name</AppText>
         <Input value={name} onChangeText={setName} placeholder="Full name" />
 
-        <AppText variant="label" className="mb-2">Bio</AppText>
+        <AppText className="text-sm font-semibold mb-2">Bio</AppText>
         <Input value={bio} onChangeText={setBio} placeholder="A short bio" />
       </View>
 

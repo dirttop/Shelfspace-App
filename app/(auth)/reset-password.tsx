@@ -96,7 +96,7 @@ const ResetPasswordScreen = () => {
 
           <Card className="w-full max-w-md mx-auto">
             <View className="mb-4">
-              <AppText variant="label" className="mb-4 text-center text-zinc-700">
+              <AppText variant="body" className="mb-4 text-center font-semibold text-zinc-700">
                 Create a new password
               </AppText>
 
@@ -109,13 +109,13 @@ const ResetPasswordScreen = () => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-              <AppText variant="caption" className="text-zinc-500 mb-2">
+              <AppText className="text-xs text-zinc-500 mb-2">
                 Passwords must be at least 6 characters.
               </AppText>
               {submitAttempted &&
                 password.length > 0 &&
                 password.length < 6 && (
-                  <AppText variant="caption" className="text-red-500 mt-1 ml-1 mb-2">
+                  <AppText className="text-xs text-red-500 mt-1 ml-1 mb-2">
                     Password must be at least 6 characters.
                   </AppText>
                 )}
@@ -134,7 +134,7 @@ const ResetPasswordScreen = () => {
               {submitAttempted &&
                 confirmPassword.length > 0 &&
                 password !== confirmPassword && (
-                  <AppText variant="caption" className="text-red-500 mt-2 ml-1">
+                  <AppText className="text-xs text-red-500 mt-2 ml-1">
                     Passwords do not match.
                   </AppText>
                 )}

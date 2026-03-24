@@ -159,7 +159,7 @@ const RegisterScreen = () => {
               </View>
               {submitAttempted &&
                 (firstName.trim() === "" || lastName.trim() === "") && (
-                  <AppText variant="caption" className="text-red-500 mt-2 ml-1">
+                  <AppText className="text-xs text-red-500 mt-2 ml-1">
                     First and last name are required.
                   </AppText>
                 )}
@@ -176,7 +176,7 @@ const RegisterScreen = () => {
                 autoCapitalize="none"
               />
               {submitAttempted && username.trim() === "" && (
-                <AppText variant="caption" className="text-red-500 mt-2 ml-1">
+                <AppText className="text-xs text-red-500 mt-2 ml-1">
                   Username is required.
                 </AppText>
               )}
@@ -194,7 +194,7 @@ const RegisterScreen = () => {
                 autoCapitalize="none"
               />
               {submitAttempted && email.trim() === "" && (
-                <AppText variant="caption" className="text-red-500 mt-2 ml-1">
+                <AppText className="text-xs text-red-500 mt-2 ml-1">
                   Email is required.
                 </AppText>
               )}
@@ -210,13 +210,13 @@ const RegisterScreen = () => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-              <AppText variant="caption" className="text-zinc-500 dark:text-zinc-400">
+              <AppText className="text-xs text-zinc-500 dark:text-zinc-400">
                 Passwords must be at least 6 characters.
               </AppText>
               {submitAttempted &&
                 password.length > 0 &&
                 password.length < 6 && (
-                  <AppText variant="caption" className="text-red-500 mt-2 ml-1">
+                  <AppText className="text-xs text-red-500 mt-2 ml-1">
                     Password must be at least 6 characters.
                   </AppText>
                 )}
@@ -235,7 +235,7 @@ const RegisterScreen = () => {
               {submitAttempted &&
                 confirmPassword.length > 0 &&
                 password !== confirmPassword && (
-                  <AppText variant="caption" className="text-red-500 mt-2 ml-1">
+                  <AppText className="text-xs text-red-500 mt-2 ml-1">
                     Passwords do not match.
                   </AppText>
                 )}
@@ -248,7 +248,7 @@ const RegisterScreen = () => {
                 onValueChange={setTerms}
               />
               {submitAttempted && !terms && (
-                <AppText variant="caption" className="text-red-500 mt-2 ml-1">
+                <AppText className="text-xs text-red-500 mt-2 ml-1">
                   You must accept the terms to continue.
                 </AppText>
               )}
@@ -268,7 +268,7 @@ const RegisterScreen = () => {
                 Already have an account?{" "}
               </AppText>
               <Link href="/(auth)/login" asChild>
-                <AppText variant="label">
+                <AppText className="font-semibold">
                   Sign in
                 </AppText>
               </Link>

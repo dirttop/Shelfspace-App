@@ -104,7 +104,7 @@ const LoginScreen = () => {
 
             <View className="mt-4 flex-row justify-center">
               <Link href="/(auth)/forgot-password" asChild>
-                <AppText variant="label" className="text-zinc-500">
+                <AppText className="font-semibold text-zinc-500">
                   Forgot password?
                 </AppText>
               </Link>
@@ -115,7 +115,7 @@ const LoginScreen = () => {
                 Don&apos;t have an account?{' '}
               </AppText>
               <Link href="/(auth)/register" asChild>
-                <AppText variant="label">
+                <AppText className="font-semibold">
                   Sign up
                 </AppText>
               </Link>
