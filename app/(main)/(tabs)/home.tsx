@@ -178,12 +178,19 @@ export default function Home() {
                 <ReviewCard
                   key={`review-${item.id}`}
                   postType="review"
+                  postId={item.id}
+                  currentUserId={currentUserId ?? undefined}
+                  userId={item.profiles?.id}
                   firstName={item.profiles?.first_name || "Unknown"}
                   lastName={item.profiles?.last_name || ""}
                   username={item.profiles?.username || "unknown"}
                   uriAvatar={item.profiles?.avatar_url}
                   postText={item.body}
                   userRating={item.rating}
+                  timestamp={item.created_at}
+                  likesCount={item.postLikes?.[0]?.count || 0}
+                  commentsCount={item.comments?.[0]?.count || 0}
+                  onDelete={fetchPosts}
                   book={item.books || { isbn: item.book_isbn, title: "Unknown Book" } as any}
                   className="mb-4"
                 />

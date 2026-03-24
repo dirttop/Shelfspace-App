@@ -118,38 +118,38 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
           </View>
         </View>
 
-        {selectedBook && (
-          <View className="flex-row mb-4 bg-slate-50 p-3 rounded-xl items-center">
-            {selectedBook.coverImage ? (
-              <Image source={{ uri: selectedBook.coverImage }} className="w-12 h-16 rounded mr-3" resizeMode="cover" />
-            ) : (
-              <View className="w-12 h-16 bg-slate-200 rounded mr-3 items-center justify-center">
-                <AppText variant="caption">No Cover</AppText>
-              </View>
-            )}
-            <View className="flex-1">
-              <AppText className="font-fraunces-bold" numberOfLines={1}>{selectedBook.title}</AppText>
-              <AppText variant="caption" className="text-slate-500" numberOfLines={1}>{selectedBook.authors?.join(', ')}</AppText>
-            </View>
-          </View>
-        )}
-
-        <View className="items-center mb-6">
-          <Rating 
-            variant="hearts-outline"
-            size={40} 
-            rating={userRating} 
-            onChange={handleRatingChange}
-            spacing={0.5}
-            baseSymbol={require('@/assets/images/icons/heart-line.png')}
-            fillSymbol={require('@/assets/images/icons/heart-fill.png')}
-            baseColor="#71717a"
-            fillColor="#FF2D55"
-          />
-        </View>
-
         {Platform.OS === 'web' ? (
           <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}>
+            {selectedBook && (
+              <View className="flex-row mb-4 bg-slate-50 p-3 rounded-xl items-center">
+                {selectedBook.coverImage ? (
+                  <Image source={{ uri: selectedBook.coverImage }} className="w-12 h-16 rounded mr-3" resizeMode="cover" />
+                ) : (
+                  <View className="w-12 h-16 bg-slate-200 rounded mr-3 items-center justify-center">
+                    <AppText variant="caption">No Cover</AppText>
+                  </View>
+                )}
+                <View className="flex-1">
+                  <AppText className="font-fraunces-bold" numberOfLines={1}>{selectedBook.title}</AppText>
+                  <AppText variant="caption" className="text-slate-500" numberOfLines={1}>{selectedBook.authors?.join(', ')}</AppText>
+                </View>
+              </View>
+            )}
+
+            <View className="items-center mb-6">
+              <Rating 
+                variant="hearts-outline"
+                size={40} 
+                rating={userRating} 
+                onChange={handleRatingChange}
+                spacing={0.5}
+                baseSymbol={require('@/assets/images/icons/heart-line.png')}
+                fillSymbol={require('@/assets/images/icons/heart-fill.png')}
+                baseColor="#71717a"
+                fillColor="#FF2D55"
+              />
+            </View>
+
             <TextInput
               className="bg-muted p-4 rounded-xl text-base mb-4 text-foreground custom-font-regular"
               style={{ minHeight: 120, textAlignVertical: 'top' }}
@@ -164,6 +164,36 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
           </ScrollView>
         ) : (
           <BottomSheetScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}>
+            {selectedBook && (
+              <View className="flex-row mb-4 bg-slate-50 p-3 rounded-xl items-center">
+                {selectedBook.coverImage ? (
+                  <Image source={{ uri: selectedBook.coverImage }} className="w-12 h-16 rounded mr-3" resizeMode="cover" />
+                ) : (
+                  <View className="w-12 h-16 bg-slate-200 rounded mr-3 items-center justify-center">
+                    <AppText variant="caption">No Cover</AppText>
+                  </View>
+                )}
+                <View className="flex-1">
+                  <AppText className="font-fraunces-bold" numberOfLines={1}>{selectedBook.title}</AppText>
+                  <AppText variant="caption" className="text-slate-500" numberOfLines={1}>{selectedBook.authors?.join(', ')}</AppText>
+                </View>
+              </View>
+            )}
+
+            <View className="items-center mb-6">
+              <Rating 
+                variant="hearts-outline"
+                size={40} 
+                rating={userRating} 
+                onChange={handleRatingChange}
+                spacing={0.5}
+                baseSymbol={require('@/assets/images/icons/heart-line.png')}
+                fillSymbol={require('@/assets/images/icons/heart-fill.png')}
+                baseColor="#71717a"
+                fillColor="#FF2D55"
+              />
+            </View>
+
             <BottomSheetTextInput
               className="bg-muted p-4 rounded-xl text-base mb-4 text-foreground custom-font-regular"
               style={{ minHeight: 120, textAlignVertical: 'top' }}

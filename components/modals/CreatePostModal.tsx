@@ -108,13 +108,14 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
           fileUrl = data.publicUrl;
         }
 
-        // Insert into posts table
         const { error: insertErr } = await supabase
           .from('posts')
           .insert({
             userId: userData.user.id,
             body: postText,
             file: fileUrl,
+            post_type: 'post',
+            book_isbn: null,
           });
 
         if (insertErr) throw insertErr;
