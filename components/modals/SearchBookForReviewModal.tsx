@@ -137,6 +137,7 @@ export const SearchBookForReviewModal = forwardRef<BottomSheetModal, SearchBookF
         handleIndicatorStyle={{ backgroundColor: '#A1A1AA', opacity: 0.8 }}
         onDismiss={handleDismiss}
         keyboardBehavior="extend"
+        enableDynamicSizing={false}
       >
         {content}
       </BottomSheetModal>

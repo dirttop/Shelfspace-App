@@ -179,14 +179,12 @@ const ReviewCard = ({
             <View className="items-start mt-2 mb-2">
               <Rating 
                 disabled={true}
-                variant="hearts-outline"
                 size={24}
                 rating={userRating}
-                spacing={.5}
-                baseSymbol={require('@/assets/images/icons/heart-line.png')}
-                fillSymbol={require('@/assets/images/icons/heart-fill.png')}
+                spacing={1.5}
                 baseColor="#71717a"
-                fillColor="#FF2D55"
+                fillColor="#73BDA8"
+                touchColor="#73BDA8"
               />
             </View>
           </View>
@@ -217,7 +215,7 @@ const ReviewCard = ({
         </View>
           
         {!!postText && (
-          <AppText variant="collapsible" className="mb-2 mt-2">
+          <AppText variant="collapsible" className="mb-2 mt-2" charLimit={250}>
             {postText}
           </AppText>
         )}

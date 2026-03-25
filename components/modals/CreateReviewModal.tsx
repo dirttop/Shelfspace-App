@@ -138,15 +138,13 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
 
             <View className="items-center mb-6">
               <Rating 
-                variant="hearts-outline"
                 size={40} 
                 rating={userRating} 
                 onChange={handleRatingChange}
-                spacing={0.5}
-                baseSymbol={require('@/assets/images/icons/heart-line.png')}
-                fillSymbol={require('@/assets/images/icons/heart-fill.png')}
+                spacing={1.5}
                 baseColor="#71717a"
-                fillColor="#FF2D55"
+                fillColor="#73BDA8"
+                touchColor="#73BDA8"
               />
             </View>
 
@@ -182,15 +180,13 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
 
             <View className="items-center mb-6">
               <Rating 
-                variant="hearts-outline"
                 size={40} 
                 rating={userRating} 
                 onChange={handleRatingChange}
-                spacing={0.5}
-                baseSymbol={require('@/assets/images/icons/heart-line.png')}
-                fillSymbol={require('@/assets/images/icons/heart-fill.png')}
+                spacing={1.5}
                 baseColor="#71717a"
-                fillColor="#FF2D55"
+                fillColor="#73BDA8"
+                touchColor="#73BDA8"
               />
             </View>
 
@@ -229,6 +225,7 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
         onDismiss={handleDismiss}
         keyboardBehavior="extend"
         keyboardBlurBehavior="restore"
+        enableDynamicSizing={false}
       >
         {Platform.OS === 'web' ? (
           content

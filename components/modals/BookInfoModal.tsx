@@ -313,15 +313,13 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                 </AppText>
                                 <View className="items-start pt-4">
                                     <Rating
-                                        variant="hearts-outline"
                                         size={30}
                                         rating={displayRating}
                                         onChange={handleChange}
-                                        spacing={.5}
-                                        baseSymbol={require('@/assets/images/icons/heart-line.png')}
-                                        fillSymbol={require('@/assets/images/icons/heart-fill.png')}
+                                        spacing={1.5}
                                         baseColor="#71717a"
-                                        fillColor="#FF2D55"
+                                        fillColor="#73BDA8"
+                                        touchColor="#73BDA8"
                                     />
                                 </View>
                             </View>

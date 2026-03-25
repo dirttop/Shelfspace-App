@@ -188,7 +188,7 @@ const PostCard = ({
         </View>
 
         {!!postText && (
-          <AppText variant="collapsible" className="mb-2 mt-2">
+          <AppText variant="collapsible" className="mb-2 mt-2" charLimit={250}>
             {postText}
           </AppText>
         )}

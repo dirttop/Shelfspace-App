@@ -68,14 +68,12 @@ const CondensedReviewCard = ({
           <View className="items-end pl-2">
             <Rating 
               disabled={true}
-              variant="hearts-outline"
               size={12}
               rating={userRating}
-              spacing={0.5}
-              baseSymbol={require('@/assets/images/icons/heart-line.png')}
-              fillSymbol={require('@/assets/images/icons/heart-fill.png')}
+              spacing={1.5}
               baseColor="#71717a"
-              fillColor="#FF2D55"
+              fillColor="#73BDA8"
+              touchColor="#73BDA8"
             />
           </View>
         </View>
