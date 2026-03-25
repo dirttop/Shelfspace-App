@@ -379,6 +379,11 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                     timestamp={review.created_at}
                                     likesCount={review.postLikes?.[0]?.count || 0}
                                     userId={review.profiles?.id}
+                                    onPressProfile={() => {
+                                        if (ref && 'current' in ref && ref.current) {
+                                            ref.current.dismiss();
+                                        }
+                                    }}
                                 />
                             ))}
                             {topReviews.length > 3 && (

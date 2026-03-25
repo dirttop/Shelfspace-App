@@ -67,7 +67,6 @@ export const SearchBookForReviewModal = forwardRef<BottomSheetModal, SearchBookF
                 onChangeText={setSearchQuery}
                 autoCapitalize="none"
                 autoCorrect={false}
-                clearButtonMode="while-editing"
                 style={{ outlineStyle: 'none' } as any}
               />
             ) : (
@@ -79,10 +78,9 @@ export const SearchBookForReviewModal = forwardRef<BottomSheetModal, SearchBookF
                 onChangeText={setSearchQuery}
                 autoCapitalize="none"
                 autoCorrect={false}
-                clearButtonMode="while-editing"
               />
             )}
-            {searchQuery.length > 0 && Platform.OS !== 'ios' && (
+            {searchQuery.length > 0 && (
               <TouchableOpacity onPress={() => setSearchQuery('')} className="p-1">
                 <X size={16} color="#a1a1aa" />
               </TouchableOpacity>

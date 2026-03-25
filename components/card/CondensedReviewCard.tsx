@@ -16,6 +16,7 @@ interface CondensedReviewProps extends ViewProps {
   timestamp?: string;
   likesCount?: number;
   userId?: string;
+  onPressProfile?: () => void;
 }
 
 const CondensedReviewCard = ({
@@ -28,6 +29,7 @@ const CondensedReviewCard = ({
   timestamp,
   likesCount = 0,
   userId,
+  onPressProfile,
   className = "",
   ...props
 }: CondensedReviewProps) => {
@@ -63,6 +65,7 @@ const CondensedReviewCard = ({
               username={username} 
               uriAvatar={uriAvatar}
               rightText=""
+              onPress={onPressProfile}
             />
           </View>
           <View className="items-end pl-2">

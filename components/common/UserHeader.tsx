@@ -10,6 +10,7 @@ interface UserHeaderProps {
     lastName?: string;
     uriAvatar?: string;
     rightText?: string;
+    onPress?: () => void;
 };
 
 const UserHeader = ({
@@ -19,10 +20,11 @@ const UserHeader = ({
   lastName,
   uriAvatar,
   rightText,
+  onPress,
   ...props
 }: UserHeaderProps) => {
     const content = (
-        <Pressable className = "flex-row items-center justify-center gap-2">
+        <Pressable onPress={onPress} className="flex-row items-center justify-center gap-2">
             <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="sm"/>
             <AppText variant = "label">@{username}</AppText>
             {rightText && (
@@ -35,7 +37,7 @@ const UserHeader = ({
 
     if (userId) {
         return (
-            <Link href={`/(main)/user/${userId}`} asChild>
+            <Link href={`/(main)/user/${userId}`} asChild onPress={onPress}>
                 {content}
             </Link>
         );

@@ -1,6 +1,6 @@
 import React, { forwardRef, useCallback, useMemo, useState, useEffect } from 'react';
-import { View, FlatList, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard, TouchableOpacity, Alert, TextInput } from 'react-native';
-import { BottomSheetModal, BottomSheetView, BottomSheetTextInput, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { View, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { BottomSheetModal, BottomSheetFlatList, BottomSheetTextInput, BottomSheetBackdrop, BottomSheetFooter } from '@gorhom/bottom-sheet';
 import { supabase } from '@/app/lib/supabase';
 import AppText from '../common/AppText';
 import UserHeader from '../common/UserHeader';
@@ -112,8 +112,8 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
                 .from('comments')
                 .delete({ count: 'exact' })
                 .eq('id', commentId);
-                // Temporarily removed userId filter to debug
-                // .eq('userId', currentUserId);
+              // Temporarily removed userId filter to debug
+              // .eq('userId', currentUserId);
 
               if (error) throw error;
               console.log(`Delete response: Rows affected: ${count}`);
@@ -142,69 +142,11 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
     []
   );
 
-  const renderComment = ({ item }: { item: Comment }) => (
-    <View className="mb-4 px-4">
-      <View className="flex-row items-start gap-x-3">
-        <UserHeader
-          userId={item.userId}
-          firstName={item.profiles?.first_name}
-          lastName={item.profiles?.last_name}
-          username={item.profiles?.username}
-          uriAvatar={item.profiles?.avatar_url}
-        />
-        <View className="flex-1 bg-slate-100 p-3 rounded-2xl relative">
-          <AppText variant="body" className="text-slate-800">
-            {item.text}
-          </AppText>
-          {item.userId === currentUserId && (
-            <TouchableOpacity
-              onPress={() => handleDeleteComment(item.id)}
-              className="absolute top-2 right-2 p-1"
-            >
-              <Trash2 size={14} color="#ef4444" />
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
-    </View>
-  );
-
-  return (
-    <BottomSheetModal
-      ref={ref}
-      index={1}
-      snapPoints={snapPoints}
-      backdropComponent={renderBackdrop}
-      keyboardBehavior="interactive"
-      keyboardBlurBehavior="restore"
-    >
-      <BottomSheetView className="flex-1 bg-white">
-        <View className="p-4 border-b border-slate-100 flex-row justify-between items-center">
-          <AppText variant="title">Comments</AppText>
-        </View>
-
-        {loading && comments.length === 0 ? (
-          <View className="flex-1 justify-center items-center">
-            <ActivityIndicator color="#3b82f6" />
-          </View>
-        ) : (
-          <FlatList
-            data={comments}
-            keyExtractor={(item) => item.id}
-            renderItem={renderComment}
-            contentContainerStyle={{ paddingVertical: 16, paddingBottom: 100 }}
-            ListEmptyComponent={
-              <View className="flex-1 justify-center items-center py-20">
-                <AppText className="text-slate-400">No comments yet. Be the first to comment!</AppText>
-              </View>
-            }
-          />
-        )}
-
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-          className="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-3"
+  const renderFooter = useCallback(
+    (props: any) => (
+      <BottomSheetFooter {...props} bottomInset={0}>
+        <View
+          className="bg-white border-t border-slate-200 px-4 py-3"
           style={{ paddingBottom: Math.max(insets.bottom, 12) }}
         >
           <View className="flex-row items-center gap-x-2">
@@ -233,8 +175,78 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
               <Send size={20} color="white" />
             </TouchableOpacity>
           </View>
-        </KeyboardAvoidingView>
-      </BottomSheetView>
+        </View>
+      </BottomSheetFooter>
+    ),
+    [insets.bottom, newComment, isSubmitting]
+  );
+
+  const renderComment = ({ item }: { item: Comment }) => (
+    <View className="mb-4 px-4">
+      <View className="flex-row items-start gap-x-3">
+        <UserHeader
+          userId={item.userId}
+          firstName={item.profiles?.first_name}
+          lastName={item.profiles?.last_name}
+          username={item.profiles?.username}
+          uriAvatar={item.profiles?.avatar_url}
+          onPress={() => {
+            if (ref && 'current' in ref && ref.current) {
+              ref.current.dismiss();
+            }
+          }}
+        />
+        <View className="flex-1 bg-slate-100 p-3 rounded-2xl relative">
+          <AppText variant="body" className="text-slate-800">
+            {item.text}
+          </AppText>
+          {item.userId === currentUserId && (
+            <TouchableOpacity
+              onPress={() => handleDeleteComment(item.id)}
+              className="absolute top-2 right-2 p-1"
+            >
+              <Trash2 size={14} color="#ef4444" />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    </View>
+  );
+
+  return (
+    <BottomSheetModal
+      ref={ref}
+      index={1}
+      snapPoints={snapPoints}
+      backdropComponent={renderBackdrop}
+      keyboardBehavior="interactive"
+      keyboardBlurBehavior="restore"
+      footerComponent={renderFooter}
+    >
+      <View className="flex-1 bg-white">
+        <View className="p-4 border-b border-slate-100 flex-row justify-between items-center">
+          <AppText variant="title">Comments</AppText>
+        </View>
+
+        {loading && comments.length === 0 ? (
+          <View className="flex-1 justify-center items-center">
+            <ActivityIndicator color="#3b82f6" />
+          </View>
+        ) : (
+          <BottomSheetFlatList
+            className="flex-1"
+            data={comments}
+            keyExtractor={(item: Comment) => item.id}
+            renderItem={renderComment}
+            contentContainerStyle={{ paddingVertical: 16 }}
+            ListEmptyComponent={
+              <View className="flex-1 justify-center items-center py-20">
+                <AppText className="text-slate-400">No comments yet. Be the first to comment!</AppText>
+              </View>
+            }
+          />
+        )}
+      </View>
     </BottomSheetModal>
   );
 });
