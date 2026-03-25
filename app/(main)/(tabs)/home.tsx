@@ -173,6 +173,7 @@ export default function Home() {
           variant="secondary"
           size="md"
           dropdownPosition="right"
+          className="self-start"
         />
       </View>
 

@@ -1,6 +1,8 @@
 import { supabase } from "@/app/lib/supabase";
+import Avatar from "@/components/common/Avatar";
 import Buttons from "@/components/common/Buttons";
 import Input from "@/components/common/Input";
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -26,6 +28,8 @@ export default function EditProfile() {
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [bio, setBio] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [newAvatarUri, setNewAvatarUri] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -51,6 +55,7 @@ export default function EditProfile() {
         setLastName(data.last_name ?? "");
         setUsername(data.username ?? "");
         setBio(data.bio ?? "");
+        setAvatarUrl(data.avatar_url ?? null);
       }
       setLoading(false);
     }
@@ -75,6 +80,50 @@ export default function EditProfile() {
     }
     return true;
   }
+
+  const pickImage = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission required", "Permission needed to access photos.");
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets?.[0]?.uri) {
+        setNewAvatarUri(result.assets[0].uri);
+      }
+    } catch (err) {
+      Alert.alert("Image picker error", "Could not pick image");
+    }
+  };
+
+  const uploadAvatar = async (userId: string, uri: string) => {
+    const extMatch = uri.match(/\.(\w+)(?:\?|$)/);
+    const ext = extMatch ? extMatch[1] : "jpg";
+    const filename = `${userId}_${Date.now()}.${ext}`;
+
+    const formData = new FormData();
+    formData.append("file", {
+      uri,
+      name: filename,
+      type: `image/${ext}`,
+    } as any);
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(filename, formData, { upsert: false });
+
+    if (uploadError) throw uploadError;
+
+    const { data } = supabase.storage.from("avatars").getPublicUrl(filename);
+    return data.publicUrl;
+  };
 
   async function saveProfile() {
     if (!validate()) return;
@@ -110,12 +159,23 @@ export default function EditProfile() {
         }
       }
 
+      let finalAvatarUrl = avatarUrl;
+      if (newAvatarUri) {
+        try {
+          finalAvatarUrl = await uploadAvatar(userId, newAvatarUri);
+        } catch (e: any) {
+          console.warn("avatar upload failed", e);
+          Alert.alert("Upload failed", "Could not upload avatar. Saving profile without it.");
+        }
+      }
+
       const { error } = await supabase.from("profiles").upsert({
         id: userId,
         first_name: firstName.trim(),
         last_name: lastName.trim(),
         username: desiredUsername,
         bio: bio.trim() || null,
+        avatar_url: finalAvatarUrl,
       });
       if (error) {
         Alert.alert(
@@ -176,6 +236,23 @@ export default function EditProfile() {
           paddingTop: insets.top + 56,
         }}
       >
+        {/* Profile Picture */}
+        <View className="items-center mb-6 mt-4">
+          <Avatar
+            uri={newAvatarUri || avatarUrl || undefined}
+            name={`${firstName} ${lastName}`.trim() || undefined}
+            size="xl"
+          />
+          <View className="mt-4">
+            <Buttons
+              title="Change Picture"
+              onPress={pickImage}
+              size="sm"
+              variant="secondary"
+            />
+          </View>
+        </View>
+
         {/* Back arrow is rendered absolute in top-left */}
         <View className="mb-4">
           <Text className="text-sm font-medium mb-1">First name</Text>

@@ -125,7 +125,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                 `)
                 .eq('book_isbn', book.isbn)
                 .eq('post_type', 'review');
-                
+
             if (!error && data) {
                 const sorted = data.sort((a, b) => {
                     const likesA = a.postLikes?.[0]?.count || 0;
@@ -287,7 +287,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                 <View className="absolute top-0 w-full h-[35vh]">
                     <LinearGradient
                         colors={["#B2D3C2", "#F9F8F2"]}
-                        className="flex-1"
+                        style={{ flex: 1 }}
                     />
                 </View>
                 <BottomSheetScrollView showsVerticalScrollIndicator={false} className="flex-1">
@@ -305,50 +305,49 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                         )}
                         <View className="flex-1 flex-col justify-between py-1">
                             <View>
-                                <AppText variant="subtitle" numberOfLines={2}>{book?.title}</AppText>
+                                <AppText variant="title" numberOfLines={2}>{book?.title}</AppText>
                                 <AppText variant="body" numberOfLines={1}>{book?.authors?.join(', ')}</AppText>
                                 {/* This should be turned into a link */}
                                 <AppText variant="label" className="pt-6">
                                     {infoText}
                                 </AppText>
+                                <View className="items-start pt-4">
+                                    <Rating
+                                        variant="hearts-outline"
+                                        size={30}
+                                        rating={displayRating}
+                                        onChange={handleChange}
+                                        spacing={.5}
+                                        baseSymbol={require('@/assets/images/icons/heart-line.png')}
+                                        fillSymbol={require('@/assets/images/icons/heart-fill.png')}
+                                        baseColor="#71717a"
+                                        fillColor="#FF2D55"
+                                    />
+                                </View>
                             </View>
-                            <View className="items-start">
-                                <Rating
-                                    variant="hearts-outline"
-                                    size={36}
-                                    rating={displayRating}
-                                    onChange={handleChange}
-                                    spacing={.5}
-                                    baseSymbol={require('@/assets/images/icons/heart-line.png')}
-                                    fillSymbol={require('@/assets/images/icons/heart-fill.png')}
-                                    baseColor="#71717a"
-                                    fillColor="#FF2D55"
+                            <View className="flex-row items-center gap-2 pt-2">
+                                <DropdownButton
+                                    title="Shelf"
+                                    variant="primary"
+                                    size="md"
+                                    dropdownPosition="right"
+                                    menuOnly={true}
+                                    dropdownItems={[
+                                        ...shelves.map(shelf => ({
+                                            label: shelf.name,
+                                            onPress: () => handleAddToShelf(shelf.id)
+                                        }))
+                                    ]}
+                                />
+                                <Buttons
+                                    title="Review"
+                                    variant="secondary"
+                                    size="md"
+                                    textClassName="font-sans"
+                                    onPress={() => createReviewModalRef.current?.present()}
                                 />
                             </View>
                         </View>
-                    </View>
-
-                    <View className="items-center w-full px-4 pb-6 mt-2 gap-y-3">
-                        <DropdownButton
-                            title="Add to Shelf"
-                            variant="secondary"
-                            size="md"
-                            dropdownPosition="right"
-                            menuOnly={true}
-                            dropdownItems={[
-                                ...shelves.map(shelf => ({
-                                    label: shelf.name,
-                                    onPress: () => handleAddToShelf(shelf.id)
-                                }))
-                            ]}
-                            className="w-3/5"
-                        />
-                        <TouchableOpacity
-                            className="bg-primary flex-row items-center justify-center py-2 w-3/5 rounded-2xl"
-                            onPress={() => createReviewModalRef.current?.present()}
-                        >
-                            <AppText className="text-white font-fraunces-bold text-lg">Add a Review</AppText>
-                        </TouchableOpacity>
                     </View>
                     <View className="px-4 pt-2">
                         <AppText variant="collapsible" charLimit={150}>
@@ -359,7 +358,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                     <View className="px-4 pt-6">
                         <AppText variant="subtitle">Top Reviews</AppText>
                     </View>
-                    
+
                     {reviewsLoading ? (
                         <View className="px-4 py-8 items-center">
                             <AppText variant="body" className="text-slate-500">Loading reviews...</AppText>
@@ -385,7 +384,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                 />
                             ))}
                             {topReviews.length > 3 && (
-                                <TouchableOpacity 
+                                <TouchableOpacity
                                     className="py-3 items-center border border-slate-200 rounded-xl mt-2 active:bg-slate-50"
                                     onPress={() => setIsReviewsExpanded(!isReviewsExpanded)}
                                 >
