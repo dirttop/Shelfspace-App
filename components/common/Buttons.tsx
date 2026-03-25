@@ -18,6 +18,7 @@ export interface ButtonProps {
   variant?: "primary" | "secondary" | "outline";
   size?: "sm" | "md" | "lg";
   className?: string;
+  textClassName?: string;
   dropdownItems?: DropdownItemType[];
   dropdownPosition?: "left" | "right";
 }
@@ -44,6 +45,7 @@ const Buttons = ({
   variant = "primary",
   size = "md",
   className = "",
+  textClassName = "font-sans-bold",
   dropdownItems,
   dropdownPosition = "right",
 }: ButtonProps) => {
@@ -89,12 +91,12 @@ const containerClasses = disabled
             size="small"
             color={variant === "primary" ? "#fff" : "#000"}
           />
-          <AppText className={`font-sans-bold ${textClasses} ml-2`}>
+          <AppText className={`${textClassName} ${textClasses} ml-2`}>
             {title}
           </AppText>
         </View>
       ) : (
-        <AppText className={`font-sans-bold ${textClasses}`}>{title}</AppText>
+        <AppText className={`${textClassName} ${textClasses}`}>{title}</AppText>
       )}
     </Pressable>
   );

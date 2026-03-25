@@ -103,46 +103,74 @@ const DropdownButton = ({
       ref={buttonRef}
       className={`flex-row items-stretch justify-center overflow-hidden flex-shrink-0 ${roundedClasses} ${splitContainerClasses}`}
     >
-      {isLeft && (
+      {menuOnly ? (
         <Pressable
           onPress={handleDropdownPress}
           disabled={disabled || loading}
-          className={`justify-center items-center active:opacity-80 ${verticalPadding} ${dropPadding} ${dividerClasses}`}
+          className={`flex-row items-center justify-center active:opacity-80 ${verticalPadding} ${mainPadding}`}
         >
-          <Feather name="chevron-down" color={iconColor} size={size === "sm" ? 16 : 20} />
-        </Pressable>
-      )}
-
-      <Pressable
-        onPress={menuOnly ? handleDropdownPress : currentAction.onPress}
-        disabled={disabled || loading}
-        className={`flex-1 flex-row items-center justify-center active:opacity-80 ${verticalPadding} ${mainPadding}`}
-      >
-        {loading ? (
-          <View className="flex-row items-center">
-            <ActivityIndicator
-              size="small"
-              color={variant === "primary" ? "#fff" : "#000"}
-            />
-            <AppText className={`font-fraunces-bold ${textClasses} ml-2`}>
+          {isLeft && <Feather name="chevron-down" color={iconColor} size={size === "sm" ? 16 : 20} style={{ marginRight: 6 }} />}
+          {loading ? (
+            <View className="flex-row items-center">
+              <ActivityIndicator
+                size="small"
+                color={variant === "primary" ? "#fff" : "#000"}
+              />
+              <AppText className={`font-fraunces-bold ${textClasses} ml-2`}>
+                {currentAction.title}
+              </AppText>
+            </View>
+          ) : (
+            <AppText className={`font-fraunces-bold ${textClasses}`}>
               {currentAction.title}
             </AppText>
-          </View>
-        ) : (
-          <AppText className={`font-fraunces-bold ${textClasses}`}>
-            {currentAction.title}
-          </AppText>
-        )}
-      </Pressable>
-
-      {!isLeft && (
-        <Pressable
-          onPress={handleDropdownPress}
-          disabled={disabled || loading}
-          className={`justify-center items-center active:opacity-80 ${verticalPadding} ${dropPadding} ${dividerClasses}`}
-        >
-          <Feather name="chevron-down" color={iconColor} size={size === "sm" ? 16 : 20} />
+          )}
+          {!isLeft && <Feather name="chevron-down" color={iconColor} size={size === "sm" ? 16 : 20} style={{ marginLeft: 6 }} />}
         </Pressable>
+      ) : (
+        <>
+          {isLeft && (
+            <Pressable
+              onPress={handleDropdownPress}
+              disabled={disabled || loading}
+              className={`justify-center items-center active:opacity-80 ${verticalPadding} ${dropPadding} ${dividerClasses}`}
+            >
+              <Feather name="chevron-down" color={iconColor} size={size === "sm" ? 16 : 20} />
+            </Pressable>
+          )}
+
+          <Pressable
+            onPress={currentAction.onPress}
+            disabled={disabled || loading}
+            className={`flex-row items-center justify-center active:opacity-80 ${verticalPadding} ${mainPadding}`}
+          >
+            {loading ? (
+              <View className="flex-row items-center">
+                <ActivityIndicator
+                  size="small"
+                  color={variant === "primary" ? "#fff" : "#000"}
+                />
+                <AppText className={`font-fraunces-bold ${textClasses} ml-2`}>
+                  {currentAction.title}
+                </AppText>
+              </View>
+            ) : (
+              <AppText className={`font-fraunces-bold ${textClasses}`}>
+                {currentAction.title}
+              </AppText>
+            )}
+          </Pressable>
+
+          {!isLeft && (
+            <Pressable
+              onPress={handleDropdownPress}
+              disabled={disabled || loading}
+              className={`justify-center items-center active:opacity-80 ${verticalPadding} ${dropPadding} ${dividerClasses}`}
+            >
+              <Feather name="chevron-down" color={iconColor} size={size === "sm" ? 16 : 20} />
+            </Pressable>
+          )}
+        </>
       )}
 
       {dropdownVisible && (
@@ -164,3 +192,4 @@ const DropdownButton = ({
 };
 
 export default React.memo(DropdownButton);
+

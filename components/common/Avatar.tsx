@@ -44,7 +44,10 @@ const Avatar = ({uri, name, size = 'md'}: AvatarProps) => {
         <Image
           source={{ uri }}
           className="absolute inset-0 w-full h-full"
-          onError={() => setHasError(true)}
+          onError={(e) => {
+             console.log("Avatar failed to load URL:", uri, e.nativeEvent.error);
+             setHasError(true);
+          }}
         />
         )}
     </View>
