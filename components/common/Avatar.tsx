@@ -40,7 +40,7 @@ const Avatar = ({uri, name, size = 'md'}: AvatarProps) => {
             {getInitials(name)}
         </AppText>
 
-        {uri && !hasError && (
+        {(uri && !hasError) ? (
         <Image
           source={{ uri }}
           className="absolute inset-0 w-full h-full"
@@ -49,7 +49,7 @@ const Avatar = ({uri, name, size = 'md'}: AvatarProps) => {
              setHasError(true);
           }}
         />
-        )}
+        ) : null}
     </View>
     );
 };

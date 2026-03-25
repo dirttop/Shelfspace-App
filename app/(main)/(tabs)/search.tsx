@@ -45,8 +45,8 @@ const BooksTab = ({ searchQuery }: { searchQuery: string }) => {
 
   return (
     <View className="flex-1">
-      {isLoading && <ActivityIndicator className="mt-5" size="large" />}
-      {error && <AppText className="text-maroon-500 text-center mt-4">Error loading books.</AppText>}
+      {isLoading ? <ActivityIndicator className="mt-5" size="large" /> : null}
+      {error ? <AppText className="text-maroon-500 text-center mt-4">Error loading books.</AppText> : null}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
@@ -164,14 +164,14 @@ export default function SearchTab() {
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
-          {searchQuery.length > 0 && (
+          {searchQuery.length > 0 ? (
             <TouchableOpacity 
               onPress={() => setSearchQuery('')} 
               className="absolute right-3 top-4 p-1 z-10"
             >
               <X size={16} color="#a1a1aa" />
             </TouchableOpacity>
-          )}
+          ) : null}
         </View>
       </View>
     </View>

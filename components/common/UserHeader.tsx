@@ -27,11 +27,11 @@ const UserHeader = ({
         <Pressable onPress={onPress} className="flex-row items-center justify-center gap-2">
             <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="sm"/>
             <AppText variant = "label">@{username}</AppText>
-            {rightText && (
+            {rightText ? (
                 <AppText variant="caption" className="text-gray-500">
                     {rightText}
                 </AppText>
-            )}
+            ) : null}
         </Pressable>
     );
 

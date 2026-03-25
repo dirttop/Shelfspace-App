@@ -80,20 +80,20 @@ export const SearchBookForReviewModal = forwardRef<BottomSheetModal, SearchBookF
                 autoCorrect={false}
               />
             )}
-            {searchQuery.length > 0 && (
+            {searchQuery.length > 0 ? (
               <TouchableOpacity onPress={() => setSearchQuery('')} className="p-1">
                 <X size={16} color="#a1a1aa" />
               </TouchableOpacity>
-            )}
+            ) : null}
           </View>
         </View>
 
-        {loading && <ActivityIndicator className="mt-4" size="large" />}
-        {error && <AppText className="text-maroon-500 text-center mt-4 px-6">Error loading books.</AppText>}
+        {loading ? <ActivityIndicator className="mt-4" size="large" /> : null}
+        {error ? <AppText className="text-maroon-500 text-center mt-4 px-6">Error loading books.</AppText> : null}
         
-        {!loading && !error && books.length === 0 && debouncedQuery.length > 0 && (
+        {(!loading && !error && books.length === 0 && debouncedQuery.length > 0) ? (
           <AppText className="text-center mt-4 text-zinc-500 px-6">No books found.</AppText>
-        )}
+        ) : null}
 
         <BottomSheetFlatList
           data={books}
