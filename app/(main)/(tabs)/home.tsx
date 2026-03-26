@@ -104,7 +104,7 @@ export default function Home() {
           <AppText variant="title" className="text-4xl pb-2">
             Shelf
           </AppText>
-          <Icons.logo width={100} height={100} color="#000" />
+          <Icons.logo width={100} height={100} color="#73BDA8" />
           <AppText variant="title" className="text-4xl pb-2">
             Space
           </AppText>
