@@ -3,7 +3,9 @@ import AppText from '@/components/common/AppText';
 import Input from '@/components/common/Input';
 import { useBookSearch } from '@/hooks/useBookSearch';
 import { useBookRecommendations } from '@/hooks/useBookRecommendations';
+import { useUserSearch } from '@/hooks/useUserSearch';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import UserHeader from '@/components/common/UserHeader';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   ActivityIndicator,
@@ -95,11 +97,42 @@ const BooksTab = ({ searchQuery }: { searchQuery: string }) => {
   );
 };
 
-const UsersTab = () => (
-  <View className="flex-1 justify-center items-center" pointerEvents="box-none">
-    <AppText className="text-zinc-500">Users search coming soon.</AppText>
-  </View>
-);
+const UsersTab = ({ searchQuery }: { searchQuery: string }) => {
+  const { users, loading, error, refetch } = useUserSearch(searchQuery);
+
+  return (
+    <View className="flex-1">
+      {loading && <ActivityIndicator className="mt-5" size="large" />}
+      {error && <AppText className="text-maroon-500 text-center mt-4">Error loading users.</AppText>}
+      <FlatList
+        data={users}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 24, paddingBottom: 48 }}
+        refreshing={loading}
+        onRefresh={refetch}
+        ItemSeparatorComponent={() => <View className="h-4" />}
+        renderItem={({ item }) => (
+          <View className="bg-white px-4 py-3 rounded-xl shadow-sm border border-zinc-100">
+            <UserHeader
+              userId={item.id}
+              firstName={item.first_name}
+              lastName={item.last_name}
+              username={item.username}
+              uriAvatar={item.avatar_url}
+              rightText={`  ${item.first_name} ${item.last_name}`}
+              align="left"
+            />
+          </View>
+        )}
+        ListEmptyComponent={() => (
+          !loading && searchQuery ? (
+            <AppText className="text-center mt-5 text-zinc-500">No users found.</AppText>
+          ) : null
+        )}
+      />
+    </View>
+  );
+};
 
 const ClubsTab = () => (
   <View className="flex-1 justify-center items-center" pointerEvents="box-none">
@@ -148,7 +181,7 @@ export default function SearchTab() {
       case 'books':
         return <BooksTab searchQuery={debouncedQuery} />;
       case 'users':
-        return <UsersTab />;
+        return <UsersTab searchQuery={debouncedQuery} />;
       case 'clubs':
         return <ClubsTab />;
       default:

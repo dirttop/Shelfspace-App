@@ -1,6 +1,6 @@
 import AppText from '@/components/common/AppText';
 import React, { useState } from 'react';
-import { Image, View } from 'react-native';
+import { Image, View, TouchableOpacity } from 'react-native';
 
 interface AvatarProps {
     uri?: string; 
@@ -11,7 +11,7 @@ interface AvatarProps {
 
 import { avatarSizeMap, avatarTextMap } from "@/components/common/styles/avatarStyles";
 
-const Avatar = ({uri, name, size = 'md'}: AvatarProps) => {
+const Avatar = ({uri, name, size = 'md', onPress}: AvatarProps) => {
 
     const [hasError, setHasError] = useState(false);
 
@@ -25,32 +25,42 @@ const Avatar = ({uri, name, size = 'md'}: AvatarProps) => {
             .substring(0, 2);
     }
 
-    return (
-    <View
-        className={`
-        ${avatarSizeMap[size]} 
-        rounded-full 
-        bg-slate-200 
-        items-center 
-        justify-center 
-        overflow-hidden
-        `}
-    >
-        <AppText className={`${avatarTextMap[size]}`}>
-            {getInitials(name)}
-        </AppText>
+    const content = (
+        <View
+            className={`
+            ${avatarSizeMap[size]} 
+            rounded-full 
+            bg-slate-200 
+            items-center 
+            justify-center 
+            overflow-hidden
+            `}
+        >
+            <AppText className={`${avatarTextMap[size]}`}>
+                {getInitials(name)}
+            </AppText>
 
-        {uri && !hasError && (
-        <Image
-          source={{ uri }}
-          className="absolute inset-0 w-full h-full"
-          onError={(e) => {
-             console.log("Avatar failed to load URL:", uri, e.nativeEvent.error);
-             setHasError(true);
-          }}
-        />
-        )}
-    </View>
+            {uri && !hasError && (
+            <Image
+            source={{ uri }}
+            className="absolute inset-0 w-full h-full"
+            onError={(e) => {
+                console.log("Avatar failed to load URL:", uri, e.nativeEvent.error);
+                setHasError(true);
+            }}
+            />
+            )}
+        </View>
     );
+
+    if (onPress) {
+        return (
+            <TouchableOpacity onPress={onPress}>
+                {content}
+            </TouchableOpacity>
+        );
+    }
+
+    return content;
 };
 export default React.memo(Avatar);

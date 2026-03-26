@@ -10,6 +10,7 @@ interface UserHeaderProps {
     lastName?: string;
     uriAvatar?: string;
     rightText?: string;
+    align?: 'left' | 'center';
 };
 
 const UserHeader = ({
@@ -19,10 +20,11 @@ const UserHeader = ({
   lastName,
   uriAvatar,
   rightText,
+  align = 'center',
   ...props
 }: UserHeaderProps) => {
     const content = (
-        <Pressable className = "flex-row items-center justify-center gap-2">
+        <Pressable className={`flex-row items-center gap-2 ${align === 'left' ? 'justify-start' : 'justify-center'}`}>
             <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="sm"/>
             <AppText variant = "label">@{username}</AppText>
             {rightText && (
