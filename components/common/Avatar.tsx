@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Image, View, TouchableOpacity } from 'react-native';
 
 interface AvatarProps {
-    uri?: string; 
+    uri?: string;
     name?: string;
     size?: 'sm' | 'md' | 'lg' | 'xl';
     onPress?: () => void;
@@ -11,7 +11,7 @@ interface AvatarProps {
 
 import { avatarSizeMap, avatarTextMap } from "@/components/common/styles/avatarStyles";
 
-const Avatar = ({uri, name, size = 'md', onPress}: AvatarProps) => {
+const Avatar = ({ uri, name, size = 'md', onPress }: AvatarProps) => {
 
     const [hasError, setHasError] = useState(false);
 
@@ -41,14 +41,14 @@ const Avatar = ({uri, name, size = 'md', onPress}: AvatarProps) => {
             </AppText>
 
             {uri && !hasError && (
-            <Image
-            source={{ uri }}
-            className="absolute inset-0 w-full h-full"
-            onError={(e) => {
-                console.log("Avatar failed to load URL:", uri, e.nativeEvent.error);
-                setHasError(true);
-            }}
-            />
+                <Image
+                    source={{ uri }}
+                    className="absolute inset-0 w-full h-full"
+                    onError={(e) => {
+                        console.log("Avatar failed to load URL:", uri, e.nativeEvent.error);
+                        setHasError(true);
+                    }}
+                />
             )}
         </View>
     );

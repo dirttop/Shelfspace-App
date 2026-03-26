@@ -14,11 +14,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   useWindowDimensions,
-  Animated
+  Animated,
+  TouchableOpacity
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { X } from 'lucide-react-native';
 
 const BooksTab = ({ searchQuery }: { searchQuery: string }) => {
   const isSearchActive = !!searchQuery && searchQuery.trim().length > 0;
@@ -61,8 +63,8 @@ const BooksTab = ({ searchQuery }: { searchQuery: string }) => {
 
   return (
     <View className="flex-1">
-      {isLoading && <ActivityIndicator className="mt-5" size="large" />}
-      {error && <AppText className="text-maroon-500 text-center mt-4">Error loading books.</AppText>}
+      {isLoading ? <ActivityIndicator className="mt-5" size="large" /> : null}
+      {error ? <AppText className="text-maroon-500 text-center mt-4">Error loading books.</AppText> : null}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
@@ -207,11 +209,21 @@ export default function SearchTab() {
         )}
       />
       <View className="px-4 pt-2 pb-3 border-b border-zinc-200">
-        <Input
-          placeholder={index === 0 ? "Search by title, author, or ISBN..." : index === 1 ? "Search users..." : "Search clubs..."}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
+        <View className="relative justify-center">
+          <Input
+            placeholder={index === 0 ? "Search by title, author, or ISBN..." : index === 1 ? "Search users..." : "Search clubs..."}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 ? (
+            <TouchableOpacity 
+              onPress={() => setSearchQuery('')} 
+              className="absolute right-3 top-4 p-1 z-10"
+            >
+              <X size={16} color="#a1a1aa" />
+            </TouchableOpacity>
+          ) : null}
+        </View>
       </View>
     </View>
   );

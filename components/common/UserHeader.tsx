@@ -14,30 +14,29 @@ interface UserHeaderProps {
 };
 
 const UserHeader = ({
-  userId,
-  username,
-  firstName,
-  lastName,
-  uriAvatar,
-  rightText,
-  align = 'center',
-  ...props
+    userId,
+    username,
+    firstName,
+    lastName,
+    uriAvatar,
+    rightText,
+    ...props
 }: UserHeaderProps) => {
     const content = (
-        <Pressable className={`flex-row items-center gap-2 ${align === 'left' ? 'justify-start' : 'justify-center'}`}>
-            <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="sm"/>
-            <AppText variant = "label">@{username}</AppText>
-            {rightText && (
+        <Pressable className="flex-row items-center justify-center gap-2">
+            <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="sm" />
+            <AppText variant="label">@{username}</AppText>
+            {rightText ? (
                 <AppText variant="caption" className="text-gray-500">
                     {rightText}
                 </AppText>
-            )}
+            ) : null}
         </Pressable>
     );
 
     if (userId) {
         return (
-            <Link href={`/(main)/user/${userId}`} asChild>
+            <Link href={`/(main)/user/${userId}`} asChild onPress={onPress}>
                 {content}
             </Link>
         );
