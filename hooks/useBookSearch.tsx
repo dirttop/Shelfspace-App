@@ -26,7 +26,7 @@ export const SEARCH_BOOKS_QUERY = gql`
 `;
 
 export function useBookSearch(query: string) {
-  const { data, loading, error } = useQuery<SearchBooksResponse, SearchBooksVariables>(
+  const { data, loading, error, refetch } = useQuery<SearchBooksResponse, SearchBooksVariables>(
     SEARCH_BOOKS_QUERY,
     {
       variables: { query },
@@ -56,5 +56,6 @@ export function useBookSearch(query: string) {
     books,
     loading,
     error,
+    refetch,
   };
 }

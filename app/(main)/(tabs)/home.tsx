@@ -18,18 +18,6 @@ import { FileText, Star } from "lucide-react-native";
 import React, { useCallback, useRef } from "react";
 import AppText from "@/components/common/AppText";
 
-const mockBook: Book = {
-  isbn: "9780765326355",
-  title: "The Way of Kings",
-  authors: ["Brandon Sanderson"],
-  description: "An epic fantasy novel...",
-  publisher: "Tor Books",
-  pageCount: 1007,
-  source: "Google Books",
-  coverImage: "https://covers.openlibrary.org/b/isbn/9780765326355-L.jpg",
-  releaseYear: "2010",
-};
-
 export default function Home() {
   const [selectedFilter, setSelectedFilter] = useState('Following');
   const createPostModalRef = useRef<BottomSheetModal>(null);
@@ -104,21 +92,20 @@ export default function Home() {
   };
 
   const navItems = [
-    { label: 'ShelfSpace', onPress: () => setSelectedFilter('ShelfSpace'), selected: selectedFilter === 'ShelfSpace' },
+    { label: 'Friends', onPress: () => setSelectedFilter('Friends'), selected: selectedFilter === 'Friends' },
     { label: 'Following', onPress: () => setSelectedFilter('Following'), selected: selectedFilter === 'Following' },
-    { label: 'Favorites', onPress: () => setSelectedFilter('Favorites'), selected: selectedFilter === 'Favorites' },
-    { label: 'Manage favorites', onPress: () => { }, separatorBefore: true },
+    { label: 'For You', onPress: () => setSelectedFilter('For You'), selected: selectedFilter === 'For You' }
   ];
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
       <View className="flex-row items-center justify-between mb-4 mt-4 ml-2 px-4 z-20">
         <View className="flex-row items-center justify-start">
-          <AppText variant="title" className="pb-2">
+          <AppText variant="title" className="text-4xl pb-2">
             Shelf
           </AppText>
           <Icons.logo width={100} height={100} color="#000" />
-          <AppText variant="title" className="pb-2">
+          <AppText variant="title" className="text-4xl pb-2">
             Space
           </AppText>
         </View>
@@ -131,12 +118,12 @@ export default function Home() {
             size="lg"
             className="justify-end"
           />
-          <View ref={addButtonRef} className="justify-end ml-2">
+          <View ref={addButtonRef} className="justify-end">
             <IconButton
               icon="add"
               color="#333333"
               onPress={handleAddPress}
-              size="md"
+              size="xl"
             />
           </View>
         </View>
@@ -173,6 +160,8 @@ export default function Home() {
           variant="secondary"
           size="md"
           dropdownPosition="right"
+          buttonMaxWidth="50%"
+          dropdownMaxWidth="50%"
           className="self-start"
         />
       </View>

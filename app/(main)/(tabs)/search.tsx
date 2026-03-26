@@ -24,9 +24,25 @@ const BooksTab = ({ searchQuery }: { searchQuery: string }) => {
   const searchResult = useBookSearch(searchQuery);
   const recResult = useBookRecommendations();
 
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      if (isSearchActive && searchResult.refetch) {
+        await searchResult.refetch();
+      } else if (!isSearchActive && recResult.refetch) {
+        await recResult.refetch({ offset: 0 });
+      }
+    } catch (error) {
+      console.error("Error refreshing:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [isSearchActive, searchResult.refetch, recResult.refetch]);
+
   useFocusEffect(
     useCallback(() => {
-      // Only refetch recommendations if we aren't actively searching
       if (!isSearchActive && recResult.refetch) {
         recResult.refetch({ offset: 0 });
       }
@@ -59,6 +75,8 @@ const BooksTab = ({ searchQuery }: { searchQuery: string }) => {
           columnWrapperStyle={{ justifyContent: 'flex-start', marginBottom: 16, gap: 16 }}
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
           renderItem={({ item }) => (
             <BookItem 
               book={item} 

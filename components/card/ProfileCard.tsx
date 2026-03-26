@@ -72,12 +72,12 @@ const ProfileCard = ({
           <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="xl" />
         </View>
 
-        <View className="flex-1 gap-y.5 mt-2">
+        <View className="flex-1 gap-y-1 mt-2">
           <AppText variant="subtitle">
             {firstName + " " + lastName}
           </AppText>
           <AppText variant="body">@{username}</AppText>
-          <View className="flex-1 flex-row justify-around mt-4">
+          <View className="flex-row justify-around mt-4 pb-1">
             <ShelfStat label="Reading" value={readingCount} />
             <ShelfStat label="Read" value={readCount} />
             <ShelfStat label="Followers" value={followCount} />

@@ -1,6 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, View, ScrollView } from 'react-native';
+import type { DimensionValue } from 'react-native';
 import AppText from '@/components/common/AppText';
 import { BaseModal } from '@/components/modals/BaseModal';
 
@@ -23,9 +24,10 @@ export type DropdownProps = {
     right?: number;
     width?: number;
   };
+  maxWidth?: DimensionValue;
 };
 
-export const Dropdown = ({ isVisible, onClose, items, position }: DropdownProps) => {
+export const Dropdown = ({ isVisible, onClose, items, position, maxWidth }: DropdownProps) => {
   const hasIcons = items.some(item => item.icon !== undefined || item.selected !== undefined);
 
   return (
@@ -33,42 +35,53 @@ export const Dropdown = ({ isVisible, onClose, items, position }: DropdownProps)
       isVisible={isVisible}
       onClose={onClose}
       animationType="fade"
-      backdropClasses="bg-transparent" // Dropdowns usually have a transparent or very light backdrop
+      backdropClasses="bg-transparent"
     >
       <View
         className="absolute bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden"
         style={{
           width: position?.width ?? 220,
+          maxHeight: 300,
+          ...(maxWidth !== undefined ? { maxWidth } : {}),
           ...(position?.top !== undefined ? { top: position.top } : {}),
           ...(position?.bottom !== undefined ? { bottom: position.bottom } : {}),
           ...(position?.left !== undefined ? { left: position.left } : {}),
           ...(position?.right !== undefined ? { right: position.right } : {}),
         }}
       >
-        {items.map((item, index) => (
-          <React.Fragment key={`${item.label}-${index}`}>
-            {item.separatorBefore && <View className="h-[1px] bg-gray-200" />}
-            <Pressable
-              onPress={() => {
-                item.onPress();
-                onClose();
-              }}
-              className="flex-row items-center px-4 py-3 active:bg-gray-50 transition-colors"
-            >
-              {hasIcons && (
-                <View className="w-6 mr-2 items-center justify-center">
-                  {item.selected && (
-                    <Feather name="check" size={18} color="#000" />
+        <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+          {items.map((item, index) => {
+            const isSelected = item.selected;
+            
+            return (
+              <React.Fragment key={`${item.label}-${index}`}>
+                {item.separatorBefore && <View className="h-[1px] bg-gray-200" />}
+                <Pressable
+                  onPress={() => {
+                    item.onPress();
+                    onClose();
+                  }}
+                  className="flex-row items-center justify-between px-4 py-3 active:bg-gray-100"
+                >
+                  <AppText variant="body" className="flex-1" numberOfLines={1}>
+                    {item.label}
+                  </AppText>
+                  
+                  {hasIcons && (
+                    <View className="ml-2 items-center justify-center min-w-[20px]">
+                      {isSelected && (
+                        <Feather name="check" size={18} color="#000" />
+                      )}
+                      {!isSelected && item.icon && (
+                        <View className="items-center justify-center">{item.icon}</View>
+                      )}
+                    </View>
                   )}
-                  {!item.selected && item.icon && (
-                     <View className="items-center justify-center">{item.icon}</View>
-                  )}
-                </View>
-              )}
-              <AppText variant="body" className="text-gray-900 whitespace-nowrap" numberOfLines={1}>{item.label}</AppText>
-            </Pressable>
-          </React.Fragment>
-        ))}
+                </Pressable>
+              </React.Fragment>
+            );
+          })}
+        </ScrollView>
       </View>
     </BaseModal>
   );

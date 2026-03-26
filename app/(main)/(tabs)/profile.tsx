@@ -9,10 +9,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  View
+  View,
+  RefreshControl
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useFocusEffect } from "expo-router";
 
 export default function Profile() {
   const insets = useSafeAreaInsets();
@@ -22,6 +22,7 @@ export default function Profile() {
   const [error, setError] = useState<string | null>(null);
   const [readCount, setReadCount] = useState<number>(0);
   const [readingCount, setReadingCount] = useState<number>(0);
+  const [refreshing, setRefreshing] = useState(false);
   
   const [selectedShelfId, setSelectedShelfId] = useState<string | null>(null);
 
@@ -36,105 +37,108 @@ export default function Profile() {
     }
   }, [shelves]);
 
-  useFocusEffect(
-    useCallback(() => {
-    let mounted = true;
+  const fetchData = async () => {
+    setError(null);
 
-    async function fetchData() {
-      setLoading(true);
-      setError(null);
-
-      // get current user
-      const { data: userData, error: userErr } = await supabase.auth.getUser();
-      if (userErr || !userData?.user) {
-        if (mounted) setError(userErr?.message ?? "Not signed in");
-        if (mounted) setLoading(false);
-        return;
-      }
-
-      const userId = userData.user.id;
-
-      // fetch profile data
-      const { data: profileData, error: profileErr } = await supabase
-        .from("profiles")
-        .select(
-          "id, first_name, last_name, username, bio, avatar_url, read_count, reading_count, shelved_count, post_count, friend_count, follow_count",
-        )
-        .eq("id", userId)
-        .single();
-
-      if (profileErr) {
-        if (mounted) setError(profileErr.message);
-      } else {
-        if (mounted) setProfile(profileData ?? null);
-      }
-
-      // fetch shelves data
-      const { data: shelvesData, error: shelvesErr } = await supabase
-        .from("shelves")
-        .select(
-          "id, name, created_at",
-        )
-        .eq("user_id", userId);
-
-      if (shelvesErr) {
-        if (mounted) setError(shelvesErr.message);
-      } else {
-        if (mounted) setShelves(shelvesData ?? []);
-        
-        let computedReadCount = 0;
-        let computedReadingCount = 0;
-        
-        if (shelvesData) {
-          const readShelf = shelvesData.find(s => s.name?.toLowerCase() === 'read');
-          const readingShelf = shelvesData.find(s => s.name?.toLowerCase() === 'reading');
-          
-          if (readShelf) {
-             const { count } = await supabase
-               .from('shelf_books')
-               .select('*', { count: 'exact', head: true })
-               .eq('shelf_id', readShelf.id);
-             computedReadCount = count || 0;
-          }
-          
-          if (readingShelf) {
-             const { count } = await supabase
-               .from('shelf_books')
-               .select('*', { count: 'exact', head: true })
-               .eq('shelf_id', readingShelf.id);
-             computedReadingCount = count || 0;
-          }
-        }
-        
-        if (mounted) {
-          setReadCount(computedReadCount);
-          setReadingCount(computedReadingCount);
-        }
-
-        // Self-healing database sync for the current user: 
-        // If the true count in their shelves differs from the number saved in their profile mapping, sync it back to the database.
-        if (profileData && (profileData.read_count !== computedReadCount || profileData.reading_count !== computedReadingCount)) {
-            try {
-                await supabase.from("profiles").update({
-                    read_count: computedReadCount,
-                    reading_count: computedReadingCount
-                }).eq("id", userId);
-            } catch (syncErr) {
-                console.error("Failed to sync profile read counts:", syncErr);
-            }
-        }
-      }
-
-      if (mounted) setLoading(false);
+    // get current user
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userData?.user) {
+      setError(userErr?.message ?? "Not signed in");
+      return;
     }
 
-    fetchData();
+    const userId = userData.user.id;
+
+    // fetch profile data
+    const { data: profileData, error: profileErr } = await supabase
+      .from("profiles")
+      .select(
+        "id, first_name, last_name, username, bio, avatar_url, read_count, reading_count, shelved_count, post_count, friend_count, follow_count",
+      )
+      .eq("id", userId)
+      .single();
+
+    if (profileErr) {
+      setError(profileErr.message);
+    } else {
+      setProfile(profileData ?? null);
+    }
+
+    // fetch shelves data
+    const { data: shelvesData, error: shelvesErr } = await supabase
+      .from("shelves")
+      .select(
+        "id, name, created_at",
+      )
+      .eq("user_id", userId);
+
+    if (shelvesErr) {
+      setError(shelvesErr.message);
+    } else {
+      setShelves(shelvesData ?? []);
+      
+      let computedReadCount = 0;
+      let computedReadingCount = 0;
+      
+      if (shelvesData) {
+        const readShelf = shelvesData.find(s => s.name?.toLowerCase() === 'read');
+        const readingShelf = shelvesData.find(s => s.name?.toLowerCase() === 'reading');
+        
+        if (readShelf) {
+           const { count } = await supabase
+             .from('shelf_books')
+             .select('*', { count: 'exact', head: true })
+             .eq('shelf_id', readShelf.id);
+           computedReadCount = count || 0;
+        }
+        
+        if (readingShelf) {
+           const { count } = await supabase
+             .from('shelf_books')
+             .select('*', { count: 'exact', head: true })
+             .eq('shelf_id', readingShelf.id);
+           computedReadingCount = count || 0;
+        }
+      }
+      
+      setReadCount(computedReadCount);
+      setReadingCount(computedReadingCount);
+
+      if (profileData && (profileData.read_count !== computedReadCount || profileData.reading_count !== computedReadingCount)) {
+          try {
+              await supabase.from("profiles").update({
+                  read_count: computedReadCount,
+                  reading_count: computedReadingCount
+              }).eq("id", userId);
+          } catch (syncErr) {
+              console.error("Failed to sync profile read counts:", syncErr);
+          }
+      }
+    }
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    const loadInitialData = async () => {
+      setLoading(true);
+      await fetchData();
+      if (mounted) {
+        setLoading(false);
+      }
+    };
+    
+    loadInitialData();
 
     return () => {
       mounted = false;
     };
-  }, [])
-  );
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  }, []);
 
   return (
     <KeyboardAvoidingView
@@ -150,12 +154,7 @@ export default function Profile() {
           <ActivityIndicator />
         </View>
       ) : (
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          showsVerticalScrollIndicator={false}
-          style={{ paddingTop: insets.top }}
-        >
-
+        <View className="flex-1" style={{ paddingTop: insets.top }}>
           <ProfileCard
             className="mt-5 mx-4"
             firstName={profile?.first_name}
@@ -170,6 +169,14 @@ export default function Profile() {
             friendCount={profile?.friend_count}
             followCount={profile?.follow_count}
           />
+          
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
 
           <View className="mt-4 px-4 items-start">
             <DropdownButton
@@ -182,6 +189,8 @@ export default function Profile() {
               variant="secondary"
               size="sm"
               dropdownPosition="right"
+              dropdownMaxWidth="50%"
+              buttonMaxWidth="50%"
             />
           </View>
 
@@ -196,6 +205,7 @@ export default function Profile() {
             )}
           </View>
         </ScrollView>
+        </View>
       )}
     </KeyboardAvoidingView>
   );

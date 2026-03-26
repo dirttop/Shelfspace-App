@@ -1,6 +1,7 @@
 import { Feather } from "@expo/vector-icons";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
+import type { DimensionValue } from "react-native";
 import AppText from "@/components/common/AppText";
 import {
   containerSizeStyles,
@@ -9,6 +10,10 @@ import {
   textVariantStyles,
 } from "@/components/button/styles/buttonStyles";
 import { Dropdown, DropdownItemType } from "@/components/button/Dropdown";
+
+const min_width = 220;
+const y_offset = 6;
+const min_left_margin = 16;
 
 export interface DropdownButtonProps {
   title: string;
@@ -21,12 +26,14 @@ export interface DropdownButtonProps {
   dropdownItems: DropdownItemType[];
   dropdownPosition?: "left" | "right";
   menuOnly?: boolean;
+  buttonMaxWidth?: DimensionValue;
+  dropdownMaxWidth?: DimensionValue;
 }
 
 const DropdownButton = ({
   title,
   onPress,
-  disabled,
+  disabled = false,
   loading = false,
   variant = "primary",
   size = "md",
@@ -34,157 +41,88 @@ const DropdownButton = ({
   dropdownItems,
   dropdownPosition = "right",
   menuOnly = false,
+  buttonMaxWidth,
+  dropdownMaxWidth,
 }: DropdownButtonProps) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [currentAction, setCurrentAction] = useState({ title, onPress });
+  const [dropdownCoords, setDropdownCoords] = useState<{ top?: number; left?: number; width?: number }>({});
+  const [selectedItem, setSelectedItem] = useState<DropdownItemType | null>(null);
+  
   const buttonRef = useRef<View>(null);
-  const [dropdownCoords, setDropdownCoords] = useState<{
-    top?: number;
-    left?: number;
-    width?: number;
-  }>({});
+  const isMounted = useRef(true);
 
   useEffect(() => {
-    setCurrentAction({ title, onPress });
-  }, [title, onPress]);
-
+    return () => { isMounted.current = false; };
+  }, []);
+  
+  const iconSize = size === "sm" ? 16 : 20;
+  
   const textClasses = disabled
     ? `text-white/60 dark:text-zinc-300 ${textSizeStyles[size]}`
-    : `${textVariantStyles[variant]} ${textSizeStyles[size]}`;
+    : `${variant === "outline" ? "text-primary" : "text-white"} ${textSizeStyles[size]}`;
 
-  const iconColor = disabled
-    ? "rgba(255,255,255,0.6)"
-    : variant === "outline"
-    ? "#1e656d"
-    : "#fff";
-
-  const handleDropdownPress = () => {
+  const iconColor = disabled ? "rgba(255,255,255,0.6)" : variant === "outline" ? "#1e656d" : "#fff";
+  
+  const handleDropdownPress = useCallback(() => {
     buttonRef.current?.measureInWindow((x, y, width, height) => {
-      const popupWidth = Math.max(width, 220);
+      if (!isMounted.current) return;
+
+      const popupWidth = Math.max(width, min_width);
       setDropdownCoords({
-        top: y + height + 6, // 6px gap below button
-        left: Math.max(16, dropdownPosition === "right" ? x + width - popupWidth : x),
+        top: y + height + y_offset,
+        left: Math.max(min_left_margin, dropdownPosition === "right" ? x + width - popupWidth : x),
         width: popupWidth,
       });
-      setDropdownVisible(true);
+      setDropdownVisible(!dropdownVisible);
     });
-  };
+  }, [dropdownPosition, dropdownVisible]);
 
-  const handleDropdownItemSelect = (item: DropdownItemType) => {
-    if (!menuOnly) {
-      setCurrentAction({ title: item.label, onPress: item.onPress });
-    }
-  };
+  const formattedDropdownItems = useMemo(() => {
+    return dropdownItems.map((item) => ({
+      ...item,
+      onPress: () => {
+        if (!menuOnly) setSelectedItem(item);
+        if (item.onPress) item.onPress();
+        setDropdownVisible(false);
+      },
+      selected: menuOnly ? false : !!(item.selected || (selectedItem && item.label === selectedItem.label)),
+    }));
+  }, [dropdownItems, menuOnly, selectedItem]);
 
-  const isLeft = dropdownPosition === "left";
-  const mainPadding =
-    size === "sm" ? "px-3" : size === "md" ? "px-4" : "px-6";
-  const dropPadding =
-    size === "sm" ? "px-1.5" : size === "md" ? "px-1.5" : "px-3";
-  const verticalPadding = 
-    size === "sm" ? "py-1" : size === "md" ? "py-2" : "py-3";
-
-  const dividerColor =
-    variant === "outline" ? "border-primary" : "border-white/20";
-  const dividerClasses = isLeft
-    ? `border-r ${dividerColor}`
-    : `border-l ${dividerColor}`;
-
-  const splitContainerClasses = disabled
-    ? `bg-[#1e656d] ${className}`
-    : `${containerVariantStyles[variant]} ${className}`;
-
-  const roundedClasses = containerSizeStyles[size]
-    .replace(/py-\d+|px-\d+/g, "")
-    .trim();
+  const displayText = !menuOnly && selectedItem ? selectedItem.label : title;
 
   return (
-    <View
-      ref={buttonRef}
-      className={`flex-row items-stretch justify-center overflow-hidden flex-shrink-0 ${roundedClasses} ${splitContainerClasses}`}
-    >
-      {menuOnly ? (
-        <Pressable
-          onPress={handleDropdownPress}
-          disabled={disabled || loading}
-          className={`flex-row items-center justify-center active:opacity-80 ${verticalPadding} ${mainPadding}`}
-        >
-          {isLeft && <Feather name="chevron-down" color={iconColor} size={size === "sm" ? 16 : 20} style={{ marginRight: 6 }} />}
-          {loading ? (
-            <View className="flex-row items-center">
-              <ActivityIndicator
-                size="small"
-                color={variant === "primary" ? "#fff" : "#000"}
-              />
-              <AppText className={`font-fraunces-bold ${textClasses} ml-2`}>
-                {currentAction.title}
-              </AppText>
-            </View>
-          ) : (
-            <AppText className={`font-fraunces-bold ${textClasses}`}>
-              {currentAction.title}
-            </AppText>
-          )}
-          {!isLeft && <Feather name="chevron-down" color={iconColor} size={size === "sm" ? 16 : 20} style={{ marginLeft: 6 }} />}
-        </Pressable>
-      ) : (
-        <>
-          {isLeft && (
-            <Pressable
-              onPress={handleDropdownPress}
-              disabled={disabled || loading}
-              className={`justify-center items-center active:opacity-80 ${verticalPadding} ${dropPadding} ${dividerClasses}`}
-            >
-              <Feather name="chevron-down" color={iconColor} size={size === "sm" ? 16 : 20} />
-            </Pressable>
-          )}
-
-          <Pressable
-            onPress={currentAction.onPress}
-            disabled={disabled || loading}
-            className={`flex-row items-center justify-center active:opacity-80 ${verticalPadding} ${mainPadding}`}
-          >
-            {loading ? (
-              <View className="flex-row items-center">
-                <ActivityIndicator
-                  size="small"
-                  color={variant === "primary" ? "#fff" : "#000"}
-                />
-                <AppText className={`font-fraunces-bold ${textClasses} ml-2`}>
-                  {currentAction.title}
-                </AppText>
-              </View>
-            ) : (
-              <AppText className={`font-fraunces-bold ${textClasses}`}>
-                {currentAction.title}
-              </AppText>
-            )}
-          </Pressable>
-
-          {!isLeft && (
-            <Pressable
-              onPress={handleDropdownPress}
-              disabled={disabled || loading}
-              className={`justify-center items-center active:opacity-80 ${verticalPadding} ${dropPadding} ${dividerClasses}`}
-            >
-              <Feather name="chevron-down" color={iconColor} size={size === "sm" ? 16 : 20} />
-            </Pressable>
-          )}
-        </>
-      )}
-
+    <View ref={buttonRef} className={`flex-shrink-0 flex-row overflow-visible ${className}`} style={buttonMaxWidth !== undefined ? { maxWidth: buttonMaxWidth } : undefined}>
+      <Pressable
+        onPress={handleDropdownPress}
+        disabled={disabled || loading}
+        accessibilityRole="button"
+        accessibilityState={{ disabled: disabled || loading, expanded: dropdownVisible }}
+        className={`flex-row items-center justify-center flex-1 gap-2 
+          ${containerSizeStyles[size]} 
+          ${disabled ? "bg-[#1e656d]" : containerVariantStyles[variant]} 
+          active:opacity-80`}
+      >
+        {loading && (
+          <ActivityIndicator size="small" color={variant === "primary" ? "#fff" : "#000"} />
+        )}
+        <AppText className={`font-fraunces-bold ${textClasses}`}>
+          {displayText}
+        </AppText>
+        <Feather 
+          name={dropdownVisible ? "chevron-up" : "chevron-down"} 
+          color={iconColor} 
+          size={iconSize} 
+        />
+      </Pressable>
+      
       {dropdownVisible && (
         <Dropdown
           isVisible={dropdownVisible}
           onClose={() => setDropdownVisible(false)}
           position={dropdownCoords}
-          items={dropdownItems.map((item) => ({
-            ...item,
-            onPress: () => {
-              handleDropdownItemSelect(item);
-              item.onPress();
-            },
-          }))}
+          items={formattedDropdownItems}
+          maxWidth={dropdownMaxWidth}
         />
       )}
     </View>
@@ -192,4 +130,3 @@ const DropdownButton = ({
 };
 
 export default React.memo(DropdownButton);
-
