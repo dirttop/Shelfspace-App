@@ -25,11 +25,11 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
       setLoading(true);
       setError(null);
 
-      // Fetch from shelf_books, join with books
+      // Fetch from shelfBooks, join with books
       const { data, error: fetchError } = await supabase
-        .from('shelf_books')
+        .from('shelfBooks')
         .select('*, books(*)')
-        // Note: shelf_books only stores the shelf_id and book_isbn,
+        // Note: shelfBooks only stores the shelf_id and book_isbn,
         // and user_id is implicit via the shelf, but we already filter by shelf_id.
         .eq('shelf_id', shelfId);
 

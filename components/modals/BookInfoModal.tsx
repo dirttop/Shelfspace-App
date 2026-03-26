@@ -168,7 +168,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                 return;
             }
 
-            const { error: shelfErr } = await supabase.from('shelf_books').insert({
+            const { error: shelfErr } = await supabase.from('shelfBooks').insert({
                 shelf_id: shelfId,
                 book_isbn: book.isbn,
             });

@@ -86,7 +86,7 @@ export default function Profile() {
         
         if (readShelf) {
            const { count } = await supabase
-             .from('shelf_books')
+             .from('shelfBooks')
              .select('*', { count: 'exact', head: true })
              .eq('shelf_id', readShelf.id);
            computedReadCount = count || 0;
@@ -94,7 +94,7 @@ export default function Profile() {
         
         if (readingShelf) {
            const { count } = await supabase
-             .from('shelf_books')
+             .from('shelfBooks')
              .select('*', { count: 'exact', head: true })
              .eq('shelf_id', readingShelf.id);
            computedReadingCount = count || 0;
