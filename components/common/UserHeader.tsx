@@ -11,6 +11,7 @@ interface UserHeaderProps {
     uriAvatar?: string;
     rightText?: string;
     align?: 'left' | 'center';
+    onPress?: () => void;
 };
 
 const UserHeader = ({
@@ -20,10 +21,11 @@ const UserHeader = ({
     lastName,
     uriAvatar,
     rightText,
+    onPress,
     ...props
 }: UserHeaderProps) => {
     const content = (
-        <Pressable className="flex-row items-center justify-center gap-2">
+        <Pressable className="flex-row items-center justify-center gap-2" onPress={onPress}>
             <Avatar uri={uriAvatar} name={firstName + " " + lastName} size="sm" />
             <AppText variant="label">@{username}</AppText>
             {rightText ? (
