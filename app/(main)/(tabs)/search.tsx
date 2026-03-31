@@ -7,6 +7,7 @@ import { useUserSearch } from '@/hooks/useUserSearch';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import UserHeader from '@/components/common/UserHeader';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { Feather } from "@expo/vector-icons";
 import {
   ActivityIndicator,
   FlatList,
@@ -136,7 +137,8 @@ const UsersTab = ({ searchQuery }: { searchQuery: string }) => {
 
 const ClubsTab = () => (
   <View className="flex-1 justify-center items-center" pointerEvents="box-none">
-    <AppText className="text-zinc-500">Clubs search coming soon.</AppText>
+    <AppText variant="subtitle" >Under Construction</AppText>
+    <Feather name="package" size={28} color="#73BDA8" />
   </View>
 );
 
@@ -196,8 +198,8 @@ export default function SearchTab() {
         indicatorStyle={{ backgroundColor: '#27272a' }} // zinc-800
         style={{ backgroundColor: 'white', elevation: 0, shadowOffset: { height: 0, width: 0 } }}
         tabStyle={{ minHeight: 48, paddingVertical: 12 }}
-        activeColor="#18181b" // zinc-900
-        inactiveColor="#71717a" // zinc-500
+        activeColor="#18181b" // zinc-90  
+        inactiveColor="#71717a"
         renderLabel={({ route, focused, color }: { route: { title: string }, focused: boolean, color: string }) => (
           <AppText 
             style={{ color }}
