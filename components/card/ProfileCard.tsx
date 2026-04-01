@@ -8,8 +8,10 @@ import { useRouter } from "expo-router";
 import React, { useCallback, useRef } from "react";
 import { View, ViewProps } from "react-native";
 import Avatar from "../common/Avatar";
+import { useFriendship } from "@/hooks/useFriendship";
 
 interface ProfileProps extends ViewProps {
+  userId?: string;
   firstName?: string;
   lastName?: string;
   username?: string;
@@ -53,9 +55,11 @@ const ProfileCard = ({
   followCount = 0,
   isOwner = true,
   className = "",
+  userId,
   ...props
 }: ProfileProps) => {
   const router = useRouter();
+  const { status, addFriend, acceptRequest, removeFriend } = useFriendship(!isOwner ? userId : undefined);
   
   // ref
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -90,7 +94,7 @@ const ProfileCard = ({
           <AppText variant="label">{bio}</AppText>
         )}
       </View>
-      {isOwner && (
+      {isOwner ? (
         <View className="flex-row gap-x-3 justify-between items-center">
           <View className="flex-1">
             <Buttons
@@ -111,6 +115,49 @@ const ProfileCard = ({
               ref={bottomSheetModalRef}
             />
           </View>
+        </View>
+      ) : (
+        <View className="flex-row gap-x-3 justify-between items-center">
+          {status === "loading" && (
+            <View className="flex-1">
+              <Buttons title="Loading..." size="sm" loading disabled />
+            </View>
+          )}
+          {status === "none" && (
+            <View className="flex-1">
+              <Buttons title="Add Friend" size="sm" onPress={addFriend} />
+            </View>
+          )}
+          {status === "pending_sent" && (
+            <View className="flex-1">
+              <Buttons
+                title="Requested"
+                size="sm"
+                variant="secondary"
+                dropdownItems={[{ label: "Cancel Request", onPress: removeFriend }]}
+              />
+            </View>
+          )}
+          {status === "pending_received" && (
+            <View className="flex-1 flex-row gap-x-2">
+              <View className="flex-1">
+                <Buttons title="Accept Request" size="sm" onPress={acceptRequest} />
+              </View>
+              <View className="flex-1">
+                <Buttons title="Decline" size="sm" variant="secondary" onPress={removeFriend} />
+              </View>
+            </View>
+          )}
+          {status === "friends" && (
+            <View className="flex-1">
+              <Buttons
+                title="Friends"
+                size="sm"
+                variant="secondary"
+                dropdownItems={[{ label: "Unfriend", onPress: removeFriend }]}
+              />
+            </View>
+          )}
         </View>
       )}
     </Card>

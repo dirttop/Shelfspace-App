@@ -168,6 +168,7 @@ export default function UserProfile() {
             friendCount={profile?.friend_count}
             followCount={profile?.follow_count}
             isOwner={isOwner}
+            userId={profile?.id}
           />
 
           <View className="mt-4 px-4 items-start">

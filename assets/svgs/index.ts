@@ -1,4 +1,4 @@
-export type IconName = 
+export type IconName =
   | 'logo'
   | 'heartFill'
   | 'heartOutline'
@@ -10,4 +10,5 @@ export type IconName =
   | 'gearFill'
   | 'bellFill'
   | 'bellOutline'
-  | 'add';
+  | 'add'
+  | 'package';
