@@ -14,6 +14,7 @@ import {
   View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Linking from 'expo-linking';
 import { supabase } from '../lib/supabase';
 
 const RegisterScreen = () => {
@@ -29,12 +30,22 @@ const RegisterScreen = () => {
   const [error, setError] = useState("");
 
   const insets = useSafeAreaInsets();
+
+  const isValidUsername = /^[a-zA-Z0-9_]{3,20}$/.test(username);
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const hasMinLength = password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const isValidPassword = hasMinLength && hasUppercase && hasLowercase && hasNumber;
+
   const isFormValid =
     firstName.trim().length > 0 &&
     lastName.trim().length > 0 &&
-    username.trim().length > 0 &&
-    email.trim().length > 0 &&
-    password.length >= 6 &&
+    isValidUsername &&
+    isValidEmail &&
+    isValidPassword &&
     password === confirmPassword &&
     terms;
 
@@ -48,9 +59,18 @@ const RegisterScreen = () => {
       return;
     }
 
+    const redirectUrl = Linking.createURL('/');
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          username: username.trim().toLowerCase(),
+        }
+      }
     });
 
     if (signUpError) {
@@ -59,34 +79,12 @@ const RegisterScreen = () => {
       return;
     }
 
-    const user = data?.user ?? null;
-
-    // If we have a user id (some flows provide a session immediately), try to create/update the profile row.
-    if (user?.id) {
-      try {
-        const { error: upsertError } = await supabase.from("profiles").upsert({
-          id: user.id,
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-          username: username.trim().toLowerCase(),
-        });
-
-        if (upsertError) {
-          // Non-fatal: show message so the developer/user can see why profile fields were not saved.
-          console.warn("Profile upsert error:", upsertError.message);
-          Alert.alert(
-            "Warning",
-            "Account created but we couldn't save your profile details yet.",
-          );
-        }
-      } catch (e: any) {
-        console.warn("Unexpected error upserting profile:", e?.message ?? e);
-      }
-    }
-
     // If signUp did not return a session (email confirmation required), inform the user.
     if (!data?.session) {
-      Alert.alert("Please check your inbox for email verification!");
+      router.push({
+        pathname: "/(auth)/verify-email",
+        params: { email: email }
+      });
       setLoading(false);
       return;
     }
@@ -100,7 +98,7 @@ const RegisterScreen = () => {
 
   return (
     <View
-      className="flex-1 bg-white dark:bg-zinc-950"
+      className="flex-1 bg-white"
       style={{ paddingTop: insets.top }}
     >
       <KeyboardAvoidingView
@@ -117,11 +115,11 @@ const RegisterScreen = () => {
         >
           <View className="items-center mb-1">
             <View className="flex-row items-center justify-center">
-              <AppText variant="title" className="dark:text-gray-50 pb-2">
+              <AppText variant="title" className="text-black-50 pb-2">
                 Shelf
               </AppText>
               <Icons.logo width={100} height={100} color="#000" />
-              <AppText variant="title" className="dark:text-gray-50 pb-2">
+              <AppText variant="title" className="text-black-50 pb-2">
                 Space
               </AppText>
             </View>
@@ -175,6 +173,11 @@ const RegisterScreen = () => {
                 onChangeText={setUsername}
                 autoCapitalize="none"
               />
+              {username.length > 0 && !isValidUsername && (
+                <AppText variant="caption" className="text-red-500 mt-2 ml-1">
+                  Must be 3-20 characters (letters, numbers, underscores).
+                </AppText>
+              )}
               {submitAttempted && username.trim() === "" && (
                 <AppText variant="caption" className="text-red-500 mt-2 ml-1">
                   Username is required.
@@ -193,6 +196,11 @@ const RegisterScreen = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
+              {email.length > 0 && !isValidEmail && (
+                <AppText variant="caption" className="text-red-500 mt-2 ml-1">
+                  Please enter a valid email address.
+                </AppText>
+              )}
               {submitAttempted && email.trim() === "" && (
                 <AppText variant="caption" className="text-red-500 mt-2 ml-1">
                   Email is required.
@@ -210,16 +218,17 @@ const RegisterScreen = () => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-              <AppText variant="caption" className="text-zinc-500 dark:text-zinc-400">
-                Passwords must be at least 6 characters.
-              </AppText>
-              {submitAttempted &&
-                password.length > 0 &&
-                password.length < 6 && (
-                  <AppText variant="caption" className="text-red-500 mt-2 ml-1">
-                    Password must be at least 6 characters.
-                  </AppText>
-                )}
+              <View className="mt-2 ml-1 space-y-1">
+                <AppText variant="caption" className={hasMinLength ? "text-green-600" : "text-zinc-500"}>
+                  {hasMinLength ? '✓' : '○'} At least 8 characters
+                </AppText>
+                <AppText variant="caption" className={hasUppercase && hasLowercase ? "text-green-600" : "text-zinc-500"}>
+                  {hasUppercase && hasLowercase ? '✓' : '○'} Upper and lowercase letters
+                </AppText>
+                <AppText variant="caption" className={hasNumber ? "text-green-600" : "text-zinc-500"}>
+                  {hasNumber ? '✓' : '○'} At least one number
+                </AppText>
+              </View>
             </View>
 
             <View className="mb-6">
@@ -264,7 +273,7 @@ const RegisterScreen = () => {
             />
 
             <View className="mt-4 flex-row justify-center">
-              <AppText className="text-zinc-500 dark:text-zinc-400">
+              <AppText className="text-zinc-500">
                 Already have an account?{" "}
               </AppText>
               <Link href="/(auth)/login" asChild>

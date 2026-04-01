@@ -1,5 +1,5 @@
 export const DevConfig = {
-    enableDevRouting: true,
+    enableDevRouting: false,
 
     initialRoute: '/(main)/(tabs)/home',
 };
