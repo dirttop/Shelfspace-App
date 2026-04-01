@@ -294,7 +294,6 @@ export default function Home() {
         ref={searchBookModalRef} 
         onBookSelected={(book) => {
           setReviewBook(book);
-          // small delay for smooth transition
           setTimeout(() => createReviewModalRef.current?.present(), 100);
         }} 
       />

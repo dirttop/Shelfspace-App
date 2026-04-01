@@ -93,7 +93,13 @@ export default function NotificationsScreen() {
         style={{ paddingTop: Math.max(insets.top, 20) }}
       >
         <TouchableOpacity 
-          onPress={() => router.back()} 
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.push("/(tabs)/home" as any);
+            }
+          }} 
           className="w-10 h-10 items-center justify-center rounded-full bg-slate-200"
         >
           <ChevronLeft size={24} color="#333333" />
