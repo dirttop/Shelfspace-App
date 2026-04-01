@@ -98,7 +98,7 @@ export default function NotificationsScreen() {
         >
           <ChevronLeft size={24} color="#333333" />
         </TouchableOpacity>
-        <AppText variant="subtitle" className="ml-4 font-sans-bold pt-2 text-2xl">Notifications</AppText>
+        <AppText variant="title" className="ml-4 pt-2">Notifications</AppText>
       </View>
 
       {loading && notifications.length === 0 ? (
