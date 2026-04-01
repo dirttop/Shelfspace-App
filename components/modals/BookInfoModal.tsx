@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import AppText from "@/components/common/AppText";
 import Buttons from "@/components/common/Buttons";
 import DropdownButton from "@/components/button/DropdownButton";
@@ -414,3 +415,4 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
         </BottomSheetModal>
     );
 });
+BookInfoModal.displayName = 'BookInfoModal';

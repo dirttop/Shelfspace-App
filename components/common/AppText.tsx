@@ -3,6 +3,8 @@ import { memo, useMemo, useState } from "react";
 import type { TextProps } from "react-native";
 import { Pressable, Text, View } from "react-native";
 
+import { appTextBaseClasses, appTextVariantClasses } from "@/components/common/styles/appTextStyles";
+
 export interface AppTextProps extends TextProps {
   variant?:
     | "title"
@@ -13,8 +15,6 @@ export interface AppTextProps extends TextProps {
     | "collapsible";
   charLimit?: number;
 }
-
-import { appTextBaseClasses, appTextVariantClasses } from "@/components/common/styles/appTextStyles";
 
 const CollapsibleTextContent = ({
   children,

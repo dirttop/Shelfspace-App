@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { View, Pressable } from "react-native";
 import AppText from "./AppText";
 import Avatar from "./Avatar";

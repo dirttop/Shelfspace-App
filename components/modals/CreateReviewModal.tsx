@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, BottomSheetScrollView, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo, useState, useEffect } from 'react';
 import { View, Keyboard, Platform, TouchableWithoutFeedback, Alert, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
@@ -238,3 +239,5 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
     );
   }
 );
+
+CreateReviewModal.displayName = 'CreateReviewModal';

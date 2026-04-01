@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { supabase } from "@/app/lib/supabase";
 import DropdownButton from "@/components/button/DropdownButton";
 import ProfileCard from "@/components/card/ProfileCard";

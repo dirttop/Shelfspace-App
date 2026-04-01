@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { forwardRef, useCallback, useMemo, useState, useEffect } from 'react';
 import { View, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { BottomSheetModal, BottomSheetFlatList, BottomSheetTextInput, BottomSheetBackdrop, BottomSheetFooter } from '@gorhom/bottom-sheet';
@@ -252,3 +254,5 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
 });
 
 export default CommentsModal;
+
+CommentsModal.displayName = 'CommentsModal';

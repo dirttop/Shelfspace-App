@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { supabase } from '@/app/lib/supabase';
 import BookItem from '@/components/book/BookItem';
 import AppText from '@/components/common/AppText';

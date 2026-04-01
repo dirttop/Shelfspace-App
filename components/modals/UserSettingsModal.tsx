@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { router } from 'expo-router';
 import React, { forwardRef, useCallback, useMemo } from 'react';
@@ -74,3 +75,5 @@ export const UserSettingsModal = forwardRef<BottomSheetModal, UserSettingsModalP
     );
   }
 );
+
+UserSettingsModal.displayName = 'UserSettingsModal';

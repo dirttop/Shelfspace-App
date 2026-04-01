@@ -2,14 +2,14 @@ import AppText from '@/components/common/AppText';
 import React, { useState } from 'react';
 import { Image, View, TouchableOpacity } from 'react-native';
 
+import { avatarSizeMap, avatarTextMap } from "@/components/common/styles/avatarStyles";
+
 interface AvatarProps {
     uri?: string;
     name?: string;
     size?: 'sm' | 'md' | 'lg' | 'xl';
     onPress?: () => void;
 }
-
-import { avatarSizeMap, avatarTextMap } from "@/components/common/styles/avatarStyles";
 
 const Avatar = ({ uri, name, size = 'md', onPress }: AvatarProps) => {
 

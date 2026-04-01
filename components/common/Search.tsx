@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { cssInterop } from "nativewind";

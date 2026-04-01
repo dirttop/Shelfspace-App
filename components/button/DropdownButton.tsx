@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Feather } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";

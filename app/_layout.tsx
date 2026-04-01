@@ -1,18 +1,21 @@
 import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
 import { DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSans_700Bold, useFonts as useDMSansFonts } from '@expo-google-fonts/dm-sans';
 import { Fraunces_600SemiBold, Fraunces_700Bold, useFonts as useFrauncesFonts } from '@expo-google-fonts/fraunces';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { BottomSheetModalProvider , BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import React, { useEffect , useRef } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
 
-SplashScreen.preventAutoHideAsync();
-
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+
+import { BookInfoModal } from '@/components/modals/BookInfoModal';
+import { BookModalProvider, useBookModal } from '@/contexts/BookModalContext';
+
+SplashScreen.preventAutoHideAsync();
 
 let apiUrl = process.env.EXPO_PUBLIC_GRAPHQL_API_URL;
 
@@ -34,11 +37,6 @@ const client = new ApolloClient({
   }),
   cache: new InMemoryCache()
 });
-
-import { BookInfoModal } from '@/components/modals/BookInfoModal';
-import { BookModalProvider, useBookModal } from '@/contexts/BookModalContext';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import React, { useRef } from 'react';
 
 // Wrapper component to manage the modal strictly within the provider context
 const GlobalBookModal = () => {

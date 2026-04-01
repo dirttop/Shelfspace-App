@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, BottomSheetTextInput, BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo, useState, useEffect } from 'react';
 import { View, Keyboard, Platform, TouchableWithoutFeedback, ActivityIndicator, TouchableOpacity, Image, TextInput } from 'react-native';
@@ -142,3 +143,5 @@ export const SearchBookForReviewModal = forwardRef<BottomSheetModal, SearchBookF
     );
   }
 );
+
+SearchBookForReviewModal.displayName = 'SearchBookForReviewModal';

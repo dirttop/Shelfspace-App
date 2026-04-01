@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { cssInterop } from "nativewind";
 import { PressableScale } from "pressto";
 import React from "react";
@@ -5,6 +6,13 @@ import { ActivityIndicator, Pressable, View } from "react-native";
 import DropdownButton from "@/components/button/DropdownButton";
 import { DropdownItemType } from "@/components/button/Dropdown";
 import AppText from "@/components/common/AppText";
+
+import {
+  containerSizeStyles,
+  containerVariantStyles,
+  textSizeStyles,
+  textVariantStyles,
+} from "@/components/button/styles/buttonStyles";
 
 const StyledPressable = cssInterop(PressableScale, {
   className: "style",
@@ -22,13 +30,6 @@ export interface ButtonProps {
   dropdownItems?: DropdownItemType[];
   dropdownPosition?: "left" | "right";
 }
-
-import {
-  containerSizeStyles,
-  containerVariantStyles,
-  textSizeStyles,
-  textVariantStyles,
-} from "@/components/button/styles/buttonStyles";
 
 export {
   containerSizeStyles,

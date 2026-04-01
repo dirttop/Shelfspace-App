@@ -4,7 +4,7 @@ import Input from '@/components/common/Input';
 import { useBookSearch } from '@/hooks/useBookSearch';
 import { useBookRecommendations } from '@/hooks/useBookRecommendations';
 import { useUserSearch } from '@/hooks/useUserSearch';
-import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import { useRouter, useGlobalSearchParams, useFocusEffect } from 'expo-router';
 import UserHeader from '@/components/common/UserHeader';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Feather } from "@expo/vector-icons";
@@ -146,13 +146,17 @@ const ClubsTab = () => (
 
 export default function SearchTab() {
   const router = useRouter();
-  const { q } = useLocalSearchParams();
+  const { q, tab } = useGlobalSearchParams();
   const [searchQuery, setSearchQuery] = useState((q as string) || '');
   const [debouncedQuery, setDebouncedQuery] = useState((q as string) || '');
 
   const layout = useWindowDimensions();
 
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(() => {
+    if (tab === 'users') return 1;
+    if (tab === 'clubs') return 2;
+    return 0;
+  });
   const [routes] = useState([
     { key: 'books', title: 'Books' },
     { key: 'users', title: 'Users' },
@@ -174,6 +178,16 @@ export default function SearchTab() {
       setSearchQuery(q as string);
     }
   }, [q]);
+
+  useEffect(() => {
+    if (tab === 'users') {
+      setIndex(1);
+    } else if (tab === 'clubs') {
+      setIndex(2);
+    } else if (tab === 'books') {
+      setIndex(0);
+    }
+  }, [tab]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(searchQuery), 500);

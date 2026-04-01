@@ -59,3 +59,5 @@ export const AddBookModal = forwardRef<BottomSheetModal, AddBookModalProps>(
 );
 
 
+
+AddBookModal.displayName = 'AddBookModal';

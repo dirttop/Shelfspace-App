@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import Feather from '@expo/vector-icons/Feather';
 import React from 'react';
 

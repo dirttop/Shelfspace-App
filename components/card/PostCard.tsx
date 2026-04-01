@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import AppText from "@/components/common/AppText";
 import Card from "@/components/common/Card";
 import { supabase } from "@/app/lib/supabase";

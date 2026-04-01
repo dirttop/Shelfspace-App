@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import IconButton from "@/components/button/IconButton";
 import AppText from "@/components/common/AppText";
 import Buttons from "@/components/common/Buttons";

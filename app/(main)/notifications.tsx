@@ -108,7 +108,7 @@ export default function NotificationsScreen() {
       ) : notifications.length === 0 ? (
         <View className="flex-1 items-center justify-center p-6">
           <AppText variant="body" className="text-gray-500 text-center">
-            You don't have any notifications yet.
+            You don&apos;t have any notifications yet.
           </AppText>
         </View>
       ) : (
