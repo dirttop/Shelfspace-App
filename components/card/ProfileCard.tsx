@@ -4,6 +4,7 @@ import AppText from "@/components/common/AppText";
 import Buttons from "@/components/common/Buttons";
 import Card from "@/components/common/Card";
 import { UserSettingsModal } from "@/components/modals/UserSettingsModal";
+import { OtherUserSettingsModal } from "@/components/modals/OtherUserSettingsModal";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRouter } from "expo-router";
 import React, { useCallback, useRef } from "react";
@@ -64,10 +65,15 @@ const ProfileCard = ({
   
   // ref
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const otherUserModalRef = useRef<BottomSheetModal>(null);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
+  }, []);
+
+  const handlePresentOtherModalPress = useCallback(() => {
+    otherUserModalRef.current?.present();
   }, []);
 
   return (
@@ -119,46 +125,51 @@ const ProfileCard = ({
         </View>
       ) : (
         <View className="flex-row gap-x-3 justify-between items-center">
-          {status === "loading" && (
-            <View className="flex-1">
-              <Buttons title="Loading..." size="sm" loading disabled />
-            </View>
-          )}
-          {status === "none" && (
-            <View className="flex-1">
-              <Buttons title="Add Friend" size="sm" onPress={addFriend} />
-            </View>
-          )}
-          {status === "pending_sent" && (
-            <View className="flex-1">
+          <View className="flex-1">
+            {status === "loading" && (
+              <Buttons title="Loading..." size="sm" loading disabled className="mb-0" />
+            )}
+            {status === "none" && (
+              <Buttons title="Add Friend" size="sm" onPress={addFriend} className="mb-0" />
+            )}
+            {status === "pending_sent" && (
               <Buttons
                 title="Requested"
                 size="sm"
                 variant="secondary"
+                className="mb-0"
                 dropdownItems={[{ label: "Cancel Request", onPress: removeFriend }]}
               />
-            </View>
-          )}
-          {status === "pending_received" && (
-            <View className="flex-1 flex-row gap-x-2">
-              <View className="flex-1">
-                <Buttons title="Accept Request" size="sm" onPress={acceptRequest} />
+            )}
+            {status === "pending_received" && (
+              <View className="flex-row gap-x-2">
+                <View className="flex-1">
+                  <Buttons title="Accept Request" size="sm" onPress={acceptRequest} className="mb-0" />
+                </View>
+                <View className="flex-1">
+                  <Buttons title="Decline" size="sm" variant="secondary" onPress={removeFriend} className="mb-0" />
+                </View>
               </View>
-              <View className="flex-1">
-                <Buttons title="Decline" size="sm" variant="secondary" onPress={removeFriend} />
-              </View>
-            </View>
-          )}
-          {status === "friends" && (
-            <View className="flex-1">
+            )}
+            {status === "friends" && (
               <Buttons
                 title="Friends"
                 size="sm"
-                variant="secondary"
+                variant="primary"
+                className="mb-0"
                 dropdownItems={[{ label: "Unfriend", onPress: removeFriend }]}
               />
-            </View>
-          )}
+            )}
+          </View>
+          <View className="flex-row justify-end items-center mr-2">
+            <IconButton 
+              icon="gearOutline"
+              pressedIcon="gearFill"
+              onPress={handlePresentOtherModalPress}
+              size="md"
+            />
+            <OtherUserSettingsModal ref={otherUserModalRef} />
+          </View>
         </View>
       )}
     </Card>

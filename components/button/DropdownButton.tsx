@@ -99,7 +99,7 @@ const DropdownButton = ({
         disabled={disabled || loading}
         accessibilityRole="button"
         accessibilityState={{ disabled: disabled || loading, expanded: dropdownVisible }}
-        className={`flex-row items-center justify-center flex-1 gap-2 
+        className={`flex-row items-center justify-between flex-1 gap-2 w-full
           ${containerSizeStyles[size]} 
           ${disabled ? "bg-[#1e656d]" : containerVariantStyles[variant]} 
           active:opacity-80`}
@@ -107,7 +107,7 @@ const DropdownButton = ({
         {loading && (
           <ActivityIndicator size="small" color={variant === "primary" ? "#fff" : "#000"} />
         )}
-        <AppText className={`font-fraunces-bold ${textClasses}`}>
+        <AppText className={`flex-1 text-left font-fraunces-bold ${textClasses}`} numberOfLines={1}>
           {displayText}
         </AppText>
         <Feather 

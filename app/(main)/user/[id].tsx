@@ -189,6 +189,8 @@ export default function UserProfile() {
               variant="secondary"
               size="sm"
               dropdownPosition="right"
+              dropdownMaxWidth="50%"
+              buttonMaxWidth="50%"
             />
           </View>
 
