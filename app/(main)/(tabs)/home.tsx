@@ -14,9 +14,10 @@ import { CreateReviewModal } from "@/components/modals/CreateReviewModal";
 import { SearchBookForReviewModal } from "@/components/modals/SearchBookForReviewModal";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Dropdown } from "@/components/button/Dropdown";
-import { FileText, Star } from "lucide-react-native";
+import { FileText, Star, Bell } from "lucide-react-native";
 import React, { useCallback, useRef } from "react";
 import AppText from "@/components/common/AppText";
+import { useRouter } from "expo-router";
 
 export default function Home() {
   const [selectedFilter, setSelectedFilter] = useState('Following');
@@ -27,6 +28,7 @@ export default function Home() {
   const [isAddMenuVisible, setIsAddMenuVisible] = useState(false);
   const [addMenuCoords, setAddMenuCoords] = useState<{ top?: number; right?: number }>({ top: 60, right: 16 });
   const addButtonRef = useRef<View>(null);
+  const router = useRouter();
   const [posts, setPosts] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -91,6 +93,10 @@ export default function Home() {
     });
   };
 
+  const handleBellPress = () => {
+    router.push('/notifications');
+  };
+
   const navItems = [
     { label: 'Friends', onPress: () => setSelectedFilter('Friends'), selected: selectedFilter === 'Friends' },
     { label: 'Following', onPress: () => setSelectedFilter('Following'), selected: selectedFilter === 'Following' },
@@ -111,13 +117,14 @@ export default function Home() {
         </View>
 
         <View className="flex-row items-center justify-end">
-          <IconButton
-            icon="bellFill"
-            color="#333333"
-            onPress={() => { }}
-            size="lg"
-            className="justify-end"
-          />
+          <View className="justify-end mr-4">
+            <IconButton
+              icon="bellFill"
+              color="#333333"
+              onPress={handleBellPress}
+              size="lg"
+            />
+          </View>
           <View ref={addButtonRef} className="justify-end">
             <IconButton
               icon="add"
