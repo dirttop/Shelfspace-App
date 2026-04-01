@@ -16,7 +16,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Dropdown } from "@/components/button/Dropdown";
 import { FileText, Star } from "lucide-react-native";
 import AppText from "@/components/common/AppText";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 
 export default function Home() {
@@ -32,6 +32,32 @@ export default function Home() {
   const [posts, setPosts] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [hasFriends, setHasFriends] = useState(false);
+
+  const fetchNotificationCount = async () => {
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData?.user) return;
+      
+      const { count, error } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('receiverId', userData.user.id);
+        
+      if (!error && count !== null) {
+        setNotificationCount(count);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchNotificationCount();
+    }, [])
+  );
 
   const fetchPosts = async () => {
     try {
@@ -40,9 +66,9 @@ export default function Home() {
       const currentId = userData?.user?.id;
       if (currentId) setCurrentUserId(currentId);
 
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      const weekAgoISO = weekAgo.toISOString();
+      const twoWeeksAgo = new Date();
+      twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+      const twoWeeksAgoISO = twoWeeksAgo.toISOString();
 
       let query = supabase
         .from('posts')
@@ -65,7 +91,7 @@ export default function Home() {
           postLikes:postLikes(count),
           comments:comments(count)
         `)
-        .gte('created_at', weekAgoISO)
+        .gte('created_at', twoWeeksAgoISO)
         .order('created_at', { ascending: false });
 
       if (selectedFilter === 'Friends') {
@@ -83,6 +109,7 @@ export default function Home() {
         if (friendsError) throw friendsError;
 
         const friendIds = friendsData ? friendsData.map(f => f.user_id === currentId ? f.friend_id : f.user_id) : [];
+        setHasFriends(friendIds.length > 0);
 
         if (friendIds.length > 0) {
           query = query.in('userId', friendIds);
@@ -150,13 +177,23 @@ export default function Home() {
         </View>
 
         <View className="flex-row items-center justify-end">
-          <View className="justify-end mr-4">
+          <View className="justify-end relative">
             <IconButton
               icon="bellFill"
               color="#333333"
               onPress={handleBellPress}
               size="lg"
             />
+            {notificationCount > 0 && (
+              <View className="absolute top-2 right-3 z-10 pointer-events-none">
+                <AppText 
+                  className="text-[14px] font-sans-bold leading-none"
+                  style={{ color: '#73BDA8' }}
+                >
+                  {notificationCount > 99 ? '99+' : notificationCount}
+                </AppText>
+              </View>
+            )}
           </View>
           <View ref={addButtonRef} className="justify-end">
             <IconButton
@@ -266,18 +303,27 @@ export default function Home() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 100, paddingTop: 16, paddingHorizontal: 16 }}
             ListEmptyComponent={
-              <View className="flex-1 items-center justify-center mt-20">
-                <AppText variant="subtitle" className="text-[#333333]">No posts yet.</AppText>
-                <AppText variant="body" className="text-[#333333] mt-2">
-                  <AppText 
-                    variant="body" 
-                    className="text-[#73BDA8] underline" 
-                    onPress={() => router.push({ pathname: '/search', params: { tab: 'users' } })}
-                  >
-                    Connect
-                  </AppText>
-                  {' '}with your friends to see their posts
-                </AppText>
+              <View className="flex-1 items-center justify-center mt-20 px-4">
+                {hasFriends ? (
+                  <>
+                    <AppText variant="title" className="text-[#333333] mb-1">No posts</AppText>
+                    <AppText variant="body" className="text-gray-500 text-center">You're all caught up!</AppText>
+                  </>
+                ) : (
+                  <>
+                    <AppText variant="subtitle" className="text-[#333333]">No posts yet.</AppText>
+                    <AppText variant="body" className="text-[#333333] mt-2">
+                      <AppText 
+                        variant="body" 
+                        className="text-[#73BDA8] underline" 
+                        onPress={() => router.push({ pathname: '/search', params: { tab: 'users' } })}
+                      >
+                        Connect
+                      </AppText>
+                      {' '}with your friends to see their posts
+                    </AppText>
+                  </>
+                )}
               </View>
             }
           />

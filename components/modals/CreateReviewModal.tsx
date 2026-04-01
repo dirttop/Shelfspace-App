@@ -75,6 +75,31 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
           });
 
         if (insertErr) throw insertErr;
+
+        // Notify friends
+        try {
+          const { data: friendsData } = await supabase
+            .from('friends')
+            .select('user_id, friend_id')
+            .eq('status', 'accepted')
+            .or(`user_id.eq.${userData.user.id},friend_id.eq.${userData.user.id}`);
+
+          if (friendsData && friendsData.length > 0) {
+            const friendIds = friendsData.map(f => f.user_id === userData.user.id ? f.friend_id : f.user_id);
+            const notificationsToInsert = friendIds.map(fid => ({
+               receiverId: fid,
+               senderId: userData.user.id,
+               title: `posted a review on ${selectedBook.title}!`,
+               data: JSON.stringify({ type: 'new_review', bookTitle: selectedBook.title })
+            }));
+            
+            supabase.from('notifications').insert(notificationsToInsert).then(({error})=> {
+              if (error) console.error('Failed to notify friends:', error)
+            });
+          }
+        } catch (e) {
+          console.error('Notification error:', e);
+        }
         
         // Clear draft and dismiss modal
         setPostText('');

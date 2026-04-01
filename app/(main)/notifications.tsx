@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChevronLeft } from 'lucide-react-native';
+import { ChevronLeft, X } from 'lucide-react-native';
 import AppText from '@/components/common/AppText';
 import Avatar from '@/components/common/Avatar';
 import { supabase } from '@/app/lib/supabase';
@@ -50,6 +50,29 @@ export default function NotificationsScreen() {
     fetchNotifications();
   }, []);
 
+  const removeNotification = async (id: string | number) => {
+    // Optimistically remove from state
+    setNotifications(prev => prev.filter(n => n.id !== id));
+    try {
+      await supabase.from('notifications').delete().eq('id', id);
+    } catch (err) {
+      console.error('Error deleting notification:', err);
+    }
+  };
+
+  const clearAllNotifications = async () => {
+    if (notifications.length === 0) return;
+    // Optimistically clear all
+    setNotifications([]);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData?.user) return;
+      await supabase.from('notifications').delete().eq('receiverId', userData.user.id);
+    } catch (err) {
+      console.error('Error clearing all notifications:', err);
+    }
+  };
+
   const handleNotificationPress = (senderId: string) => {
     router.push(`/user/${senderId}`);
   };
@@ -64,47 +87,65 @@ export default function NotificationsScreen() {
       description = 'sent you a friend request!';
     } else if (json.type === 'friend_accept') {
       description = 'accepted your friend request!';
+    } else if (json.type === 'new_review') {
+      description = `posted a review on ${json.bookTitle}!`;
     }
 
     return (
-      <TouchableOpacity 
-        className="flex-row items-center p-4 border-b border-gray-100"
-        onPress={() => sender?.id ? handleNotificationPress(sender.id) : null}
-      >
-        <Avatar 
-           uri={sender?.avatar_url} 
-           name={name} 
-           size="md" 
-        />
-        <View className="flex-1 ml-3 flex-wrap">
-           <AppText variant="body" className="flex-wrap">
-              <AppText variant="body" className="font-sans-bold">{name}</AppText>
-              {' '}{description}
-           </AppText>
-        </View>
-      </TouchableOpacity>
+      <View className="flex-row items-center px-4 py-5 border-b border-gray-100">
+        <TouchableOpacity 
+          className="flex-1 flex-row items-center pr-4"
+          onPress={() => sender?.id ? handleNotificationPress(sender.id) : null}
+        >
+          <Avatar 
+             uri={sender?.avatar_url} 
+             name={name} 
+             size="md" 
+          />
+          <View className="flex-1 ml-4 justify-center">
+             <AppText variant="body" className="leading-6 text-gray-800">
+                <AppText variant="body" className="font-sans-bold text-black">{name}</AppText>
+                {' '}{description}
+             </AppText>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          className="w-8 h-8 items-center justify-center rounded-full bg-slate-100"
+          onPress={() => removeNotification(item.id)}
+        >
+          <X size={16} color="#64748B" />
+        </TouchableOpacity>
+      </View>
     );
   };
 
   return (
     <View className="flex-1 bg-white">
       <View 
-        className="px-4 flex-row items-center mt-4 pb-4 border-b border-gray-200" 
+        className="px-4 flex-row items-center justify-between mt-4 pb-4 border-b border-gray-200" 
         style={{ paddingTop: Math.max(insets.top, 20) }}
       >
-        <TouchableOpacity 
-          onPress={() => {
-            if (router.canGoBack()) {
-              router.back();
-            } else {
-              router.push("/(tabs)/home" as any);
-            }
-          }} 
-          className="w-10 h-10 items-center justify-center rounded-full bg-slate-200"
-        >
-          <ChevronLeft size={24} color="#333333" />
-        </TouchableOpacity>
-        <AppText variant="title" className="ml-4 pt-2">Notifications</AppText>
+        <View className="flex-row items-center">
+          <TouchableOpacity 
+            onPress={() => {
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.push("/(tabs)/home" as any);
+              }
+            }} 
+            className="w-10 h-10 items-center justify-center rounded-full bg-slate-200"
+          >
+            <ChevronLeft size={24} color="#333333" />
+          </TouchableOpacity>
+          <AppText variant="title" className="ml-4 pt-2">Notifications</AppText>
+        </View>
+
+        {notifications.length > 0 && (
+          <TouchableOpacity onPress={clearAllNotifications} className="pt-2">
+            <AppText variant="body" className="text-slate-500 font-sans-bold">Clear All</AppText>
+          </TouchableOpacity>
+        )}
       </View>
 
       {loading && notifications.length === 0 ? (
@@ -114,7 +155,7 @@ export default function NotificationsScreen() {
       ) : notifications.length === 0 ? (
         <View className="flex-1 items-center justify-center p-6">
           <AppText variant="body" className="text-gray-500 text-center">
-            You don&apos;t have any notifications yet.
+            No notifications.
           </AppText>
         </View>
       ) : (
