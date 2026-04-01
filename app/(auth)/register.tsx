@@ -14,6 +14,7 @@ import {
   View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Linking from 'expo-linking';
 import { supabase } from '../lib/supabase';
 
 const RegisterScreen = () => {
@@ -48,9 +49,18 @@ const RegisterScreen = () => {
       return;
     }
 
+    const redirectUrl = Linking.createURL('/');
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          username: username.trim().toLowerCase(),
+        }
+      }
     });
 
     if (signUpError) {
@@ -59,34 +69,12 @@ const RegisterScreen = () => {
       return;
     }
 
-    const user = data?.user ?? null;
-
-    // If we have a user id (some flows provide a session immediately), try to create/update the profile row.
-    if (user?.id) {
-      try {
-        const { error: upsertError } = await supabase.from("profiles").upsert({
-          id: user.id,
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-          username: username.trim().toLowerCase(),
-        });
-
-        if (upsertError) {
-          // Non-fatal: show message so the developer/user can see why profile fields were not saved.
-          console.warn("Profile upsert error:", upsertError.message);
-          Alert.alert(
-            "Warning",
-            "Account created but we couldn't save your profile details yet.",
-          );
-        }
-      } catch (e: any) {
-        console.warn("Unexpected error upserting profile:", e?.message ?? e);
-      }
-    }
-
     // If signUp did not return a session (email confirmation required), inform the user.
     if (!data?.session) {
-      Alert.alert("Please check your inbox for email verification!");
+      router.push({
+        pathname: "/(auth)/verify-email",
+        params: { email: email }
+      });
       setLoading(false);
       return;
     }
@@ -100,7 +88,7 @@ const RegisterScreen = () => {
 
   return (
     <View
-      className="flex-1 bg-white dark:bg-zinc-950"
+      className="flex-1 bg-white"
       style={{ paddingTop: insets.top }}
     >
       <KeyboardAvoidingView
@@ -117,11 +105,11 @@ const RegisterScreen = () => {
         >
           <View className="items-center mb-1">
             <View className="flex-row items-center justify-center">
-              <AppText variant="title" className="dark:text-gray-50 pb-2">
+              <AppText variant="title" className="text-black-50 pb-2">
                 Shelf
               </AppText>
               <Icons.logo width={100} height={100} color="#000" />
-              <AppText variant="title" className="dark:text-gray-50 pb-2">
+              <AppText variant="title" className="text-black-50 pb-2">
                 Space
               </AppText>
             </View>
@@ -210,7 +198,7 @@ const RegisterScreen = () => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-              <AppText variant="caption" className="text-zinc-500 dark:text-zinc-400">
+              <AppText variant="caption" className="text-zinc-500">
                 Passwords must be at least 6 characters.
               </AppText>
               {submitAttempted &&
@@ -264,7 +252,7 @@ const RegisterScreen = () => {
             />
 
             <View className="mt-4 flex-row justify-center">
-              <AppText className="text-zinc-500 dark:text-zinc-400">
+              <AppText className="text-zinc-500">
                 Already have an account?{" "}
               </AppText>
               <Link href="/(auth)/login" asChild>
