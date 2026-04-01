@@ -2,15 +2,19 @@ import { supabase } from "@/app/lib/supabase";
 import DropdownButton from "@/components/button/DropdownButton";
 import ProfileCard from "@/components/card/ProfileCard";
 import ProfileBookList from "@/components/profile/ProfileBookList";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { LinearGradient } from "expo-linear-gradient";
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { CustomizeShelvesModal } from '@/components/modals/CustomizeShelvesModal';
+import AppText from "@/components/common/AppText";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   View,
-  RefreshControl
+  RefreshControl,
+  TouchableOpacity
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -24,18 +28,7 @@ export default function Profile() {
   const [readingCount, setReadingCount] = useState<number>(0);
   const [refreshing, setRefreshing] = useState(false);
   
-  const [selectedShelfId, setSelectedShelfId] = useState<string | null>(null);
-
-  const shelfOptions = shelves.map(shelf => ({
-    label: shelf.name,
-    onPress: () => setSelectedShelfId(shelf.id),
-  }));
-
-  useEffect(() => {
-    if (shelves.length > 0) {
-      setSelectedShelfId(shelves[0].id);
-    }
-  }, [shelves]);
+  const customizeModalRef = useRef<BottomSheetModal>(null);
 
   const fetchData = async () => {
     setError(null);
@@ -68,7 +61,7 @@ export default function Profile() {
     const { data: shelvesData, error: shelvesErr } = await supabase
       .from("shelves")
       .select(
-        "id, name, created_at",
+        "id, name, created_at, display_on_profile",
       )
       .eq("user_id", userId);
 
@@ -178,33 +171,41 @@ export default function Profile() {
             }
           >
 
-          <View className="mt-4 px-4 items-start">
-            <DropdownButton
-              title={
-                selectedShelfId
-                  ? shelves.find((shelf) => shelf.id === selectedShelfId)?.name
-                  : "Shelves"
-              }
-              dropdownItems={shelfOptions}
-              variant="secondary"
-              size="sm"
-              dropdownPosition="right"
-              dropdownMaxWidth="50%"
-              buttonMaxWidth="50%"
-            />
+          <View className="mt-4 px-4 items-end">
+            <TouchableOpacity 
+              onPress={() => customizeModalRef.current?.present()}
+              className="px-4 py-2 border border-slate-200 rounded-lg bg-white shadow-sm flex-row items-center"
+            >
+              <AppText variant="caption" className="font-fraunces-semiBold">Customize Shelves</AppText>
+            </TouchableOpacity>
           </View>
 
-          <View className="flex-1 mt-4 bg-[#F2F0E9] pt-4 relative">
+          <View className="flex-1 mt-4 bg-[#F2F0E9] pt-4 pb-12 relative">
             <LinearGradient
               colors={['rgba(0,0,0,0.1)', 'transparent']}
               style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 18 }}
               pointerEvents="none"
             />
-            {profile?.id && selectedShelfId && (
-              <ProfileBookList userId={profile.id} shelfId={selectedShelfId} />
+            {profile?.id && shelves.filter(s => s.display_on_profile).map(shelf => (
+              <ProfileBookList 
+                 key={shelf.id} 
+                 userId={profile.id} 
+                 shelfId={shelf.id} 
+                 title={shelf.name} 
+              />
+            ))}
+            {shelves.filter(s => s.display_on_profile).length === 0 && (
+               <View className="items-center justify-center p-8 opacity-50">
+                 <AppText variant="body" className="text-center">No shelves displayed.</AppText>
+               </View>
             )}
           </View>
         </ScrollView>
+        <CustomizeShelvesModal 
+            ref={customizeModalRef} 
+            userId={profile?.id} 
+            onShelvesUpdated={fetchData} 
+        />
         </View>
       )}
     </KeyboardAvoidingView>

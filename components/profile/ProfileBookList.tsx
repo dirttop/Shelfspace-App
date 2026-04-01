@@ -4,8 +4,9 @@ import BookItem from '@/components/book/BookItem';
 import AppText from '@/components/common/AppText';
 import { Book } from '@/types/book';
 import React, { useEffect, useState, useCallback } from 'react';
-import { ActivityIndicator, FlatList, View } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { ActivityIndicator, FlatList, View, TouchableOpacity } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { MoreHorizontal } from 'lucide-react-native';
 
 type ProfileBookListProps = {
   userId: string;
@@ -14,6 +15,7 @@ type ProfileBookListProps = {
 };
 
 export default function ProfileBookList({ userId, shelfId, title }: ProfileBookListProps) {
+  const router = useRouter();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +34,8 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
         .select('*, books(*)')
         // Note: shelfBooks only stores the shelf_id and book_isbn,
         // and user_id is implicit via the shelf, but we already filter by shelf_id.
-        .eq('shelf_id', shelfId);
+        .eq('shelf_id', shelfId)
+        .order('position', { ascending: true, nullsFirst: false });
 
       if (fetchError) {
         if (mounted) setError(fetchError.message);
@@ -90,8 +93,14 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
   return (
     <View className="mb-6">
       {title && (
-        <View className="px-4 mb-3">
+        <View className="px-4 mb-3 flex-row items-center justify-between">
           <AppText variant="subtitle">{title}</AppText>
+          <TouchableOpacity 
+             onPress={() => router.push(`/shelf/${shelfId}/edit` as any)}
+             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+             <MoreHorizontal size={24} color="#64748b" />
+          </TouchableOpacity>
         </View>
       )}
       <FlatList

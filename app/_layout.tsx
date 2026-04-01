@@ -1,10 +1,10 @@
 import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
 import { DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSans_700Bold, useFonts as useDMSansFonts } from '@expo-google-fonts/dm-sans';
 import { Fraunces_600SemiBold, Fraunces_700Bold, useFonts as useFrauncesFonts } from '@expo-google-fonts/fraunces';
-import { BottomSheetModalProvider , BottomSheetModal } from '@gorhom/bottom-sheet';
+import { BottomSheetModalProvider, BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect , useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
@@ -77,11 +77,11 @@ function RootLayoutNav() {
   useEffect(() => {
     const handleDeepLink = async (event: { url: string }) => {
       if (!event.url) return;
-      
+
       try {
         const parsedUrl = Linking.parse(event.url);
         const queryParams = parsedUrl.queryParams;
-        
+
         if (queryParams && queryParams.code) {
           // Handle PKCE flow
           await supabase.auth.exchangeCodeForSession(queryParams.code as string);
