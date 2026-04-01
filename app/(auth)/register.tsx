@@ -30,12 +30,22 @@ const RegisterScreen = () => {
   const [error, setError] = useState("");
 
   const insets = useSafeAreaInsets();
+
+  const isValidUsername = /^[a-zA-Z0-9_]{3,20}$/.test(username);
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const hasMinLength = password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const isValidPassword = hasMinLength && hasUppercase && hasLowercase && hasNumber;
+
   const isFormValid =
     firstName.trim().length > 0 &&
     lastName.trim().length > 0 &&
-    username.trim().length > 0 &&
-    email.trim().length > 0 &&
-    password.length >= 6 &&
+    isValidUsername &&
+    isValidEmail &&
+    isValidPassword &&
     password === confirmPassword &&
     terms;
 
@@ -163,6 +173,11 @@ const RegisterScreen = () => {
                 onChangeText={setUsername}
                 autoCapitalize="none"
               />
+              {username.length > 0 && !isValidUsername && (
+                <AppText variant="caption" className="text-red-500 mt-2 ml-1">
+                  Must be 3-20 characters (letters, numbers, underscores).
+                </AppText>
+              )}
               {submitAttempted && username.trim() === "" && (
                 <AppText variant="caption" className="text-red-500 mt-2 ml-1">
                   Username is required.
@@ -181,6 +196,11 @@ const RegisterScreen = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
+              {email.length > 0 && !isValidEmail && (
+                <AppText variant="caption" className="text-red-500 mt-2 ml-1">
+                  Please enter a valid email address.
+                </AppText>
+              )}
               {submitAttempted && email.trim() === "" && (
                 <AppText variant="caption" className="text-red-500 mt-2 ml-1">
                   Email is required.
@@ -198,16 +218,17 @@ const RegisterScreen = () => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-              <AppText variant="caption" className="text-zinc-500">
-                Passwords must be at least 6 characters.
-              </AppText>
-              {submitAttempted &&
-                password.length > 0 &&
-                password.length < 6 && (
-                  <AppText variant="caption" className="text-red-500 mt-2 ml-1">
-                    Password must be at least 6 characters.
-                  </AppText>
-                )}
+              <View className="mt-2 ml-1 space-y-1">
+                <AppText variant="caption" className={hasMinLength ? "text-green-600" : "text-zinc-500"}>
+                  {hasMinLength ? '✓' : '○'} At least 8 characters
+                </AppText>
+                <AppText variant="caption" className={hasUppercase && hasLowercase ? "text-green-600" : "text-zinc-500"}>
+                  {hasUppercase && hasLowercase ? '✓' : '○'} Upper and lowercase letters
+                </AppText>
+                <AppText variant="caption" className={hasNumber ? "text-green-600" : "text-zinc-500"}>
+                  {hasNumber ? '✓' : '○'} At least one number
+                </AppText>
+              </View>
             </View>
 
             <View className="mb-6">
