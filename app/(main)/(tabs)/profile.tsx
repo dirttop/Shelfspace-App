@@ -153,19 +153,16 @@ export default function Profile() {
     setRefreshing(false);
   }, []);
 
-  const renderTabBar = () => (
+  const renderTabBar = (props: any) => (
     <View className="bg-white border-b border-slate-200" style={{ marginHorizontal: 16 }}>
       <TabBar
-        navigationState={{ index, routes }}
-        position={position}
-        jumpTo={(key) => setIndex(routes.findIndex(r => r.key === key))}
-        layout={{ width: layout.width - 32, height: 0 }}
+        {...props}
         indicatorStyle={{ backgroundColor: '#27272a' }}
         style={{ backgroundColor: 'transparent', elevation: 0, shadowOffset: { height: 0, width: 0 } }}
         tabStyle={{ minHeight: 48, paddingVertical: 12 }}
         activeColor="#18181b"
         inactiveColor="#71717a"
-        renderLabel={({ route, focused, color }) => (
+        renderLabel={({ route, focused, color }: { route: { title: string }, focused: boolean, color: string }) => (
           <AppText style={{ color }} className={focused ? "font-fraunces-bold" : ""}>
             {route.title}
           </AppText>
@@ -209,11 +206,16 @@ export default function Profile() {
                   followCount={profile?.follow_count}
                 />
 
-                {renderTabBar()}
+                {renderTabBar({
+                  navigationState: { index, routes },
+                  position: position,
+                  jumpTo: (key: string) => setIndex(routes.findIndex(r => r.key === key)),
+                  layout: { width: layout.width - 32, height: 0 }
+                })}
 
                 {index === 0 && (
                   <View className="flex-row justify-between items-center px-4 mt-6 mb-2">
-                    <AppText variant="subtitle" className="text-slate-500">My Carousels</AppText>
+                    <AppText variant="subtitle" className="text-slate-500">My Shelves</AppText>
                     <TouchableOpacity
                       onPress={() => customizeModalRef.current?.present()}
                       className="px-4 py-2 border border-slate-200 rounded-lg bg-white shadow-sm flex-row items-center"
