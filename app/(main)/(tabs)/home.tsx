@@ -111,12 +111,8 @@ export default function Home() {
         const friendIds = friendsData ? friendsData.map(f => f.user_id === currentId ? f.friend_id : f.user_id) : [];
         setHasFriends(friendIds.length > 0);
 
-        if (friendIds.length > 0) {
-          query = query.in('userId', friendIds);
-        } else {
-          setPosts([]);
-          return;
-        }
+        const feedUserIds = [...friendIds, currentId];
+        query = query.in('userId', feedUserIds);
       }
 
       const { data, error } = await query;

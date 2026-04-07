@@ -1,27 +1,43 @@
 /* eslint-disable react/display-name */
-import Feather from '@expo/vector-icons/Feather';
+import {
+  BookOpen,
+  Heart,
+  MessageCircle,
+  Share,
+  Settings,
+  Bell,
+  Plus,
+} from 'lucide-react-native';
 import React from 'react';
 
-const createIcon = (name: React.ComponentProps<typeof Feather>['name']) => {
+const createLucideIcon = (IconComponent: React.ElementType, filled: boolean = false) => {
   return (props: { color?: string; width?: string | number; height?: string | number; size?: number; className?: string; style?: any }) => {
     const size = props.size || 24;
-    return <Feather name={name} size={size as number} color={props.color || 'black'} className={props.className} style={props.style} />;
+    return (
+      <IconComponent 
+        color={props.color || 'black'} 
+        size={size as number} 
+        fill={filled ? (props.color || 'black') : 'none'}
+        className={props.className} 
+        style={props.style} 
+      />
+    );
   };
 };
 
 const Icons = {
-  logo: createIcon('book-open'),
-  heartFill: createIcon('heart'),
-  heartOutline: createIcon('heart'),
-  commentFill: createIcon('message-circle'),
-  commentOutline: createIcon('message-circle'),
-  shareOutline: createIcon('share'),
-  shareFill: createIcon('share'),
-  gearOutline: createIcon('settings'),
-  gearFill: createIcon('settings'),
-  bellFill: createIcon('bell'),
-  bellOutline: createIcon('bell'),
-  add: createIcon('plus'),
+  logo: createLucideIcon(BookOpen),
+  heartFill: createLucideIcon(Heart, true),
+  heartOutline: createLucideIcon(Heart, false),
+  commentFill: createLucideIcon(MessageCircle, true),
+  commentOutline: createLucideIcon(MessageCircle, false),
+  shareOutline: createLucideIcon(Share, false),
+  shareFill: createLucideIcon(Share, true),
+  gearOutline: createLucideIcon(Settings, false),
+  gearFill: createLucideIcon(Settings, true),
+  bellFill: createLucideIcon(Bell, true),
+  bellOutline: createLucideIcon(Bell, false),
+  add: createLucideIcon(Plus),
 };
 
 export default Icons;

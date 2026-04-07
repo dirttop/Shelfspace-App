@@ -41,7 +41,7 @@ const CardActions = ({
         <IconButton
           icon="commentOutline"
           pressedIcon="commentFill"
-          pressedColor="blue"
+          pressedColor="primary"
           onPress={onCommentPress || (() => { })}
           size="sm"
           className="-ml-2"
@@ -51,8 +51,8 @@ const CardActions = ({
 
       <IconButton
         icon="shareOutline"
-        pressedIcon="shareFill"
-        pressedColor="blue"
+        pressedIcon="shareOutline"
+        pressedColor="primary"
         onPress={onSharePress || (() => { })}
         size="sm"
         className="-ml-2"

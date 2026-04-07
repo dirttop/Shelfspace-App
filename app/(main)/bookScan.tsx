@@ -6,8 +6,25 @@ import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Alert, StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { useBookModal } from "@/contexts/BookModalContext";
-import { useLazyQuery } from '@apollo/client';
+import { gql, useLazyQuery } from '@apollo/client';
 import { SEARCH_BOOKS_QUERY } from '@/hooks/useBookSearch';
+
+const GET_BOOK_QUERY = gql`
+  query GetBook($isbn: String!) {
+    getBook(isbn: $isbn) {
+      title
+      authors
+      description
+      coverImage
+      pageCount
+      publisher
+      isbn
+      globalRating
+      releaseYear
+      source
+    }
+  }
+`;
 
 export default function BookScan() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -17,6 +34,7 @@ export default function BookScan() {
 
   const { openBookModal } = useBookModal();
   const [searchBooks] = useLazyQuery(SEARCH_BOOKS_QUERY);
+  const [getBook] = useLazyQuery(GET_BOOK_QUERY);
 
   if (!permission) {
     return <View className="flex-1 bg-black" />; // Loading
@@ -157,18 +175,20 @@ export default function BookScan() {
     setIsProcessing(true);
 
     try {
-      // For barcode, the data is the ISBN, so we can search directly
-      const result = await searchBooks({ variables: { query: scanningResult.data } });
-      const books = result.data?.searchBooks || [];
+      // Barcodes are ISBNs — use getBook for a direct ISBN lookup, not a text search
+      const isbn = scanningResult.data;
+      console.log(`Barcode scanned: ${isbn}`);
+      const result = await getBook({ variables: { isbn } });
+      const book = result.data?.getBook;
 
-      if (books.length > 0) {
-        let validSource = 'Google Books';
-        if (books[0].source === 'Cache' || books[0].source === 'Google Books' || books[0].source === 'Open Library') {
-          validSource = books[0].source;
+      if (book) {
+        let validSource: 'Cache' | 'Google Books' | 'Open Library' = 'Google Books';
+        if (book.source === 'Cache' || book.source === 'Google Books' || book.source === 'Open Library') {
+          validSource = book.source as 'Cache' | 'Google Books' | 'Open Library';
         }
-        openBookModal({ ...books[0], source: validSource });
+        openBookModal({ ...book, source: validSource });
       } else {
-        Alert.alert('Scan Result', 'Could not find a matching book for this barcode in our database.');
+        Alert.alert('Scan Result', 'Could not find a matching book for this barcode.');
       }
     } catch (searchErr) {
       console.error('Barcode Search Error:', searchErr);
