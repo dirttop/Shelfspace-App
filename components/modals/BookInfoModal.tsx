@@ -349,7 +349,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                         </View>
                     </View>
                     {isMenuExpanded && (
-                        <Animated.View 
+                        <Animated.View
                             entering={FadeInUp.duration(250)}
                             exiting={FadeOutUp.duration(250)}
                             className="px-6 py-2 mb-2"
@@ -373,7 +373,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                         }))
                                     ]}
                                 />
-                                <TouchableOpacity 
+                                <TouchableOpacity
                                     className="py-4 items-center bg-white active:bg-slate-50 flex-row justify-center"
                                     onPress={() => {
                                         setIsMenuExpanded(false);
@@ -389,59 +389,59 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                     <Animated.View layout={LinearTransition.springify()}>
                         <View className="px-4 pt-2">
                             <AppText variant="collapsible" charLimit={150}>
-                            {book?.description || ''}
-                        </AppText>
-                    </View>
-
-                    <View className="px-4 pt-6">
-                        <AppText variant="subtitle">Top Reviews</AppText>
-                    </View>
-
-                    {reviewsLoading ? (
-                        <View className="px-4 py-8 items-center">
-                            <AppText variant="body" className="text-slate-500">Loading reviews...</AppText>
+                                {book?.description || ''}
+                            </AppText>
                         </View>
-                    ) : topReviews.length === 0 ? (
-                        <View className="px-4 py-6">
-                            <AppText variant="body" className="text-slate-500 italic font-fraunces-italic">No reviews yet for this book. Be the first!</AppText>
-                        </View>
-                    ) : (
-                        <View className="px-4 pt-4 gap-y-3">
-                            {topReviews.slice(0, isReviewsExpanded ? undefined : 3).map((review) => (
-                                <CondensedReviewCard
-                                    key={`condensed-review-${review.id}`}
-                                    firstName={review.profiles?.first_name || "Unknown"}
-                                    lastName={review.profiles?.last_name || ""}
-                                    username={review.profiles?.username || "unknown"}
-                                    uriAvatar={review.profiles?.avatar_url}
-                                    userRating={review.rating}
-                                    postText={review.body}
-                                    timestamp={review.created_at}
-                                    likesCount={review.postLikes?.[0]?.count || 0}
-                                    userId={review.profiles?.id}
-                                    onPressProfile={() => {
-                                        if (ref && 'current' in ref && ref.current) {
-                                            ref.current.dismiss();
-                                        }
-                                    }}
-                                />
-                            ))}
-                            {topReviews.length > 3 && (
-                                <TouchableOpacity
-                                    className="py-3 items-center border border-slate-200 rounded-xl mt-2 active:bg-slate-50"
-                                    onPress={() => setIsReviewsExpanded(!isReviewsExpanded)}
-                                >
-                                    <AppText className="text-primary font-fraunces-bold">
-                                        {isReviewsExpanded ? "Show Less" : `Show All ${topReviews.length} Reviews`}
-                                    </AppText>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                    )}
 
-                    <View className="px-4 pt-8 pb-12">
-                        <AppText variant="subtitle">More Like This</AppText>
-                    </View>
+                        <View className="px-4 pt-6">
+                            <AppText variant="subtitle">Top Reviews</AppText>
+                        </View>
+
+                        {reviewsLoading ? (
+                            <View className="px-4 py-8 items-center">
+                                <AppText variant="body" className="text-slate-500">Loading reviews...</AppText>
+                            </View>
+                        ) : topReviews.length === 0 ? (
+                            <View className="px-4 py-6">
+                                <AppText variant="body" className="text-slate-500 italic font-fraunces-italic">No reviews yet for this book. Be the first!</AppText>
+                            </View>
+                        ) : (
+                            <View className="px-4 pt-4 gap-y-3">
+                                {topReviews.slice(0, isReviewsExpanded ? undefined : 3).map((review) => (
+                                    <CondensedReviewCard
+                                        key={`condensed-review-${review.id}`}
+                                        firstName={review.profiles?.first_name || "Unknown"}
+                                        lastName={review.profiles?.last_name || ""}
+                                        username={review.profiles?.username || "unknown"}
+                                        uriAvatar={review.profiles?.avatar_url}
+                                        userRating={review.rating}
+                                        postText={review.body}
+                                        timestamp={review.created_at}
+                                        likesCount={review.postLikes?.[0]?.count || 0}
+                                        userId={review.profiles?.id}
+                                        onPressProfile={() => {
+                                            if (ref && 'current' in ref && ref.current) {
+                                                ref.current.dismiss();
+                                            }
+                                        }}
+                                    />
+                                ))}
+                                {topReviews.length > 3 && (
+                                    <TouchableOpacity
+                                        className="py-3 items-center border border-slate-200 rounded-xl mt-2 active:bg-slate-50"
+                                        onPress={() => setIsReviewsExpanded(!isReviewsExpanded)}
+                                    >
+                                        <AppText className="text-primary font-fraunces-bold">
+                                            {isReviewsExpanded ? "Show Less" : `Show All ${topReviews.length} Reviews`}
+                                        </AppText>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                        )}
+
+                        <View className="px-4 pt-8 pb-12">
+                            <AppText variant="subtitle">More Like This</AppText>
+                        </View>
                     </Animated.View>
                 </BottomSheetScrollView>
             </View>
