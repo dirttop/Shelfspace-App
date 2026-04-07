@@ -22,50 +22,50 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
 
   useFocusEffect(
     useCallback(() => {
-    let mounted = true;
+      let mounted = true;
 
-    async function fetchBooks() {
-      setLoading(true);
-      setError(null);
+      async function fetchBooks() {
+        setLoading(true);
+        setError(null);
 
-      // Fetch from shelfBooks, join with books
-      const { data, error: fetchError } = await supabase
-        .from('shelfBooks')
-        .select('*, books(*)')
-        // Note: shelfBooks only stores the shelf_id and book_isbn,
-        // and user_id is implicit via the shelf, but we already filter by shelf_id.
-        .eq('shelf_id', shelfId)
-        .order('position', { ascending: true, nullsFirst: false });
+        // Fetch from shelfBooks, join with books
+        const { data, error: fetchError } = await supabase
+          .from('shelfBooks')
+          .select('*, books(*)')
+          // Note: shelfBooks only stores the shelf_id and book_isbn,
+          // and user_id is implicit via the shelf, but we already filter by shelf_id.
+          .eq('shelf_id', shelfId)
+          .order('position', { ascending: true, nullsFirst: false });
 
-      if (fetchError) {
-        if (mounted) setError(fetchError.message);
-      } else if (data) {
-        const mappedBooks = data.map((item: any) => {
-           const bookData = item.books || item.book;
-           if (!bookData) return null;
-           
-           return {
-             ...bookData,
-             coverImage: bookData.cover_image,
-             pageCount: bookData.page_count,
-             releaseYear: bookData.release_year,
-           } as Book;
-        }).filter((book): book is Book => book !== null);
-        
-        if (mounted) setBooks(mappedBooks);
+        if (fetchError) {
+          if (mounted) setError(fetchError.message);
+        } else if (data) {
+          const mappedBooks = data.map((item: any) => {
+            const bookData = item.books || item.book;
+            if (!bookData) return null;
+
+            return {
+              ...bookData,
+              coverImage: bookData.cover_image,
+              pageCount: bookData.page_count,
+              releaseYear: bookData.release_year,
+            } as Book;
+          }).filter((book): book is Book => book !== null);
+
+          if (mounted) setBooks(mappedBooks);
+        }
+
+        if (mounted) setLoading(false);
       }
 
-      if (mounted) setLoading(false);
-    }
+      if (userId) {
+        fetchBooks();
+      }
 
-    if (userId) {
-      fetchBooks();
-    }
-
-    return () => {
-      mounted = false;
-    };
-  }, [userId, shelfId])
+      return () => {
+        mounted = false;
+      };
+    }, [userId, shelfId])
   );
 
   if (loading) {
@@ -87,19 +87,19 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
   }
 
   if (books.length === 0) {
-      return null;
+    return null;
   }
 
   return (
-    <View className="mb-6">
+    <View className="mb-2">
       {title && (
         <View className="px-4 mb-3 flex-row items-center justify-between">
           <AppText variant="subtitle">{title}</AppText>
-          <TouchableOpacity 
-             onPress={() => router.push(`/shelf/${shelfId}/edit` as any)}
-             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          <TouchableOpacity
+            onPress={() => router.push(`/shelf/${shelfId}/edit` as any)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-             <MoreHorizontal size={24} color="#64748b" />
+            <MoreHorizontal size={24} color="#64748b" />
           </TouchableOpacity>
         </View>
       )}
@@ -108,7 +108,7 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
         keyExtractor={(item, index) => item.isbn || index.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 24, gap: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 8, gap: 16 }}
         renderItem={({ item }) => (
           <BookItem book={item} className="w-24 h-36" />
         )}

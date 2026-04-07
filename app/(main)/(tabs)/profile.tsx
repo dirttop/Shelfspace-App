@@ -214,8 +214,7 @@ export default function Profile() {
                 })}
 
                 {index === 0 && (
-                  <View className="flex-row justify-between items-center px-4 mt-6 mb-2">
-                    <AppText variant="subtitle" className="text-slate-500">My Shelves</AppText>
+                  <View className="flex-row justify-between items-center px-4 mt-2 mb-2">
                     <TouchableOpacity
                       onPress={() => customizeModalRef.current?.present()}
                       className="px-4 py-2 border border-slate-200 rounded-lg bg-white shadow-sm flex-row items-center"
@@ -230,7 +229,7 @@ export default function Profile() {
             renderItem={({ item }) => {
               if (index === 0) {
                 return (
-                  <View className="bg-[#F2F0E9] pt-4 relative">
+                  <View className="bg-[#F2F0E9] pt-2 relative">
                     <ProfileBookList
                       key={item.id}
                       userId={profile.id}

@@ -106,44 +106,46 @@ export const CustomizeShelvesModal = forwardRef<BottomSheetModal, CustomizeShelv
         }}
         onDismiss={handleDismiss}
       >
-        <BottomSheetView className="px-6 pt-2 pb-4 border-b border-gray-100 flex-row items-center justify-between">
-            <AppText variant="title">Customize Shelves</AppText>
-        </BottomSheetView>
-        <BottomSheetScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 24) }}>
-          {loading && shelves.length === 0 ? (
-            <View className="py-8 items-center justify-center">
-              <ActivityIndicator />
-            </View>
-          ) : (
-            <View className="px-4 py-2">
-              <AppText variant="caption" className="text-slate-500 mb-4 px-2">
-                Turn on the shelves you want to display on your profile.
-              </AppText>
-              {shelves.map(shelf => (
-                <TouchableOpacity 
-                   key={shelf.id} 
-                   className="flex-row items-center justify-between py-4 px-2 border-b border-gray-50"
-                   onPress={() => handleToggle(shelf)}
-                   disabled={togglingIds.has(shelf.id)}
-                >
-                   <AppText variant="body" className="flex-1">{shelf.name}</AppText>
-                   {togglingIds.has(shelf.id) ? (
-                      <ActivityIndicator size="small" className="mr-2" />
-                   ) : (
-                      <Switch 
-                         value={shelf.display_on_profile} 
-                         onValueChange={() => handleToggle(shelf)} 
-                         trackColor={{ false: '#d1d5db', true: '#73BDA8' }}
-                      />
-                   )}
-                </TouchableOpacity>
-              ))}
-              {shelves.length === 0 && !loading && (
-                 <AppText variant="body" className="text-slate-500text-center py-4">No shelves found.</AppText>
-              )}
-            </View>
-          )}
-        </BottomSheetScrollView>
+        <View className="flex-1">
+          <View className="px-6 pt-2 pb-4 border-b border-gray-100 flex-row items-center justify-between">
+              <AppText variant="title">Customize Shelves</AppText>
+          </View>
+          <BottomSheetScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 24) }}>
+            {loading && shelves.length === 0 ? (
+              <View className="py-8 items-center justify-center">
+                <ActivityIndicator />
+              </View>
+            ) : (
+              <View className="px-4 py-2">
+                <AppText variant="caption" className="text-slate-500 mb-4 px-2">
+                  Turn on the shelves you want to display on your profile.
+                </AppText>
+                {shelves.map(shelf => (
+                  <TouchableOpacity 
+                     key={shelf.id} 
+                     className="flex-row items-center justify-between py-4 px-2 border-b border-gray-50"
+                     onPress={() => handleToggle(shelf)}
+                     disabled={togglingIds.has(shelf.id)}
+                  >
+                     <AppText variant="body" className="flex-1">{shelf.name}</AppText>
+                     {togglingIds.has(shelf.id) ? (
+                        <ActivityIndicator size="small" className="mr-2" />
+                     ) : (
+                        <Switch 
+                           value={shelf.display_on_profile} 
+                           onValueChange={() => handleToggle(shelf)} 
+                           trackColor={{ false: '#d1d5db', true: '#73BDA8' }}
+                        />
+                     )}
+                  </TouchableOpacity>
+                ))}
+                {shelves.length === 0 && !loading && (
+                   <AppText variant="body" className="text-slate-500 text-center py-4">No shelves found.</AppText>
+                )}
+              </View>
+            )}
+          </BottomSheetScrollView>
+        </View>
       </BottomSheetModal>
     );
   }
