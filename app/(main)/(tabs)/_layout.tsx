@@ -5,6 +5,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import React from "react";
 import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Colors } from "@/constants/Colors";
 import { AddBookModal } from "../../../components/modals/AddBookModal";
 
 const TopTabs = withLayoutContext(createMaterialTopTabNavigator().Navigator);
@@ -29,12 +30,12 @@ export default function TabLayout() {
       <TopTabs
         tabBarPosition="bottom"
         screenOptions={{
-          tabBarActiveTintColor: "#73BDA8",
+          tabBarActiveTintColor: Colors.primary,
           tabBarInactiveTintColor: "#8E8E93",
           tabBarShowIcon: true,
           tabBarShowLabel: false,
           tabBarIndicatorStyle: {
-            backgroundColor: "#73BDA8",
+            backgroundColor: Colors.primary,
             top: 0,
           },
           tabBarStyle: Platform.select({
@@ -45,6 +46,7 @@ export default function TabLayout() {
               right: 0,
               paddingBottom: insets.bottom,
               height: 55 + insets.bottom,
+              backgroundColor: Colors.background,
             },
             default: {
               backgroundColor: "white",

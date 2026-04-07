@@ -10,6 +10,7 @@ import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flat
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SearchBookForReviewModal } from '@/components/modals/SearchBookForReviewModal';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { Colors } from '@/constants/Colors';
 
 type ShelfBook = Book & { shelfBookId: string; position: number };
 
@@ -151,15 +152,15 @@ export default function EditShelfScreen() {
       <TouchableOpacity
         onLongPress={drag}
         activeOpacity={0.8}
-        className={`flex-row items-center bg-white border border-slate-100 rounded-xl mb-3 p-3 shadow-sm ${isActive ? 'opacity-80 scale-105 shadow-md' : ''}`}
+        className={`flex-row items-center bg-white border border-border rounded-xl mb-3 p-3 shadow-sm ${isActive ? 'opacity-80 scale-105 shadow-md' : ''}`}
         style={{ elevation: isActive ? 5 : 1 }}
       >
-        <GripVertical size={24} color="#CBD5E1" className="mr-3" />
+        <GripVertical size={24} color={Colors.mutedForeground} className="mr-3" />
 
         {item.coverImage ? (
           <Image source={{ uri: item.coverImage }} className="w-12 h-16 rounded mr-3" />
         ) : (
-          <View className="w-12 h-16 bg-slate-200 rounded justify-center items-center mr-3">
+          <View className="w-12 h-16 bg-muted rounded justify-center items-center mr-3">
             <AppText variant="caption">No Cover</AppText>
           </View>
         )}
@@ -168,23 +169,23 @@ export default function EditShelfScreen() {
           <AppText variant="body" className="font-fraunces-bold" numberOfLines={2}>
             {item.title}
           </AppText>
-          <AppText variant="caption" className="text-slate-500" numberOfLines={1}>
+          <AppText variant="caption" className="text-muted-foreground" numberOfLines={1}>
             {item.authors?.join(', ')}
           </AppText>
         </View>
 
         <TouchableOpacity
           onPress={() => removeBook(item.isbn || '', item.shelfBookId)}
-          className="p-3 bg-red-50 rounded-full ml-2"
+          className="p-3 bg-destructive/10 rounded-full ml-2"
         >
-          <Trash2 size={20} color="#EF4444" />
+          <Trash2 size={20} color={Colors.destructive} />
         </TouchableOpacity>
       </TouchableOpacity>
     );
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#F8FAFC' }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.background }}>
       <View style={{ paddingTop: insets.top }} className="flex-row items-center px-4 mb-4 mt-2 justify-between">
         <View className="flex-row items-center">
           <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
@@ -194,9 +195,9 @@ export default function EditShelfScreen() {
         </View>
         <TouchableOpacity
           onPress={() => searchModalRef.current?.present()}
-          className="w-10 h-10 rounded-full bg-slate-100 items-center justify-center shadow-sm"
+          className="w-10 h-10 rounded-full bg-muted items-center justify-center shadow-sm"
         >
-          <Plus size={24} color="#0f172a" />
+          <Plus size={24} color={Colors.foreground} />
         </TouchableOpacity>
       </View>
 
@@ -208,8 +209,8 @@ export default function EditShelfScreen() {
         <View className="flex-1">
           {books.length === 0 ? (
             <View className="flex-1 justify-center items-center px-6">
-              <AppText variant="subtitle" className="text-slate-500 text-center">Shelf is empty</AppText>
-              <AppText variant="body" className="text-slate-400 text-center mt-2">Tap the + icon to add books</AppText>
+              <AppText variant="subtitle" className="text-muted-foreground text-center">Shelf is empty</AppText>
+              <AppText variant="body" className="text-muted-foreground opacity-70 text-center mt-2">Tap the + icon to add books</AppText>
             </View>
           ) : (
             <DraggableFlatList

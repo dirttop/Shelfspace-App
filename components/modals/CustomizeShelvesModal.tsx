@@ -1,6 +1,7 @@
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo, useState, useEffect } from 'react';
 import { View, Switch, Alert, Platform, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Colors } from '@/constants/Colors';
 import AppText from '../common/AppText';
 import { supabase } from '@/app/lib/supabase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -134,7 +135,7 @@ export const CustomizeShelvesModal = forwardRef<BottomSheetModal, CustomizeShelv
                         <Switch 
                            value={shelf.display_on_profile} 
                            onValueChange={() => handleToggle(shelf)} 
-                           trackColor={{ false: '#d1d5db', true: '#73BDA8' }}
+                           trackColor={{ false: '#d1d5db', true: Colors.primary }}
                         />
                      )}
                   </TouchableOpacity>

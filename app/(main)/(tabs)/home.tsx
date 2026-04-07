@@ -18,6 +18,10 @@ import { FileText, Star } from "lucide-react-native";
 import AppText from "@/components/common/AppText";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFeed } from "@/hooks/useFeed";
+import { useNotifications } from "@/hooks/useNotifications";
+import { Colors } from "@/constants/Colors";
 
 export default function Home() {
   const [selectedFilter, setSelectedFilter] = useState('Friends');
@@ -29,112 +33,16 @@ export default function Home() {
   const [addMenuCoords, setAddMenuCoords] = useState<{ top?: number; right?: number }>({ top: 60, right: 16 });
   const addButtonRef = useRef<View>(null);
   const router = useRouter();
-  const [posts, setPosts] = useState<any[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [notificationCount, setNotificationCount] = useState(0);
-  const [hasFriends, setHasFriends] = useState(false);
-
-  const fetchNotificationCount = async () => {
-    try {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData?.user) return;
-      
-      const { count, error } = await supabase
-        .from('notifications')
-        .select('*', { count: 'exact', head: true })
-        .eq('receiverId', userData.user.id);
-        
-      if (!error && count !== null) {
-        setNotificationCount(count);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchNotificationCount();
-    }, [])
-  );
-
-  const fetchPosts = async () => {
-    try {
-      // Fetch current user id for ownership checks and friend querying
-      const { data: userData } = await supabase.auth.getUser();
-      const currentId = userData?.user?.id;
-      if (currentId) setCurrentUserId(currentId);
-
-      const twoWeeksAgo = new Date();
-      twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-      const twoWeeksAgoISO = twoWeeksAgo.toISOString();
-
-      let query = supabase
-        .from('posts')
-        .select(`
-          *,
-          profiles!userId(
-            id,
-            username,
-            first_name,
-            last_name,
-            avatar_url
-          ),
-          books:book_isbn(
-            isbn,
-            title,
-            authors,
-            coverImage:cover_image,
-            pageCount:page_count
-          ),
-          postLikes:postLikes(count),
-          comments:comments(count)
-        `)
-        .gte('created_at', twoWeeksAgoISO)
-        .order('created_at', { ascending: false });
-
-      if (selectedFilter === 'Friends') {
-        if (!currentId) {
-          setPosts([]);
-          return;
-        }
-
-        const { data: friendsData, error: friendsError } = await supabase
-          .from('friends')
-          .select('user_id, friend_id')
-          .eq('status', 'accepted')
-          .or(`user_id.eq.${currentId},friend_id.eq.${currentId}`);
-
-        if (friendsError) throw friendsError;
-
-        const friendIds = friendsData ? friendsData.map(f => f.user_id === currentId ? f.friend_id : f.user_id) : [];
-        setHasFriends(friendIds.length > 0);
-
-        const feedUserIds = [...friendIds, currentId];
-        query = query.in('userId', feedUserIds);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      setPosts(data || []);
-
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-      setPosts([]);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedFilter === 'Friends') {
-      fetchPosts();
-    }
-  }, [selectedFilter]);
+  const { session } = useAuth();
+  const currentUserId = session?.user?.id ?? null;
+  const { posts, refreshing, refresh: fetchPosts, hasFriends } = useFeed({ 
+    filter: selectedFilter, 
+    currentUserId 
+  });
+  const { notificationCount } = useNotifications(currentUserId);
 
   const onRefresh = async () => {
-    setRefreshing(true);
     await fetchPosts();
-    setRefreshing(false);
   };
 
 
@@ -166,7 +74,7 @@ export default function Home() {
           <AppText variant="title" className="text-4xl pb-2">
             Shelf
           </AppText>
-          <Icons.logo width={100} height={100} color="#73BDA8" />
+          <Icons.logo width={100} height={100} color={Colors.primary} />
           <AppText variant="title" className="text-4xl pb-2">
             Space
           </AppText>
@@ -176,15 +84,14 @@ export default function Home() {
           <View className="justify-end relative">
             <IconButton
               icon="bellFill"
-              color="#333333"
+              color={Colors.foreground}
               onPress={handleBellPress}
               size="lg"
             />
             {notificationCount > 0 && (
               <View className="absolute top-2 right-3 z-10 pointer-events-none">
                 <AppText 
-                  className="text-[14px] font-sans-bold leading-none"
-                  style={{ color: '#73BDA8' }}
+                  className="text-[14px] font-sans-bold leading-none text-primary"
                 >
                   {notificationCount > 99 ? '99+' : notificationCount}
                 </AppText>
@@ -194,7 +101,7 @@ export default function Home() {
           <View ref={addButtonRef} className="justify-end">
             <IconButton
               icon="add"
-              color="#333333"
+              color={Colors.foreground}
               onPress={handleAddPress}
               size="xl"
             />
@@ -239,7 +146,7 @@ export default function Home() {
         />
       </View>
 
-      <View className="flex-1 bg-[#F2F0E9] relative z-10">
+      <View className="flex-1 bg-background relative z-10">
         <LinearGradient
           colors={['rgba(0,0,0,0.1)', 'transparent']}
           style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 18, zIndex: 10 }}
@@ -268,6 +175,7 @@ export default function Home() {
                     likesCount={item.postLikes?.[0]?.count || 0}
                     commentsCount={item.comments?.[0]?.count || 0}
                     onDelete={fetchPosts}
+                    isLiked={item.isLiked}
                     book={item.books || { isbn: item.book_isbn, title: "Unknown Book" } as any}
                     className="mb-4"
                   />
@@ -290,6 +198,7 @@ export default function Home() {
                   likesCount={item.postLikes?.[0]?.count || 0}
                   commentsCount={item.comments?.[0]?.count || 0}
                   onDelete={fetchPosts}
+                  isLiked={item.isLiked}
                   className="mb-4"
                 />
               );
@@ -302,16 +211,16 @@ export default function Home() {
               <View className="flex-1 items-center justify-center mt-20 px-4">
                 {hasFriends ? (
                   <>
-                    <AppText variant="title" className="text-[#333333] mb-1">No posts</AppText>
+                    <AppText variant="title" className="text-foreground mb-1">No posts</AppText>
                     <AppText variant="body" className="text-gray-500 text-center">You're all caught up!</AppText>
                   </>
                 ) : (
                   <>
-                    <AppText variant="subtitle" className="text-[#333333]">No posts yet.</AppText>
-                    <AppText variant="body" className="text-[#333333] mt-2">
+                    <AppText variant="subtitle" className="text-foreground">No posts yet.</AppText>
+                    <AppText variant="body" className="text-foreground mt-2">
                       <AppText 
                         variant="body" 
-                        className="text-[#73BDA8] underline" 
+                        className="text-primary underline" 
                         onPress={() => router.push({ pathname: '/search', params: { tab: 'users' } })}
                       >
                         Connect
@@ -326,7 +235,7 @@ export default function Home() {
         ) : (
           <View className="flex-1 items-center justify-center pt-20">
             <AppText variant="title">Under Construction</AppText>
-            <Feather name="package" size={28} color="#73BDA8" style={{ marginTop: 16 }} />
+            <Feather name="package" size={28} color={Colors.primary} style={{ marginTop: 16 }} />
           </View>
         )}
       </View>

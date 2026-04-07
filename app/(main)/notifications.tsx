@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChevronLeft, X } from 'lucide-react-native';
 import AppText from '@/components/common/AppText';
 import Avatar from '@/components/common/Avatar';
+import { Colors } from '@/constants/Colors';
 import { supabase } from '@/app/lib/supabase';
 
 export default function NotificationsScreen() {
@@ -113,7 +114,7 @@ export default function NotificationsScreen() {
           className="w-8 h-8 items-center justify-center rounded-full bg-slate-100"
           onPress={() => removeNotification(item.id)}
         >
-          <X size={16} color="#64748B" />
+          <X size={16} color={Colors.mutedForeground} />
         </TouchableOpacity>
       </View>
     );
@@ -136,7 +137,7 @@ export default function NotificationsScreen() {
             }} 
             className="w-10 h-10 items-center justify-center rounded-full bg-slate-200"
           >
-            <ChevronLeft size={24} color="#333333" />
+            <ChevronLeft size={24} color={Colors.foreground} />
           </TouchableOpacity>
           <AppText variant="title" className="ml-4 pt-2">Notifications</AppText>
         </View>

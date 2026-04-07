@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: #f9f8f2;
+    --background: #F2F0E9;
     --foreground: #333333;
     --card: #ffffff;
     --card-foreground: #333333;
@@ -14,6 +14,12 @@
     --secondary-foreground: #333333;
     --muted: #f1f5f9;
     --muted-foreground: #64748b;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --success: #22c55e;
+    --success-foreground: #ffffff;
+    --warning: #f59e0b;
+    --warning-foreground: #ffffff;
     --border: #e2e8f0;
   }
 }

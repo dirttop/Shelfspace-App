@@ -28,7 +28,7 @@ const BookItem = ({ book, onPress, className = "", style }: BookItemProps) => {
       className={`rounded-md ${className || 'w-32 h-48'}`}
       style={[{
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.3,
         shadowRadius: 6,
         elevation: 6,

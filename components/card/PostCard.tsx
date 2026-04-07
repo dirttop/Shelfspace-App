@@ -12,6 +12,7 @@ import CardActions from "./CardActions";
 import { Dropdown } from "@/components/button/Dropdown";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import CommentsModal from "../modals/CommentsModal";
+import { Colors } from "@/constants/Colors";
 
 interface ReviewProps extends ViewProps {
   firstName?: string;
@@ -27,6 +28,7 @@ interface ReviewProps extends ViewProps {
   likesCount?: number;
   commentsCount?: number;
   onDelete?: () => void;
+  isLiked?: boolean;
 }
 
 const PostCard = ({
@@ -45,10 +47,11 @@ const PostCard = ({
   likesCount = 0,
   commentsCount = 0,
   onDelete,
+  isLiked: initialIsLiked = false,
   ...props
 }: ReviewProps) => {
   const router = useRouter();
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [localLikesCount, setLocalLikesCount] = useState(likesCount);
   const [localCommentsCount, setLocalCommentsCount] = useState(commentsCount);
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -57,22 +60,12 @@ const PostCard = ({
   const commentsModalRef = useRef<BottomSheetModal>(null);
 
   // Keep local counts in sync if parent refreshes
+  // Keep local state in sync if parent refreshes
+  useEffect(() => { setIsLiked(initialIsLiked); }, [initialIsLiked]);
   useEffect(() => { setLocalLikesCount(likesCount); }, [likesCount]);
   useEffect(() => { setLocalCommentsCount(commentsCount); }, [commentsCount]);
 
-  // Fetch initial like state for current user
-  useEffect(() => {
-    if (!postId || !currentUserId) return;
-    supabase
-      .from('postLikes')
-      .select('id')
-      .eq('postId', postId)
-      .eq('userId', currentUserId)
-      .maybeSingle()
-      .then(({ data }) => {
-        setIsLiked(!!data);
-      });
-  }, [postId, currentUserId]);
+  // Removed redundant isLiked fetching - handled by useFeed batch query
 
   const isOwner = !!currentUserId && currentUserId === userId;
 
@@ -160,8 +153,8 @@ const PostCard = ({
   };
 
   const dropdownItems = isOwner
-    ? [{ label: "Delete Post", icon: <Trash2 size={16} color="#ef4444" />, onPress: handleDelete }]
-    : [{ label: "Report Post", icon: <Flag size={16} color="#64748b" />, onPress: () => Alert.alert("Reported", "Thank you for your report.") }];
+    ? [{ label: "Delete Post", icon: <Trash2 size={16} color={Colors.destructive} />, onPress: handleDelete }]
+    : [{ label: "Report Post", icon: <Flag size={16} color={Colors.mutedForeground} />, onPress: () => Alert.alert("Reported", "Thank you for your report.") }];
 
   const handleCommentAdded = useCallback(() => {
     setLocalCommentsCount(prev => prev + 1);
@@ -197,7 +190,7 @@ const PostCard = ({
         {!!postImage && (
           <Image
             source={postImage}
-            style={{ width: '100%', height: 256, borderRadius: 12, marginBottom: 16 }}
+            className="w-full h-64 rounded-xl mb-4"
             contentFit="cover"
           />
         )}
@@ -212,14 +205,14 @@ const PostCard = ({
           />
           <View className="flex-row items-center gap-x-2 pr-2">
             {!!timeElapsed && (
-              <AppText variant="caption" className="text-slate-400">{timeElapsed}</AppText>
+              <AppText variant="caption" className="text-muted-foreground">{timeElapsed}</AppText>
             )}
             <TouchableOpacity
               ref={moreButtonRef}
               onPress={handleMorePress}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <EllipsisVertical size={18} color="#94a3b8" />
+              <EllipsisVertical size={18} color={Colors.mutedForeground} />
             </TouchableOpacity>
           </View>
         </View>

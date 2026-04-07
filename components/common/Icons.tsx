@@ -7,6 +7,7 @@ import {
   Settings,
   Bell,
   Plus,
+  Package,
 } from 'lucide-react-native';
 import React from 'react';
 
@@ -38,6 +39,7 @@ const Icons = {
   bellFill: createLucideIcon(Bell, true),
   bellOutline: createLucideIcon(Bell, false),
   add: createLucideIcon(Plus),
+  package: createLucideIcon(Package),
 };
 
 export default Icons;

@@ -33,24 +33,6 @@ const ForgotPasswordScreen = () => {
       return;
     }
 
-    // First, check if the email actually exists in our profiles table
-    // Depending on your RLS policies, you may need a secure RPC function.
-    // Assuming profiles has an "email" column or we query it. 
-    // Since we don't have an email column in profiles based on register file, 
-    // we would usually need a secure Edge Function to check auth.users.
-    // For now, if you are letting users sign in with email, we can attempt a dummy sign in
-    // or call an RPC to verify. 
-
-    // The most secure and standard way without exposing auth.users is to call an RPC function.
-    // If you haven't set up an RPC, another way is to try sending the reset and relying on Supabase.
-    // But since Supabase's resetPasswordForEmail returns success even if the email doesn't exist (to prevent email enumeration),
-    // we MUST use a custom RPC or Edge function to securely check if it exists. 
-
-    // Since I don't know your exact DB schema for `profiles` beyond first_name, last_name, username, 
-    // Let's assume we can query `profiles` by joining or we added an email column.
-    // If you don't have an email column in profiles, we will need to create an RPC function on your database.
-
-    // Let's implement a clean call to an RPC function that you will need to add to your DB:
     const { data: emailExists, error: checkError } = await supabase
       .rpc('check_email_exists', { check_email: email });
 
@@ -67,7 +49,7 @@ const ForgotPasswordScreen = () => {
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'shelfspaceapp://reset-password', // Matches scheme in app.json 
+      redirectTo: 'shelfspaceapp://reset-password',
     });
 
     if (error) {
@@ -79,7 +61,7 @@ const ForgotPasswordScreen = () => {
   }
 
   return (
-    <View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"

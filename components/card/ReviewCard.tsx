@@ -14,6 +14,7 @@ import CardActions from "./CardActions";
 import { Dropdown } from "@/components/button/Dropdown";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import CommentsModal from "../modals/CommentsModal";
+import { Colors } from "@/constants/Colors";
 
 interface ReviewProps extends ViewProps {
   firstName?: string;
@@ -33,6 +34,7 @@ interface ReviewProps extends ViewProps {
   likesCount?: number;
   commentsCount?: number;
   onDelete?: () => void;
+  isLiked?: boolean;
 }
 
 const ReviewCard = ({
@@ -54,10 +56,11 @@ const ReviewCard = ({
   likesCount = 0,
   commentsCount = 0,
   onDelete,
+  isLiked: initialIsLiked = false,
   ...props
 }: ReviewProps) => {
   const router = useRouter();
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [localLikesCount, setLocalLikesCount] = useState(likesCount);
   const [localCommentsCount, setLocalCommentsCount] = useState(commentsCount);
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -66,22 +69,11 @@ const ReviewCard = ({
   const commentsModalRef = useRef<BottomSheetModal>(null);
 
   // Keep local counts in sync if parent refreshes
+  useEffect(() => { setIsLiked(initialIsLiked); }, [initialIsLiked]);
   useEffect(() => { setLocalLikesCount(likesCount); }, [likesCount]);
   useEffect(() => { setLocalCommentsCount(commentsCount); }, [commentsCount]);
 
-  // Fetch initial like state for current user
-  useEffect(() => {
-    if (!postId || !currentUserId) return;
-    supabase
-      .from('postLikes')
-      .select('id')
-      .eq('postId', postId)
-      .eq('userId', currentUserId)
-      .maybeSingle()
-      .then(({ data }) => {
-        setIsLiked(!!data);
-      });
-  }, [postId, currentUserId]);
+  // Removed redundant isLiked fetching - handled by useFeed batch query
 
   const isOwner = !!currentUserId && currentUserId === userId;
 
@@ -140,8 +132,8 @@ const ReviewCard = ({
   };
 
   const dropdownItems = isOwner
-    ? [{ label: "Delete Post", icon: <Trash2 size={16} color="#ef4444" />, onPress: handleDelete }]
-    : [{ label: "Report Post", icon: <Flag size={16} color="#64748b" />, onPress: () => Alert.alert("Reported", "Thank you for your report.") }];
+    ? [{ label: "Delete Post", icon: <Trash2 size={16} color={Colors.destructive} />, onPress: handleDelete }]
+    : [{ label: "Report Post", icon: <Flag size={16} color={Colors.mutedForeground} />, onPress: () => Alert.alert("Reported", "Thank you for your report.") }];
 
   const handleCommentAdded = useCallback(() => setLocalCommentsCount(prev => prev + 1), []);
   const handleCommentDeleted = useCallback(() => setLocalCommentsCount(prev => Math.max(0, prev - 1)), []);
@@ -183,9 +175,9 @@ const ReviewCard = ({
                 size={24}
                 rating={userRating}
                 spacing={1.5}
-                baseColor="#71717a"
-                fillColor="#73BDA8"
-                touchColor="#73BDA8"
+                baseColor={Colors.mutedForeground}
+                fillColor={Colors.primary}
+                touchColor={Colors.primary}
               />
             </View>
           </View>
@@ -199,14 +191,14 @@ const ReviewCard = ({
                   style={{ 
                     top: 12, 
                     left: -18, 
-                    backgroundColor: '#B1D5AD',
-                    shadowColor: '#000',
+                    backgroundColor: Colors.secondary,
+                    shadowColor: 'black',
                     shadowOffset: { width: 0, height: 2 },
                     shadowOpacity: 0.3,
                     shadowRadius: 3
                   }}
                 >
-                  <AppText variant="caption" style={{ color: '#1f2937' }}>
+                  <AppText variant="caption" className="text-foreground">
                     {progress}%
                   </AppText>
                 </View>
@@ -230,14 +222,14 @@ const ReviewCard = ({
           />
           <View className="flex-row items-center gap-x-2 pr-2">
             {!!timeElapsed && (
-              <AppText variant="caption" className="text-slate-400">{timeElapsed}</AppText>
+              <AppText variant="caption" className="text-muted-foreground">{timeElapsed}</AppText>
             )}
             <TouchableOpacity
               ref={moreButtonRef}
               onPress={handleMorePress}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <EllipsisVertical size={18} color="#94a3b8" />
+              <EllipsisVertical size={18} color={Colors.mutedForeground} />
             </TouchableOpacity>
           </View>
         </View>

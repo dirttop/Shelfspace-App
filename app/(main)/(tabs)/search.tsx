@@ -21,7 +21,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import { X } from 'lucide-react-native';
+import { AudioLines, Search, X } from "lucide-react-native";
+import { Colors } from "@/constants/Colors";
 
 const BooksTab = ({ searchQuery }: { searchQuery: string }) => {
   const isSearchActive = !!searchQuery && searchQuery.trim().length > 0;
@@ -140,7 +141,7 @@ const UsersTab = ({ searchQuery }: { searchQuery: string }) => {
 const ClubsTab = () => (
   <View className="flex-1 justify-center items-center" pointerEvents="box-none">
     <AppText variant="subtitle" >Under Construction</AppText>
-    <Feather name="package" size={28} color="#73BDA8" />
+    <Feather name="package" size={28} color={Colors.primary} />
   </View>
 );
 
@@ -211,11 +212,11 @@ export default function SearchTab() {
     <View className="bg-white">
       <TabBar
         {...props}
-        indicatorStyle={{ backgroundColor: '#27272a' }} // zinc-800
+        indicatorStyle={{ backgroundColor: Colors.border }}
         style={{ backgroundColor: 'white', elevation: 0, shadowOffset: { height: 0, width: 0 } }}
         tabStyle={{ minHeight: 48, paddingVertical: 12 }}
-        activeColor="#18181b" // zinc-90  
-        inactiveColor="#71717a"
+        activeColor={Colors.foreground}
+        inactiveColor={Colors.mutedForeground}
         renderLabel={({ route, focused, color }: { route: { title: string }, focused: boolean, color: string }) => (
           <AppText 
             style={{ color }}
@@ -236,7 +237,7 @@ export default function SearchTab() {
               onPress={() => setSearchQuery('')} 
               className="absolute right-3 top-4 p-1 z-10"
             >
-              <X size={16} color="#a1a1aa" />
+              <X size={16} color={Colors.mutedForeground} />
             </TouchableOpacity>
           ) : null}
         </View>
@@ -257,7 +258,7 @@ export default function SearchTab() {
             if (newIndex >= 0) setIndex(newIndex);
           }
         })}
-        <View className="flex-1 bg-[#F2F0E9] relative">
+        <View className="flex-1 bg-background relative">
           <LinearGradient
             colors={['rgba(0,0,0,0.1)', 'transparent']}
             style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 18, zIndex: 10 }}

@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChevronDown, Keyboard as KeyboardIcon } from 'lucide-react-native';
 import { Rating } from '@kolking/react-native-rating';
 import { Book } from '@/types/book';
+import { Colors } from '@/constants/Colors';
 
 export type CreateReviewModalProps = {
   onReviewCreated?: () => void;
@@ -25,7 +26,7 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
     const MAX_CHARS = 1000; // allow a bit more text for reviews
     const charsRemaining = MAX_CHARS - postText.length;
     const isOverLimit = charsRemaining < 0;
-    const counterColor = isOverLimit ? '#ef4444' : charsRemaining <= 50 ? '#f97316' : charsRemaining <= 150 ? '#eab308' : '#a1a1aa';
+    const counterColor = isOverLimit ? Colors.destructive : charsRemaining <= 50 ? Colors.warningOrange : charsRemaining <= 150 ? Colors.warningYellow : Colors.mutedForeground;
 
     const snapPoints = useMemo(() => ['50%', '90%'], []);
 
@@ -136,10 +137,10 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
             <TouchableOpacity
               onPress={Keyboard.dismiss}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              className="bg-slate-100 rounded-full p-1.5 flex-row items-center gap-1"
+              className="bg-muted rounded-full p-1.5 flex-row items-center gap-1"
             >
-              <KeyboardIcon size={14} color="#64748b" />
-              <ChevronDown size={14} color="#64748b" />
+              <KeyboardIcon size={14} color={Colors.mutedForeground} />
+              <ChevronDown size={14} color={Colors.mutedForeground} />
             </TouchableOpacity>
           </View>
         </View>
@@ -157,7 +158,7 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
                 )}
                 <View className="flex-1">
                   <AppText className="font-fraunces-bold" numberOfLines={1}>{selectedBook.title}</AppText>
-                  <AppText variant="caption" className="text-slate-500" numberOfLines={1}>{selectedBook.authors?.join(', ')}</AppText>
+                  <AppText variant="caption" className="text-muted-foreground" numberOfLines={1}>{selectedBook.authors?.join(', ')}</AppText>
                 </View>
               </View>
             )}
@@ -168,9 +169,9 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
                 rating={userRating} 
                 onChange={handleRatingChange}
                 spacing={1.5}
-                baseColor="#71717a"
-                fillColor="#73BDA8"
-                touchColor="#73BDA8"
+                baseColor={Colors.mutedForeground}
+                fillColor={Colors.primary}
+                touchColor={Colors.primary}
               />
             </View>
 
@@ -178,7 +179,7 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
               className="bg-muted p-4 rounded-xl text-base mb-4 text-foreground custom-font-regular"
               style={{ minHeight: 120, textAlignVertical: 'top' }}
               placeholder="What did you think of this book?"
-              placeholderTextColor="#A1A1AA"
+              placeholderTextColor={Colors.mutedForeground}
               multiline
               value={postText}
               onChangeText={(text) => {
@@ -189,17 +190,17 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
         ) : (
           <BottomSheetScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}>
             {selectedBook && (
-              <View className="flex-row mb-4 bg-slate-50 p-3 rounded-xl items-center">
+              <View className="flex-row mb-4 bg-muted p-3 rounded-xl items-center">
                 {selectedBook.coverImage ? (
                   <Image source={{ uri: selectedBook.coverImage }} className="w-12 h-16 rounded mr-3" resizeMode="cover" />
                 ) : (
-                  <View className="w-12 h-16 bg-slate-200 rounded mr-3 items-center justify-center">
+                  <View className="w-12 h-16 bg-muted rounded mr-3 items-center justify-center">
                     <AppText variant="caption">No Cover</AppText>
                   </View>
                 )}
                 <View className="flex-1">
                   <AppText className="font-fraunces-bold" numberOfLines={1}>{selectedBook.title}</AppText>
-                  <AppText variant="caption" className="text-slate-500" numberOfLines={1}>{selectedBook.authors?.join(', ')}</AppText>
+                  <AppText variant="caption" className="text-muted-foreground" numberOfLines={1}>{selectedBook.authors?.join(', ')}</AppText>
                 </View>
               </View>
             )}
@@ -210,9 +211,9 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
                 rating={userRating} 
                 onChange={handleRatingChange}
                 spacing={1.5}
-                baseColor="#71717a"
-                fillColor="#73BDA8"
-                touchColor="#73BDA8"
+                baseColor={Colors.mutedForeground}
+                fillColor={Colors.primary}
+                touchColor={Colors.primary}
               />
             </View>
 
@@ -220,7 +221,7 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
               className="bg-muted p-4 rounded-xl text-base mb-4 text-foreground custom-font-regular"
               style={{ minHeight: 120, textAlignVertical: 'top' }}
               placeholder="What did you think of this book?"
-              placeholderTextColor="#A1A1AA"
+              placeholderTextColor={Colors.mutedForeground}
               multiline
               value={postText}
               onChangeText={(text) => {
@@ -247,7 +248,7 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
         snapPoints={snapPoints}
         backdropComponent={renderBackdrop}
         backgroundStyle={{ backgroundColor: 'white' }}
-        handleIndicatorStyle={{ backgroundColor: '#A1A1AA', opacity: 0.8 }}
+        handleIndicatorStyle={{ backgroundColor: Colors.mutedForeground, opacity: 0.8 }}
         onDismiss={handleDismiss}
         keyboardBehavior="extend"
         keyboardBlurBehavior="restore"

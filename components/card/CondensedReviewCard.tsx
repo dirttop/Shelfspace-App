@@ -4,6 +4,7 @@ import React from "react";
 import { View, ViewProps } from "react-native";
 import UserHeader from "../common/UserHeader";
 import { Rating } from '@kolking/react-native-rating';
+import { Colors } from '@/constants/Colors';
 import { Heart } from "lucide-react-native";
 
 interface CondensedReviewProps extends ViewProps {
@@ -75,8 +76,8 @@ const CondensedReviewCard = ({
               rating={userRating}
               spacing={1.5}
               baseColor="#71717a"
-              fillColor="#73BDA8"
-              touchColor="#73BDA8"
+              fillColor={Colors.primary}
+              touchColor={Colors.primary}
             />
           </View>
         </View>

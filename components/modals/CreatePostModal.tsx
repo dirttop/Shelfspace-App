@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { X, Image as ImageIcon, ChevronDown, Keyboard as KeyboardIcon } from 'lucide-react-native';
+import { Colors } from '@/constants/Colors';
 // Replaced above
 
 export type CreatePostModalProps = {
@@ -26,12 +27,12 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
     const charsRemaining = MAX_CHARS - postText.length;
     const isOverLimit = charsRemaining < 0;
     const counterColor = isOverLimit
-      ? '#ef4444'   // red
+      ? Colors.destructive
       : charsRemaining <= 25
-      ? '#f97316'   // orange
+      ? Colors.warningOrange
       : charsRemaining <= 100
-      ? '#eab308'   // yellow
-      : '#a1a1aa';  // default gray
+      ? Colors.warningYellow
+      : Colors.mutedForeground;
 
     const snapPoints = useMemo(() => ['50%', '90%'], []);
 
@@ -154,10 +155,10 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
             <TouchableOpacity
               onPress={Keyboard.dismiss}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              className="bg-slate-100 rounded-full p-1.5 flex-row items-center gap-1"
+              className="bg-muted rounded-full p-1.5 flex-row items-center gap-1"
             >
-              <KeyboardIcon size={14} color="#64748b" />
-              <ChevronDown size={14} color="#64748b" />
+              <KeyboardIcon size={14} color={Colors.mutedForeground} />
+              <ChevronDown size={14} color={Colors.mutedForeground} />
             </TouchableOpacity>
           </View>
         </View>
@@ -175,7 +176,7 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
                 textAlignVertical: 'top'
               }}
               placeholder="What are your thoughts?"
-              placeholderTextColor="#A1A1AA"
+              placeholderTextColor={Colors.mutedForeground}
               multiline
               value={postText}
               onChangeText={(text) => {
@@ -195,9 +196,9 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
             )}
             
             <View className="flex-row items-center gap-4 mb-4">
-              <TouchableOpacity onPress={pickImage} className="flex-row items-center gap-2 p-2 bg-slate-100 rounded-lg">
-                <ImageIcon size={20} color="#64748b" />
-                <AppText variant="caption" className="text-slate-600">Attach Image</AppText>
+              <TouchableOpacity onPress={pickImage} className="flex-row items-center gap-2 p-2 bg-muted rounded-lg">
+                <ImageIcon size={20} color={Colors.mutedForeground} />
+                <AppText variant="caption" className="text-muted-foreground">Attach Image</AppText>
               </TouchableOpacity>
             </View>
           </ScrollView>
@@ -214,7 +215,7 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
                 textAlignVertical: 'top'
               }}
               placeholder="What are your thoughts?"
-              placeholderTextColor="#A1A1AA"
+              placeholderTextColor={Colors.mutedForeground}
               multiline
               value={postText}
               onChangeText={(text) => {
@@ -234,9 +235,9 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
             )}
             
             <View className="flex-row items-center gap-4 mb-4">
-              <TouchableOpacity onPress={pickImage} className="flex-row items-center gap-2 p-2 bg-slate-100 rounded-lg">
-                <ImageIcon size={20} color="#64748b" />
-                <AppText variant="caption" className="text-slate-600">Attach Image</AppText>
+              <TouchableOpacity onPress={pickImage} className="flex-row items-center gap-2 p-2 bg-muted rounded-lg">
+                <ImageIcon size={20} color={Colors.mutedForeground} />
+                <AppText variant="caption" className="text-muted-foreground">Attach Image</AppText>
               </TouchableOpacity>
             </View>
           </BottomSheetScrollView>
@@ -259,7 +260,7 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
         snapPoints={snapPoints}
         backdropComponent={renderBackdrop}
         backgroundStyle={{ backgroundColor: 'white' }}
-        handleIndicatorStyle={{ backgroundColor: '#A1A1AA', opacity: 0.8 }}
+        handleIndicatorStyle={{ backgroundColor: Colors.mutedForeground, opacity: 0.8 }}
         onDismiss={handleDismiss}
         keyboardBehavior="extend"
         keyboardBlurBehavior="restore"

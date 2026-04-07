@@ -8,6 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { IconName } from "../../assets/svgs";
 import Icons from "../common/Icons";
+import { Colors } from "@/constants/Colors";
 
 interface IconButtonProps {
   onPress?: () => void;
@@ -37,7 +38,7 @@ const IconButton = ({
   toggledIcon,
   pressedIcon,
   isToggled = false,
-  color = "#71717a",
+  color = Colors.mutedForeground,
   toggledColor,
   pressedColor,
   size = "md",

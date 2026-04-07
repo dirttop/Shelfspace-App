@@ -13,6 +13,7 @@ import {
   textSizeStyles,
   textVariantStyles,
 } from "@/components/button/styles/buttonStyles";
+import { Colors } from "@/constants/Colors";
 
 const StyledPressable = cssInterop(PressableScale, {
   className: "style",
@@ -51,7 +52,7 @@ const Buttons = ({
   dropdownPosition = "right",
 }: ButtonProps) => {
 const containerClasses = disabled
-    ? `bg-[#1e656d] ${containerSizeStyles[size]} ${className}`
+    ? `bg-primary opacity-50 ${containerSizeStyles[size]} ${className}`
     : `${containerVariantStyles[variant]} ${containerSizeStyles[size]} ${className}`;
   const textClasses = disabled
     ? `text-white/60 dark:text-zinc-300 ${textSizeStyles[size]}`
@@ -74,7 +75,7 @@ const containerClasses = disabled
   }
 
   const defaultContainerClasses = disabled
-    ? `bg-[#1e656d] ${containerSizeStyles[size]} ${className}`
+    ? `bg-primary opacity-50 ${containerSizeStyles[size]} ${className}`
     : `${containerVariantStyles[variant]} ${containerSizeStyles[size]} ${className}`;
 
   return (
@@ -90,7 +91,7 @@ const containerClasses = disabled
         <View className="flex-row items-center">
           <ActivityIndicator
             size="small"
-            color={variant === "primary" ? "#fff" : "#000"}
+            color={variant === "primary" ? Colors.primaryForeground : Colors.foreground}
           />
           <AppText className={`${textClassName} ${textClasses} ml-2`}>
             {title}

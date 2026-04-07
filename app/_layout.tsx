@@ -40,8 +40,6 @@ const client = new ApolloClient({
 
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSegments } from 'expo-router';
-import * as Linking from 'expo-linking';
-import { supabase } from '@/app/lib/supabase';
 // Wrapper component to manage the modal strictly within the provider context
 const GlobalBookModal = () => {
   const { selectedBook } = useBookModal();
@@ -72,42 +70,6 @@ function RootLayoutNav() {
   const { session, loading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
-
-  // Handle deep linking for Supabase auto-login
-  useEffect(() => {
-    const handleDeepLink = async (event: { url: string }) => {
-      if (!event.url) return;
-
-      try {
-        const parsedUrl = Linking.parse(event.url);
-        const queryParams = parsedUrl.queryParams;
-
-        if (queryParams && queryParams.code) {
-          // Handle PKCE flow
-          await supabase.auth.exchangeCodeForSession(queryParams.code as string);
-        } else if (event.url.includes('#access_token=')) {
-          // Handle implicit flow (fallback)
-          const hashMatch = event.url.match(/#access_token=([^&]+)/);
-          const refreshMatch = event.url.match(/&refresh_token=([^&]+)/);
-          if (hashMatch && refreshMatch) {
-            await supabase.auth.setSession({
-              access_token: hashMatch[1],
-              refresh_token: refreshMatch[1],
-            });
-          }
-        }
-      } catch (e) {
-        console.error("Deep link handling error", e);
-      }
-    };
-
-    const subscription = Linking.addEventListener('url', handleDeepLink);
-    Linking.getInitialURL().then((url) => {
-      if (url) handleDeepLink({ url });
-    });
-
-    return () => subscription.remove();
-  }, []);
 
   useEffect(() => {
     if (loading) return;

@@ -6,6 +6,7 @@ import { useBookModal } from '@/contexts/BookModalContext';
 import { Book } from "@/types/book";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Rating } from '@kolking/react-native-rating';
+import { Colors } from '@/constants/Colors';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { forwardRef, useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { Alert, Image, View, TouchableOpacity } from "react-native";
@@ -287,7 +288,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
             <View className="flex-1 bg-background overflow-hidden rounded-t-2xl">
                 <View className="absolute top-0 w-full h-[35vh]">
                     <LinearGradient
-                        colors={["#B2D3C2", "#F9F8F2"]}
+                        colors={[Colors.secondary, Colors.background]}
                         style={{ flex: 1 }}
                     />
                 </View>
@@ -318,9 +319,9 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                         rating={displayRating}
                                         onChange={handleChange}
                                         spacing={1.5}
-                                        baseColor="#71717a"
-                                        fillColor="#73BDA8"
-                                        touchColor="#73BDA8"
+                                        baseColor={Colors.mutedForeground}
+                                        fillColor={Colors.primary}
+                                        touchColor={Colors.primary}
                                     />
                                 </View>
                             </View>

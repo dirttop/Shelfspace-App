@@ -1,4 +1,5 @@
 import { supabase } from "@/app/lib/supabase";
+import { Colors } from "@/constants/Colors";
 import ProfileCard from "@/components/card/ProfileCard";
 import ProfileBookList from "@/components/profile/ProfileBookList";
 import PostCard from "@/components/card/PostCard";
@@ -171,11 +172,11 @@ export default function UserProfile() {
     <View className="bg-white border-b border-slate-200" style={{ marginHorizontal: 16 }}>
       <TabBar
         {...props}
-        indicatorStyle={{ backgroundColor: '#27272a' }}
+        indicatorStyle={{ backgroundColor: Colors.border }}
         style={{ backgroundColor: 'transparent', elevation: 0, shadowOffset: { height: 0, width: 0 } }}
         tabStyle={{ minHeight: 48, paddingVertical: 12 }}
-        activeColor="#18181b"
-        inactiveColor="#71717a"
+        activeColor={Colors.foreground}
+        inactiveColor={Colors.mutedForeground}
         renderLabel={({ route, focused, color }: { route: { title: string }, focused: boolean, color: string }) => (
           <AppText style={{ color }} className={focused ? "font-fraunces-bold" : ""}>
             {route.title}
@@ -218,7 +219,7 @@ export default function UserProfile() {
                   }}
                   className="w-10 h-10 items-center justify-center rounded-full bg-slate-200"
                 >
-                  <ChevronLeft size={24} color="#333333" />
+                  <ChevronLeft size={24} color={Colors.foreground} />
                 </TouchableOpacity>
               </View>
 
@@ -257,7 +258,7 @@ export default function UserProfile() {
           renderItem={({ item }) => {
             if (index === 0) {
               return (
-                <View className="bg-[#F2F0E9] pt-4 relative">
+                <View className="bg-background pt-4 relative">
                   <ProfileBookList
                     key={item.id}
                     userId={profile.id}
@@ -268,7 +269,7 @@ export default function UserProfile() {
               );
             } else {
               return (
-                <View className="bg-[#F2F0E9]">
+                <View className="bg-background">
                   {item.post_type === 'review' ? (
                     <ReviewCard
                       postId={item.id}
@@ -310,7 +311,7 @@ export default function UserProfile() {
             }
           }}
           ListEmptyComponent={() => (
-            <View className="items-center justify-center p-8 opacity-50 bg-[#F2F0E9] flex-1">
+            <View className="items-center justify-center p-8 opacity-50 bg-background flex-1">
               {index === 0
                 ? <AppText variant="body" className="text-center">No public shelves available.</AppText>
                 : loadingPosts
@@ -319,7 +320,7 @@ export default function UserProfile() {
               }
             </View>
           )}
-          style={{ backgroundColor: '#F2F0E9' }}
+          style={{ backgroundColor: Colors.background }}
         />
       )}
     </KeyboardAvoidingView>
