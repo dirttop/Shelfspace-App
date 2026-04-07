@@ -91,7 +91,7 @@ const ProfileCard = ({
           <View className="flex-row justify-around mt-4 pb-1">
             <ShelfStat label="Reading" value={readingCount} />
             <ShelfStat label="Read" value={readCount} />
-            <ShelfStat label="Followers" value={followCount} />
+            <ShelfStat label="Friends" value={friendCount} />
           </View>
         </View>
       </View>
