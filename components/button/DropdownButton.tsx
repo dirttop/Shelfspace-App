@@ -21,9 +21,10 @@ export interface DropdownButtonProps {
   onPress?: () => void | Promise<void>;
   disabled?: boolean;
   loading?: boolean;
-  variant?: "primary" | "secondary" | "outline";
+  variant?: "primary" | "secondary" | "outline" | "ghost";
   size?: "sm" | "md" | "lg";
   className?: string;
+  buttonClassName?: string;
   dropdownItems: DropdownItemType[];
   dropdownPosition?: "left" | "right";
   menuOnly?: boolean;
@@ -39,6 +40,7 @@ const DropdownButton = ({
   variant = "primary",
   size = "md",
   className = "",
+  buttonClassName = "",
   dropdownItems,
   dropdownPosition = "right",
   menuOnly = false,
@@ -60,9 +62,9 @@ const DropdownButton = ({
   
   const textClasses = disabled
     ? `text-white/60 dark:text-zinc-300 ${textSizeStyles[size]}`
-    : `${variant === "outline" ? "text-primary" : "text-white"} ${textSizeStyles[size]}`;
+    : `${variant === "outline" || variant === "ghost" ? "text-primary" : "text-white"} ${textSizeStyles[size]}`;
 
-  const iconColor = disabled ? "rgba(255,255,255,0.6)" : variant === "outline" ? "#1e656d" : "#fff";
+  const iconColor = disabled ? "rgba(255,255,255,0.6)" : variant === "outline" || variant === "ghost" ? "#1e656d" : "#fff";
   
   const handleDropdownPress = useCallback(() => {
     buttonRef.current?.measureInWindow((x, y, width, height) => {
@@ -101,13 +103,14 @@ const DropdownButton = ({
         accessibilityState={{ disabled: disabled || loading, expanded: dropdownVisible }}
         className={`flex-row items-center justify-between flex-1 gap-2 w-full
           ${containerSizeStyles[size]} 
-          ${disabled ? "bg-[#1e656d]" : containerVariantStyles[variant]} 
+          ${disabled ? "bg-[#1e656d]" : variant === "ghost" ? "bg-transparent" : containerVariantStyles[variant]} 
+          ${buttonClassName}
           active:opacity-80`}
       >
         {loading && (
           <ActivityIndicator size="small" color={variant === "primary" ? "#fff" : "#000"} />
         )}
-        <AppText className={`flex-1 text-left font-fraunces-bold ${textClasses}`} numberOfLines={1}>
+        <AppText className={`flex-1 font-fraunces-bold ${buttonClassName.includes('justify-center') ? 'text-center' : 'text-left'} ${textClasses}`} numberOfLines={1}>
           {displayText}
         </AppText>
         <Feather 
