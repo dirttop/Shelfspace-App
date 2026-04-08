@@ -7,8 +7,8 @@ import ReviewCard from "@/components/card/ReviewCard";
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { CustomizeShelvesModal } from '@/components/modals/CustomizeShelvesModal';
 import AppText from "@/components/common/AppText";
+import { useFocusEffect } from 'expo-router';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -136,16 +136,18 @@ export default function Profile() {
     }
   };
 
-  useEffect(() => {
-    let mounted = true;
-    const loadInitialData = async () => {
-      setLoading(true);
-      await fetchData();
-      if (mounted) setLoading(false);
-    };
-    loadInitialData();
-    return () => { mounted = false; };
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      let mounted = true;
+      const loadInitialData = async () => {
+        setLoading(true);
+        await fetchData();
+        if (mounted) setLoading(false);
+      };
+      loadInitialData();
+      return () => { mounted = false; };
+    }, [])
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -214,13 +216,7 @@ export default function Profile() {
                 })}
 
                 {index === 0 && (
-                  <View className="flex-row justify-between items-center px-4 mt-2 mb-2">
-                    <TouchableOpacity
-                      onPress={() => customizeModalRef.current?.present()}
-                      className="px-4 py-2 border border-slate-200 rounded-lg bg-white shadow-sm flex-row items-center"
-                    >
-                      <AppText variant="caption" className="font-fraunces-semiBold text-slate-700">Customize Shelves</AppText>
-                    </TouchableOpacity>
+                  <View className="flex-row justify-between items-center px-4 mt-3 mb-3">
                   </View>
                 )}
                 {index === 1 && <View className="h-4" />}
@@ -292,12 +288,6 @@ export default function Profile() {
               </View>
             )}
             style={{ backgroundColor: '#F2F0E9' }}
-          />
-
-          <CustomizeShelvesModal
-            ref={customizeModalRef}
-            userId={profile?.id}
-            onShelvesUpdated={fetchData}
           />
         </View>
       )}

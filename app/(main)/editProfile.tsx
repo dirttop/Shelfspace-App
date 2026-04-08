@@ -4,7 +4,9 @@ import Buttons from "@/components/common/Buttons";
 import Input from "@/components/common/Input";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { CustomizeShelvesModal } from "@/components/modals/CustomizeShelvesModal";
 import {
   ActivityIndicator,
   Alert,
@@ -30,6 +32,8 @@ export default function EditProfile() {
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [newAvatarUri, setNewAvatarUri] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | undefined>(undefined);
+  const customizeModalRef = useRef<BottomSheetModal>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -41,11 +45,12 @@ export default function EditProfile() {
         if (mounted) setLoading(false);
         return;
       }
-      const userId = userData.user.id;
+      const uId = userData.user.id;
+      setUserId(uId);
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", userId)
+        .eq("id", uId)
         .single();
       if (!mounted) return;
       if (error) {
@@ -298,10 +303,24 @@ export default function EditProfile() {
           />
         </View>
 
+        <View className="mt-2">
+          <Buttons 
+            title="Customize Shelves" 
+            variant="outline" 
+            onPress={() => customizeModalRef.current?.present()} 
+          />
+        </View>
+
         <View className="mt-4">
           <Buttons title="Save" onPress={saveProfile} loading={saving} />
         </View>
       </ScrollView>
+
+      <CustomizeShelvesModal
+        ref={customizeModalRef}
+        userId={userId || ""}
+        onShelvesUpdated={() => {}} 
+      />
     </KeyboardAvoidingView>
   );
 }

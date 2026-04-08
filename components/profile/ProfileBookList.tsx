@@ -108,11 +108,12 @@ export default function ProfileBookList({ userId, shelfId, title }: ProfileBookL
         keyExtractor={(item, index) => item.isbn || index.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 8, gap: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16, gap: 16 }}
         renderItem={({ item }) => (
           <BookItem book={item} className="w-24 h-36" />
         )}
       />
+      <View className="h-[1px] bg-[#d1d5db] mx-4 mt-2 mb-1" />
     </View>
   );
 }

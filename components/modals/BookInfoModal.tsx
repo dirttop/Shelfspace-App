@@ -9,11 +9,13 @@ import { Rating } from '@kolking/react-native-rating';
 import { Colors } from '@/constants/Colors';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { forwardRef, useCallback, useEffect, useMemo, useState, useRef } from 'react';
-import { Alert, Image, View, TouchableOpacity } from "react-native";
+import { Alert, Image, View, TouchableOpacity, LayoutAnimation } from "react-native";
+import Animated, { FadeInUp, FadeOutUp, LinearTransition } from 'react-native-reanimated';
 import { supabase } from '@/app/lib/supabase';
 import { gql, useMutation } from '@apollo/client';
 import { CreateReviewModal } from './CreateReviewModal';
 import CondensedReviewCard from '../card/CondensedReviewCard';
+import { Plus, X } from 'lucide-react-native';
 
 const SAVE_BOOK_MUTATION = gql`
   mutation SaveBook(
@@ -80,6 +82,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
 
     useEffect(() => {
         setUserRating(null);
+        setIsMenuExpanded(false);
     }, [book?.isbn]);
 
     const displayRating = userRating !== null ? userRating : (book?.globalRating || 0);
@@ -108,6 +111,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
     const [topReviews, setTopReviews] = useState<any[]>([]);
     const [reviewsLoading, setReviewsLoading] = useState(false);
     const [isReviewsExpanded, setIsReviewsExpanded] = useState(false);
+    const [isMenuExpanded, setIsMenuExpanded] = useState(false);
 
     useEffect(() => {
         let mounted = true;
@@ -274,7 +278,10 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
             backdropComponent={renderBackdrop}
             enablePanDownToClose={true}
             enableDynamicSizing={false}
-            onDismiss={closeBookModal}
+            onDismiss={() => {
+                setIsMenuExpanded(false);
+                closeBookModal();
+            }}
             backgroundStyle={{ backgroundColor: 'transparent' }}
             handleIndicatorStyle={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.3 }}
             handleStyle={{
@@ -326,84 +333,117 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                 </View>
                             </View>
                             <View className="flex-row items-center gap-2 pt-2">
-                                <DropdownButton
-                                    title="Shelf"
-                                    variant="primary"
-                                    size="md"
-                                    dropdownPosition="right"
-                                    menuOnly={true}
-                                    dropdownItems={[
-                                        ...shelves.map(shelf => ({
-                                            label: shelf.name,
-                                            onPress: () => handleAddToShelf(shelf.id)
-                                        }))
-                                    ]}
-                                />
-                                <Buttons
-                                    title="Review"
-                                    variant="secondary"
-                                    size="md"
-                                    textClassName="font-sans"
-                                    onPress={() => createReviewModalRef.current?.present()}
-                                />
+                                <TouchableOpacity
+                                    className="w-10 h-10 rounded-full bg-[#73BDA8] items-center justify-center p-0"
+                                    onPress={() => {
+                                        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                                        setIsMenuExpanded(!isMenuExpanded);
+                                    }}
+                                >
+                                    {isMenuExpanded ? (
+                                        <X size={24} color="#FFF" />
+                                    ) : (
+                                        <Plus size={24} color="#FFF" />
+                                    )}
+                                </TouchableOpacity>
                             </View>
                         </View>
                     </View>
-                    <View className="px-4 pt-2">
-                        <AppText variant="collapsible" charLimit={150}>
-                            {book?.description || ''}
-                        </AppText>
-                    </View>
-
-                    <View className="px-4 pt-6">
-                        <AppText variant="subtitle">Top Reviews</AppText>
-                    </View>
-
-                    {reviewsLoading ? (
-                        <View className="px-4 py-8 items-center">
-                            <AppText variant="body" className="text-slate-500">Loading reviews...</AppText>
-                        </View>
-                    ) : topReviews.length === 0 ? (
-                        <View className="px-4 py-6">
-                            <AppText variant="body" className="text-slate-500 italic font-fraunces-italic">No reviews yet for this book. Be the first!</AppText>
-                        </View>
-                    ) : (
-                        <View className="px-4 pt-4 gap-y-3">
-                            {topReviews.slice(0, isReviewsExpanded ? undefined : 3).map((review) => (
-                                <CondensedReviewCard
-                                    key={`condensed-review-${review.id}`}
-                                    firstName={review.profiles?.first_name || "Unknown"}
-                                    lastName={review.profiles?.last_name || ""}
-                                    username={review.profiles?.username || "unknown"}
-                                    uriAvatar={review.profiles?.avatar_url}
-                                    userRating={review.rating}
-                                    postText={review.body}
-                                    timestamp={review.created_at}
-                                    likesCount={review.postLikes?.[0]?.count || 0}
-                                    userId={review.profiles?.id}
-                                    onPressProfile={() => {
-                                        if (ref && 'current' in ref && ref.current) {
-                                            ref.current.dismiss();
-                                        }
-                                    }}
+                    {isMenuExpanded && (
+                        <Animated.View
+                            entering={FadeInUp.duration(250)}
+                            exiting={FadeOutUp.duration(250)}
+                            className="px-6 py-2 mb-2"
+                        >
+                            <View className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+                                <DropdownButton
+                                    title="Add to shelf"
+                                    variant="ghost"
+                                    size="md"
+                                    dropdownPosition="right"
+                                    menuOnly={true}
+                                    className="border-0 border-b border-slate-200"
+                                    buttonClassName="!rounded-none bg-white justify-center items-center py-4"
+                                    dropdownItems={[
+                                        ...shelves.map(shelf => ({
+                                            label: shelf.name,
+                                            onPress: () => {
+                                                setIsMenuExpanded(false);
+                                                handleAddToShelf(shelf.id);
+                                            }
+                                        }))
+                                    ]}
                                 />
-                            ))}
-                            {topReviews.length > 3 && (
                                 <TouchableOpacity
-                                    className="py-3 items-center border border-slate-200 rounded-xl mt-2 active:bg-slate-50"
-                                    onPress={() => setIsReviewsExpanded(!isReviewsExpanded)}
+                                    className="py-4 items-center bg-white active:bg-slate-50 flex-row justify-center"
+                                    onPress={() => {
+                                        setIsMenuExpanded(false);
+                                        createReviewModalRef.current?.present();
+                                    }}
                                 >
-                                    <AppText className="text-primary font-fraunces-bold">
-                                        {isReviewsExpanded ? "Show Less" : `Show All ${topReviews.length} Reviews`}
-                                    </AppText>
+                                    <AppText className="font-fraunces-bold text-[#1e656d] text-lg">Write Review</AppText>
+                                    <View className="w-5 h-5 ml-2" />
                                 </TouchableOpacity>
-                            )}
-                        </View>
+                            </View>
+                        </Animated.View>
                     )}
+                    <Animated.View layout={LinearTransition.springify()}>
+                        <View className="px-4 pt-2">
+                            <AppText variant="collapsible" charLimit={150}>
+                                {book?.description || ''}
+                            </AppText>
+                        </View>
 
-                    <View className="px-4 pt-8 pb-12">
-                        <AppText variant="subtitle">More Like This</AppText>
-                    </View>
+                        <View className="px-4 pt-6">
+                            <AppText variant="subtitle">Top Reviews</AppText>
+                        </View>
+
+                        {reviewsLoading ? (
+                            <View className="px-4 py-8 items-center">
+                                <AppText variant="body" className="text-slate-500">Loading reviews...</AppText>
+                            </View>
+                        ) : topReviews.length === 0 ? (
+                            <View className="px-4 py-6">
+                                <AppText variant="body" className="text-slate-500 italic font-fraunces-italic">No reviews yet for this book. Be the first!</AppText>
+                            </View>
+                        ) : (
+                            <View className="px-4 pt-4 gap-y-3">
+                                {topReviews.slice(0, isReviewsExpanded ? undefined : 3).map((review) => (
+                                    <CondensedReviewCard
+                                        key={`condensed-review-${review.id}`}
+                                        firstName={review.profiles?.first_name || "Unknown"}
+                                        lastName={review.profiles?.last_name || ""}
+                                        username={review.profiles?.username || "unknown"}
+                                        uriAvatar={review.profiles?.avatar_url}
+                                        userRating={review.rating}
+                                        postText={review.body}
+                                        timestamp={review.created_at}
+                                        likesCount={review.postLikes?.[0]?.count || 0}
+                                        userId={review.profiles?.id}
+                                        onPressProfile={() => {
+                                            if (ref && 'current' in ref && ref.current) {
+                                                ref.current.dismiss();
+                                            }
+                                        }}
+                                    />
+                                ))}
+                                {topReviews.length > 3 && (
+                                    <TouchableOpacity
+                                        className="py-3 items-center border border-slate-200 rounded-xl mt-2 active:bg-slate-50"
+                                        onPress={() => setIsReviewsExpanded(!isReviewsExpanded)}
+                                    >
+                                        <AppText className="text-primary font-fraunces-bold">
+                                            {isReviewsExpanded ? "Show Less" : `Show All ${topReviews.length} Reviews`}
+                                        </AppText>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                        )}
+
+                        <View className="px-4 pt-8 pb-12">
+                            <AppText variant="subtitle">More Like This</AppText>
+                        </View>
+                    </Animated.View>
                 </BottomSheetScrollView>
             </View>
             <CreateReviewModal
