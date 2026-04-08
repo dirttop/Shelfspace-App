@@ -1,29 +1,16 @@
 import { Feather } from "@expo/vector-icons";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRouter, withLayoutContext } from "expo-router";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import React from "react";
 import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
-import { AddBookModal } from "../../../components/modals/AddBookModal";
 
 const TopTabs = withLayoutContext(createMaterialTopTabNavigator().Navigator);
 
 export default function TabLayout() {
-  const addBookModalRef = React.useRef<BottomSheetModal>(null);
   const router = useRouter();
   const insets = useSafeAreaInsets();
-
-  const handleScan = () => {
-    addBookModalRef.current?.dismiss();
-    router.push("/bookScan");
-  };
-
-  const handleSearch = () => {
-    addBookModalRef.current?.dismiss();
-    router.push("/search");
-  };
 
   return (
     <>
@@ -90,12 +77,6 @@ export default function TabLayout() {
               />
             ),
           }}
-          listeners={{
-            tabPress: (e: any) => {
-              e.preventDefault();
-              addBookModalRef.current?.present();
-            },
-          }}
         />
 
         <TopTabs.Screen
@@ -124,11 +105,6 @@ export default function TabLayout() {
           }}
         />
       </TopTabs>
-      <AddBookModal
-        ref={addBookModalRef}
-        onScan={handleScan}
-        onSearch={handleSearch}
-      />
     </>
   );
 }

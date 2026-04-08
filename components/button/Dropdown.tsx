@@ -1,9 +1,9 @@
-import { Feather } from '@expo/vector-icons';
-import React from 'react';
-import { Pressable, View, ScrollView } from 'react-native';
-import type { DimensionValue } from 'react-native';
 import AppText from '@/components/common/AppText';
 import { BaseModal } from '@/components/modals/BaseModal';
+import { Feather } from '@expo/vector-icons';
+import React from 'react';
+import type { DimensionValue } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 
 export type DropdownItemType = {
   label: string;
@@ -38,7 +38,7 @@ export const Dropdown = ({ isVisible, onClose, items, position, maxWidth }: Drop
       backdropClasses="bg-transparent"
     >
       <View
-        className="absolute bg-foreground rounded-xl shadow-lg border border-gray-100 overflow-hidden"
+        className="absolute bg-background rounded-xl shadow-lg border border-gray-100 overflow-hidden"
         style={{
           width: position?.width ?? 220,
           maxHeight: 300,
