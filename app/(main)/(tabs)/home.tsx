@@ -91,7 +91,8 @@ export default function Home() {
             {notificationCount > 0 && (
               <View className="absolute top-2 right-3 z-10 pointer-events-none">
                 <AppText 
-                  className="text-[14px] font-sans-bold leading-none text-primary"
+                  className="text-[14px] font-sans-bold leading-none"
+                  style={{ color: Colors.primary }}
                 >
                   {notificationCount > 99 ? '99+' : notificationCount}
                 </AppText>
