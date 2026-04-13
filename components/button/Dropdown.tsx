@@ -38,7 +38,7 @@ export const Dropdown = ({ isVisible, onClose, items, position, maxWidth }: Drop
       backdropClasses="bg-transparent"
     >
       <View
-        className="absolute bg-background rounded-xl shadow-lg border border-gray-100 overflow-hidden"
+        className="absolute bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden"
         style={{
           width: position?.width ?? 220,
           maxHeight: 300,

@@ -1,4 +1,6 @@
-import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
+import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache, from } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+import { supabase } from './lib/supabase';
 import { DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSans_700Bold, useFonts as useDMSansFonts } from '@expo-google-fonts/dm-sans';
 import { Fraunces_600SemiBold, Fraunces_700Bold, useFonts as useFrauncesFonts } from '@expo-google-fonts/fraunces';
 import { BottomSheetModalProvider, BottomSheetModal } from '@gorhom/bottom-sheet';
@@ -31,10 +33,24 @@ if (!apiUrl) {
   apiUrl = `http://${host}:4000/graphql`;
 }
 
+const httpLink = new HttpLink({
+  uri: apiUrl,
+});
+
+const authLink = setContext(async (_, { headers }) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+  
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+    }
+  }
+});
+
 const client = new ApolloClient({
-  link: new HttpLink({
-    uri: apiUrl,
-  }),
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache()
 });
 

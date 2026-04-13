@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, BottomSheetScrollView, BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, BottomSheetScrollView, BottomSheetTextInput, BottomSheetFooter } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo, useState, useEffect } from 'react';
 import { View, Keyboard, Platform, TouchableWithoutFeedback, Alert, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import AppText from '../common/AppText';
@@ -10,6 +10,35 @@ import { ChevronDown, Keyboard as KeyboardIcon } from 'lucide-react-native';
 import { Rating } from '@kolking/react-native-rating';
 import { Book } from '@/types/book';
 import { Colors } from '@/constants/Colors';
+import { gql, useMutation } from '@apollo/client';
+
+const SAVE_BOOK_MUTATION = gql`
+  mutation SaveBook(
+    $title: String!
+    $authors: [String!]!
+    $description: String
+    $coverImage: String
+    $pageCount: Int
+    $publisher: String
+    $isbn: String!
+    $releaseYear: String
+    $source: String!
+  ) {
+    saveBook(
+      title: $title
+      authors: $authors
+      description: $description
+      coverImage: $coverImage
+      pageCount: $pageCount
+      publisher: $publisher
+      isbn: $isbn
+      releaseYear: $releaseYear
+      source: $source
+    ) {
+      isbn
+    }
+  }
+`;
 
 export type CreateReviewModalProps = {
   onReviewCreated?: () => void;
@@ -22,6 +51,8 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
     const [userRating, setUserRating] = useState<number>(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const insets = useSafeAreaInsets();
+    
+    const [saveBookMutation] = useMutation(SAVE_BOOK_MUTATION);
 
     const MAX_CHARS = 1000; // allow a bit more text for reviews
     const charsRemaining = MAX_CHARS - postText.length;
@@ -64,7 +95,27 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
           throw new Error('You must be logged in to post.');
         }
 
-        // Insert into posts table
+        // 1. Ensure the book exists in the DB first to satisfy foreign key constraint
+        try {
+          await saveBookMutation({
+            variables: {
+              title: selectedBook.title || "",
+              authors: selectedBook.authors || [],
+              description: selectedBook.description || "",
+              coverImage: selectedBook.coverImage || "",
+              pageCount: selectedBook.pageCount || 0,
+              publisher: selectedBook.publisher || "",
+              isbn: selectedBook.isbn,
+              releaseYear: selectedBook.releaseYear || "",
+              source: selectedBook.source || "Unknown"
+            }
+          });
+        } catch (bookErr: any) {
+          console.error("Book upsert error in Review Modal:", bookErr);
+          throw new Error("Failed to save book details before posting review.");
+        }
+
+        // 2. Insert into posts table
         const { error: insertErr } = await supabase
           .from('posts')
           .insert({
@@ -123,8 +174,26 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
       setUserRating(Math.round(value * 2) / 2);
     }, []);
 
+    const renderFooter = useCallback(
+      (footerProps: any) => (
+        <BottomSheetFooter {...footerProps} bottomInset={0}>
+          <View 
+            className="bg-white px-6 py-4 border-t border-slate-100" 
+            style={{ paddingBottom: Math.max(insets.bottom, 16) }}
+          >
+            <Buttons
+              title={isSubmitting ? "Posting..." : "Post Review"}
+              onPress={handleSubmit}
+              disabled={isSubmitting || isOverLimit || userRating === 0 || !selectedBook}
+            />
+          </View>
+        </BottomSheetFooter>
+      ),
+      [insets.bottom, isSubmitting, isOverLimit, userRating, selectedBook]
+    );
+
     const content = (
-      <BottomSheetView style={{ flex: 1, backgroundColor: 'white' }} className="px-6 pt-2 pb-8 flex-1">
+      <View className="px-6 pt-2 flex-1">
         <View className="flex-row items-center justify-between mb-4">
           <AppText variant="title">Write a Review</AppText>
           <View className="flex-row items-center gap-3">
@@ -182,9 +251,10 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
               placeholderTextColor={Colors.mutedForeground}
               multiline
               value={postText}
-              onChangeText={(text) => {
-                if (text.length <= MAX_CHARS + 50) setPostText(text);
-              }}
+              onChangeText={setPostText}
+              maxLength={MAX_CHARS}
+              autoCorrect={true}
+              spellCheck={true}
             />
           </ScrollView>
         ) : (
@@ -224,21 +294,24 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
               placeholderTextColor={Colors.mutedForeground}
               multiline
               value={postText}
-              onChangeText={(text) => {
-                if (text.length <= MAX_CHARS + 50) setPostText(text);
-              }}
+              onChangeText={setPostText}
+              maxLength={MAX_CHARS}
+              autoCorrect={true}
+              spellCheck={true}
             />
           </BottomSheetScrollView>
         )}
 
-        <View className="mt-auto" style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
-          <Buttons
-            title={isSubmitting ? "Posting..." : "Post Review"}
-            onPress={handleSubmit}
-            disabled={isSubmitting || isOverLimit || userRating === 0 || !selectedBook}
-          />
-        </View>
-      </BottomSheetView>
+        {Platform.OS === 'web' && (
+          <View className="mt-auto px-6 pb-8" style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
+            <Buttons
+              title={isSubmitting ? "Posting..." : "Post Review"}
+              onPress={handleSubmit}
+              disabled={isSubmitting || isOverLimit || userRating === 0 || !selectedBook}
+            />
+          </View>
+        )}
+      </View>
     );
 
     return (
@@ -253,14 +326,9 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
         keyboardBehavior="extend"
         keyboardBlurBehavior="restore"
         enableDynamicSizing={false}
+        footerComponent={Platform.OS === 'web' ? undefined : renderFooter}
       >
-        {Platform.OS === 'web' ? (
-          content
-        ) : (
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            {content}
-          </TouchableWithoutFeedback>
-        )}
+        {content}
       </BottomSheetModal>
     );
   }

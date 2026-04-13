@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, BottomSheetScrollView, BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, BottomSheetScrollView, BottomSheetTextInput, BottomSheetFooter } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
 import { View, Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Alert, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import AppText from '../common/AppText';
@@ -140,8 +140,26 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
       }
     };
 
+    const renderFooter = useCallback(
+      (footerProps: any) => (
+        <BottomSheetFooter {...footerProps} bottomInset={0}>
+          <View 
+            className="bg-white px-6 py-4 border-t border-slate-100" 
+            style={{ paddingBottom: Math.max(insets.bottom, 16) }}
+          >
+            <Buttons
+              title={isSubmitting ? "Posting..." : "Post"}
+              onPress={handleSubmit}
+              disabled={!postText.trim() || isSubmitting || isOverLimit}
+            />
+          </View>
+        </BottomSheetFooter>
+      ),
+      [insets.bottom, isSubmitting, postText, isOverLimit]
+    );
+
     const content = (
-      <BottomSheetView style={{ flex: 1, backgroundColor: 'white' }} className="px-6 pt-2 pb-8 flex-1">
+      <View className="px-6 pt-2 flex-1">
         {/* Header row: title, char counter, keyboard-dismiss button */}
         <View className="flex-row items-center justify-between mb-4">
           <AppText variant="title">Create a Post</AppText>
@@ -179,9 +197,10 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
               placeholderTextColor={Colors.mutedForeground}
               multiline
               value={postText}
-              onChangeText={(text) => {
-                if (text.length <= MAX_CHARS + 50) setPostText(text);
-              }}
+              onChangeText={setPostText}
+              maxLength={MAX_CHARS}
+              autoCorrect={true}
+              spellCheck={true}
             />
             {imageUri && (
               <View className="mb-4 relative">
@@ -218,9 +237,10 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
               placeholderTextColor={Colors.mutedForeground}
               multiline
               value={postText}
-              onChangeText={(text) => {
-                if (text.length <= MAX_CHARS + 50) setPostText(text);
-              }}
+              onChangeText={setPostText}
+              maxLength={MAX_CHARS}
+              autoCorrect={true}
+              spellCheck={true}
             />
             {imageUri && (
               <View className="mb-4 relative">
@@ -243,14 +263,16 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
           </BottomSheetScrollView>
         )}
 
-        <View className="mt-auto" style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
-          <Buttons
-            title={isSubmitting ? "Posting..." : "Post"}
-            onPress={handleSubmit}
-            disabled={!postText.trim() || isSubmitting || isOverLimit}
-          />
-        </View>
-      </BottomSheetView>
+        {Platform.OS === 'web' && (
+          <View className="mt-auto px-6 pb-8" style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
+            <Buttons
+              title={isSubmitting ? "Posting..." : "Post"}
+              onPress={handleSubmit}
+              disabled={!postText.trim() || isSubmitting || isOverLimit}
+            />
+          </View>
+        )}
+      </View>
     );
 
     return (
@@ -264,14 +286,10 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
         onDismiss={handleDismiss}
         keyboardBehavior="extend"
         keyboardBlurBehavior="restore"
+        enableDynamicSizing={false}
+        footerComponent={Platform.OS === 'web' ? undefined : renderFooter}
       >
-        {Platform.OS === 'web' ? (
-          content
-        ) : (
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            {content}
-          </TouchableWithoutFeedback>
-        )}
+        {content}
       </BottomSheetModal>
     );
   }

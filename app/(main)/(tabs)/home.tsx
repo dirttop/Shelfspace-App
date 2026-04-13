@@ -1,27 +1,26 @@
+import { Dropdown } from "@/components/button/Dropdown";
 import DropdownButton from "@/components/button/DropdownButton";
-import ReviewCard from "@/components/card/ReviewCard";
-import { Book } from "@/types/book";
-import React, { useState, useEffect , useCallback, useRef } from "react";
-import { View, FlatList } from "react-native";
-import { supabase } from '@/app/lib/supabase';
-import { SafeAreaView } from "react-native-safe-area-context"
-import { LinearGradient } from "expo-linear-gradient";
-import Icons from '@/components/common/Icons';
-import PostCard from "@/components/card/PostCard";
 import IconButton from "@/components/button/IconButton";
+import PostCard from "@/components/card/PostCard";
+import ReviewCard from "@/components/card/ReviewCard";
+import AppText from "@/components/common/AppText";
+import Icons from '@/components/common/Icons';
 import { CreatePostModal } from "@/components/modals/CreatePostModal";
 import { CreateReviewModal } from "@/components/modals/CreateReviewModal";
 import { SearchBookForReviewModal } from "@/components/modals/SearchBookForReviewModal";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { Dropdown } from "@/components/button/Dropdown";
-import { FileText, Star } from "lucide-react-native";
-import AppText from "@/components/common/AppText";
-import { useRouter, useFocusEffect } from "expo-router";
-import { Feather } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFeed } from "@/hooks/useFeed";
 import { useNotifications } from "@/hooks/useNotifications";
-import { Colors } from "@/constants/Colors";
+import { Book } from "@/types/book";
+import { Feather } from "@expo/vector-icons";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import { FileText, Star } from "lucide-react-native";
+import React, { useRef, useState } from "react";
+import { Dimensions, FlatList, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home() {
   const [selectedFilter, setSelectedFilter] = useState('Friends');
@@ -49,9 +48,10 @@ export default function Home() {
 
   const handleAddPress = () => {
     addButtonRef.current?.measureInWindow((x, y, width, height) => {
+      const windowWidth = Dimensions.get('window').width;
       setAddMenuCoords({
-        top: y + height + 8,
-        right: 16,
+        top: y + height,
+        right: windowWidth - (x + width),
       });
       setIsAddMenuVisible(true);
     });

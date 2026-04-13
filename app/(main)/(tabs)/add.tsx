@@ -63,7 +63,6 @@ export default function AddTab() {
       let filename = uri.split('/').pop() || `upload.${Date.now()}.jpg`;
 
       const formData = new FormData();
-      // React Native requires this specific object structure to upload files via FormData
       formData.append('image', {
         uri: uri,
         name: filename,
@@ -93,7 +92,6 @@ export default function AddTab() {
           .filter(Boolean)
           .join(' ');
       } else if (data.raw_text && data.raw_text.trim().length > 0) {
-        // Fallback if OpenAI formatting fails in the Azure function but text is still extracted
         console.log('Metadata null, falling back to raw_text');
         searchQuery = data.raw_text.replace(/\s+/g, ' ').trim().substring(0, 80);
       }
@@ -135,7 +133,7 @@ export default function AddTab() {
       setIsProcessing(true);
       const photo = await cameraRef.current.takePictureAsync({
         quality: 0.8,
-        base64: false, // Don't need base64 if we are uploading the file
+        base64: false,
       });
       if (photo?.uri) {
         await processImage(photo.uri);
@@ -203,7 +201,6 @@ export default function AddTab() {
       console.error('Barcode Search Error:', searchErr);
       Alert.alert('Search Failed', 'Failed to retrieve book details for this barcode.');
     } finally {
-      // reset after short delay
       setTimeout(() => setIsProcessing(false), 2000);
     }
   };

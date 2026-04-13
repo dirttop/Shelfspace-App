@@ -77,15 +77,67 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
         [closeBookModal]
     );
 
-    const [userRating, setUserRating] = useState<number | null>(null);
+    const [olRating, setOlRating] = useState<number | null>(null);
     const [saveBookMutation] = useMutation(SAVE_BOOK_MUTATION);
 
     useEffect(() => {
-        setUserRating(null);
+        setOlRating(null);
         setIsMenuExpanded(false);
     }, [book?.isbn]);
 
-    const displayRating = userRating !== null ? userRating : (book?.globalRating || 0);
+    // Fetch Open Library Rating
+    useEffect(() => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
+        async function fetchOLRating() {
+            if (!book?.isbn) return;
+            
+            // Sanitize ISBN: remove all non-numeric characters except 'X' (for ISBN-10)
+            const sanitizedIsbn = book.isbn.replace(/[^0-9X]/gi, '');
+            if (!sanitizedIsbn) return;
+
+            try {
+                const response = await fetch(
+                    `https://openlibrary.org/search.json?q=${sanitizedIsbn}&fields=ratings_average`,
+                    { signal: controller.signal }
+                );
+                
+                if (!response.ok) {
+                    console.log(`Open Library API returned status ${response.status}`);
+                    return;
+                }
+
+                const text = await response.text();
+                if (!text || text.trim().length === 0) {
+                    return;
+                }
+
+                const data = JSON.parse(text);
+                if (data.docs && data.docs.length > 0) {
+                    const rating = data.docs[0].ratings_average;
+                    if (rating) {
+                        setOlRating(rating);
+                    }
+                }
+            } catch (err: any) {
+                if (err.name === 'AbortError') {
+                    console.log("OL rating fetch timed out");
+                } else {
+                    console.error("Error fetching OL rating:", err);
+                }
+            } finally {
+                clearTimeout(timeoutId);
+            }
+        }
+        fetchOLRating();
+        
+        return () => {
+            controller.abort();
+            clearTimeout(timeoutId);
+        };
+    }, [book?.isbn]);
+
     const releaseYear = book?.releaseYear || null;
 
     const infoText = [
@@ -93,13 +145,6 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
         book?.pageCount ? `${book.pageCount} Pages` : null,
         releaseYear
     ].filter(Boolean).join(' ◦ ');
-
-    const handleChange = useCallback(
-        (value: number) => {
-            setUserRating(Math.round(value * 2) / 2);
-        },
-        [],
-    );
 
     const [shelves, setShelves] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -321,15 +366,25 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                     {infoText}
                                 </AppText>
                                 <View className="items-start pt-4">
-                                    <Rating
-                                        size={30}
-                                        rating={displayRating}
-                                        onChange={handleChange}
-                                        spacing={1.5}
-                                        baseColor={Colors.mutedForeground}
-                                        fillColor={Colors.primary}
-                                        touchColor={Colors.primary}
-                                    />
+                                    {olRating !== null ? (
+                                        <View pointerEvents="none" className="flex-row items-center gap-2">
+                                            <Rating
+                                                size={30}
+                                                rating={olRating}
+                                                spacing={1.5}
+                                                baseColor={Colors.mutedForeground}
+                                                fillColor={Colors.primary}
+                                                touchColor={Colors.primary}
+                                            />
+                                            <AppText className="font-fraunces-bold text-foreground pt-0.5">
+                                                {olRating.toFixed(1)}
+                                            </AppText>
+                                        </View>
+                                    ) : (
+                                        <AppText variant="caption" className="text-muted-foreground italic">
+                                            No ratings yet
+                                        </AppText>
+                                    )}
                                 </View>
                             </View>
                             <View className="flex-row items-center gap-2 pt-2">

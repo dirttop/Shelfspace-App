@@ -158,6 +158,9 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
                 placeholder="Write a comment..."
                 value={newComment}
                 onChangeText={setNewComment}
+                maxLength={2000}
+                autoCorrect={true}
+                spellCheck={true}
                 multiline
               />
             ) : (
@@ -166,6 +169,9 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
                 placeholder="Write a comment..."
                 value={newComment}
                 onChangeText={setNewComment}
+                maxLength={2000}
+                autoCorrect={true}
+                spellCheck={true}
                 multiline
               />
             )}
@@ -221,7 +227,7 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
       index={1}
       snapPoints={snapPoints}
       backdropComponent={renderBackdrop}
-      keyboardBehavior="interactive"
+      keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       footerComponent={renderFooter}
     >
