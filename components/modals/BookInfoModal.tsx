@@ -9,7 +9,7 @@ import { Rating } from '@kolking/react-native-rating';
 import { Colors } from '@/constants/Colors';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { forwardRef, useCallback, useEffect, useMemo, useState, useRef } from 'react';
-import { Image, View, TouchableOpacity, LayoutAnimation } from "react-native";
+import { ActivityIndicator, Image, View, TouchableOpacity, LayoutAnimation } from "react-native";
 import Animated, { FadeInUp, FadeOutUp, LinearTransition } from 'react-native-reanimated';
 import { supabase } from '@/app/lib/supabase';
 import { gql, useMutation } from '@apollo/client';
@@ -81,10 +81,12 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
     const [olRating, setOlRating] = useState<number | null>(null);
     const [saveBookMutation] = useMutation(SAVE_BOOK_MUTATION);
     const { showAlert } = useAlert();
+    const [addingShelfId, setAddingShelfId] = useState<string | null>(null);
 
     useEffect(() => {
         setOlRating(null);
         setIsMenuExpanded(false);
+        setAddingShelfId(null);
     }, [book?.isbn]);
 
     // Fetch Open Library Rating
@@ -199,7 +201,9 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
             showAlert('Error', 'This book cannot be added because it is missing an ISBN.', 'error');
             return;
         }
+        if (addingShelfId) return; // prevent double-tap
 
+        setAddingShelfId(shelfId);
         try {
             try {
                 await saveBookMutation({
@@ -218,6 +222,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
             } catch (bookErr: any) {
                 console.error("Book upsert error:", bookErr);
                 showAlert('Error', 'Failed to save book details.', 'error');
+                setAddingShelfId(null);
                 return;
             }
 
@@ -266,12 +271,14 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                     }
                 }
 
+                setIsMenuExpanded(false);
                 showAlert('Added!', 'Book added to shelf.', 'success');
             }
         } catch (e: any) {
             console.error("Error adding to shelf:", e);
             showAlert('Error', e.message || 'An unexpected error occurred.', 'error');
         }
+        setAddingShelfId(null);
     };
 
     useEffect(() => {
@@ -345,7 +352,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                     />
                 </View>
                 <BottomSheetScrollView showsVerticalScrollIndicator={false} className="flex-1">
-                    <View className="flex-row pt-[4vh] pb-6 px-4 gap-4">
+                    <View className="flex-row pt-10 pb-6 px-4 gap-4">
                         {book?.coverImage ? (
                             <Image
                                 source={{ uri: book.coverImage }}
@@ -411,26 +418,40 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                             className="px-6 py-2 mb-2"
                         >
                             <View className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm">
-                                <DropdownButton
-                                    title="Add to shelf"
-                                    variant="ghost"
-                                    size="md"
-                                    dropdownPosition="right"
-                                    menuOnly={true}
-                                    className="border-0 border-b border-slate-200"
-                                    buttonClassName="!rounded-none bg-white justify-center items-center py-4"
-                                    dropdownItems={[
-                                        ...shelves.map(shelf => ({
-                                            label: shelf.name,
-                                            onPress: () => {
-                                                setIsMenuExpanded(false);
-                                                handleAddToShelf(shelf.id);
-                                            }
-                                        }))
-                                    ]}
-                                />
+                                {/* Shelf rows - inline with per-shelf loading spinner */}
+                                <View className="border-b border-slate-200">
+                                    <AppText
+                                        variant="caption"
+                                        className="text-muted-foreground px-4 pt-3 pb-1"
+                                    >
+                                        Add to shelf
+                                    </AppText>
+                                    {shelves.map((shelf, index) => (
+                                        <TouchableOpacity
+                                            key={shelf.id}
+                                            onPress={() => handleAddToShelf(shelf.id)}
+                                            disabled={!!addingShelfId}
+                                            className={`flex-row items-center justify-between px-4 py-3 ${
+                                                index < shelves.length - 1 ? 'border-b border-slate-100' : ''
+                                            } ${addingShelfId && addingShelfId !== shelf.id ? 'opacity-40' : ''}`}
+                                        >
+                                            <AppText
+                                                variant="body"
+                                                className="font-fraunces-bold text-[#1e656d]"
+                                            >
+                                                {shelf.name}
+                                            </AppText>
+                                            {addingShelfId === shelf.id ? (
+                                                <ActivityIndicator size="small" color={Colors.primary} />
+                                            ) : (
+                                                <View className="w-5 h-5" />
+                                            )}
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
                                 <TouchableOpacity
                                     className="py-4 items-center bg-white active:bg-slate-50 flex-row justify-center"
+                                    disabled={!!addingShelfId}
                                     onPress={() => {
                                         setIsMenuExpanded(false);
                                         createReviewModalRef.current?.present();

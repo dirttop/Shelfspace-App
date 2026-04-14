@@ -51,6 +51,7 @@ export default function EditShelfScreen() {
   const [shelfName, setShelfName] = useState<string>('');
   const [books, setBooks] = useState<ShelfBook[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdding, setIsAdding] = useState(false);
 
   const searchModalRef = useRef<BottomSheetModal>(null);
   const [saveBookMutation] = useMutation(SAVE_BOOK_MUTATION);
@@ -154,6 +155,7 @@ export default function EditShelfScreen() {
       return;
     }
 
+    setIsAdding(true);
     try {
       // Step 1: Upsert the book into the local `books` table first.
       // Books from the search API may not yet exist in Supabase, so the
@@ -174,6 +176,7 @@ export default function EditShelfScreen() {
     } catch (saveErr) {
       console.error('Failed to save book:', saveErr);
       showAlert('Error', 'Failed to save book details.', 'error');
+      setIsAdding(false);
       return;
     }
 
@@ -200,6 +203,7 @@ export default function EditShelfScreen() {
     } else if (data) {
       setBooks(prev => [...prev, { ...book, shelfBookId: data.id, position: newPosition }]);
     }
+    setIsAdding(false);
   };
 
   const renderItem = ({ item, drag, isActive }: RenderItemParams<ShelfBook>) => {
@@ -250,9 +254,14 @@ export default function EditShelfScreen() {
         </View>
         <TouchableOpacity
           onPress={() => searchModalRef.current?.present()}
+          disabled={isAdding}
           className="w-10 h-10 rounded-full bg-muted items-center justify-center shadow-sm"
         >
-          <Plus size={24} color={Colors.foreground} />
+          {isAdding ? (
+            <ActivityIndicator size="small" color={Colors.primary} />
+          ) : (
+            <Plus size={24} color={Colors.foreground} />
+          )}
         </TouchableOpacity>
       </View>
 
@@ -262,7 +271,17 @@ export default function EditShelfScreen() {
         </View>
       ) : (
         <View className="flex-1">
-          {books.length === 0 ? (
+          {/* Adding book overlay banner */}
+          {isAdding && (
+            <View
+              style={{ backgroundColor: Colors.primary }}
+              className="flex-row items-center justify-center gap-x-2 py-3 mx-4 mb-3 rounded-xl"
+            >
+              <ActivityIndicator size="small" color="#fff" />
+              <AppText variant="label" style={{ color: '#fff' }}>Adding book to shelf...</AppText>
+            </View>
+          )}
+          {books.length === 0 && !isAdding ? (
             <View className="flex-1 justify-center items-center px-6">
               <AppText variant="subtitle" className="text-muted-foreground text-center">Shelf is empty</AppText>
               <AppText variant="body" className="text-muted-foreground opacity-70 text-center mt-2">Tap the + icon to add books</AppText>
