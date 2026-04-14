@@ -15,7 +15,7 @@ import { supabase } from '@/app/lib/supabase';
 import { gql, useMutation } from '@apollo/client';
 import { CreateReviewModal } from './CreateReviewModal';
 import CondensedReviewCard from '../card/CondensedReviewCard';
-import { Plus, X } from 'lucide-react-native';
+import { Plus, X, ChevronRight, ChevronLeft } from 'lucide-react-native';
 import { useAlert } from '@/contexts/AlertContext';
 
 const SAVE_BOOK_MUTATION = gql`
@@ -82,11 +82,13 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
     const [saveBookMutation] = useMutation(SAVE_BOOK_MUTATION);
     const { showAlert } = useAlert();
     const [addingShelfId, setAddingShelfId] = useState<string | null>(null);
+    const [showShelfPicker, setShowShelfPicker] = useState(false);
 
     useEffect(() => {
         setOlRating(null);
         setIsMenuExpanded(false);
         setAddingShelfId(null);
+        setShowShelfPicker(false);
     }, [book?.isbn]);
 
     // Fetch Open Library Rating
@@ -96,7 +98,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
 
         async function fetchOLRating() {
             if (!book?.isbn) return;
-            
+
             // Sanitize ISBN: remove all non-numeric characters except 'X' (for ISBN-10)
             const sanitizedIsbn = book.isbn.replace(/[^0-9X]/gi, '');
             if (!sanitizedIsbn) return;
@@ -106,7 +108,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                     `https://openlibrary.org/search.json?q=${sanitizedIsbn}&fields=ratings_average`,
                     { signal: controller.signal }
                 );
-                
+
                 if (!response.ok) {
                     console.log(`Open Library API returned status ${response.status}`);
                     return;
@@ -135,7 +137,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
             }
         }
         fetchOLRating();
-        
+
         return () => {
             controller.abort();
             clearTimeout(timeoutId);
@@ -399,6 +401,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                     className="w-10 h-10 rounded-full bg-[#73BDA8] items-center justify-center p-0"
                                     onPress={() => {
                                         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                                        setShowShelfPicker(false);
                                         setIsMenuExpanded(!isMenuExpanded);
                                     }}
                                 >
@@ -413,53 +416,70 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                     </View>
                     {isMenuExpanded && (
                         <Animated.View
-                            entering={FadeInUp.duration(250)}
-                            exiting={FadeOutUp.duration(250)}
+                            entering={FadeInUp.duration(220)}
+                            exiting={FadeOutUp.duration(180)}
                             className="px-6 py-2 mb-2"
                         >
                             <View className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm">
-                                {/* Shelf rows - inline with per-shelf loading spinner */}
-                                <View className="border-b border-slate-200">
-                                    <AppText
-                                        variant="caption"
-                                        className="text-muted-foreground px-4 pt-3 pb-1"
-                                    >
-                                        Add to shelf
-                                    </AppText>
-                                    {shelves.map((shelf, index) => (
+                                {!showShelfPicker ? (
+                                    // ── Level 1: main actions ──────────────────────────────
+                                    <>
                                         <TouchableOpacity
-                                            key={shelf.id}
-                                            onPress={() => handleAddToShelf(shelf.id)}
-                                            disabled={!!addingShelfId}
-                                            className={`flex-row items-center justify-between px-4 py-3 ${
-                                                index < shelves.length - 1 ? 'border-b border-slate-100' : ''
-                                            } ${addingShelfId && addingShelfId !== shelf.id ? 'opacity-40' : ''}`}
+                                            className="flex-row items-center justify-between px-4 py-4 border-b border-slate-100 active:bg-slate-50"
+                                            onPress={() => {
+                                                LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                                                setShowShelfPicker(true);
+                                            }}
                                         >
-                                            <AppText
-                                                variant="body"
-                                                className="font-fraunces-bold text-[#1e656d]"
-                                            >
-                                                {shelf.name}
-                                            </AppText>
-                                            {addingShelfId === shelf.id ? (
-                                                <ActivityIndicator size="small" color={Colors.primary} />
-                                            ) : (
-                                                <View className="w-5 h-5" />
-                                            )}
+                                            <AppText className="font-fraunces-bold text-[#1e656d] text-base">Add to Shelf</AppText>
+                                            <ChevronRight size={18} color={Colors.primary} />
                                         </TouchableOpacity>
-                                    ))}
-                                </View>
-                                <TouchableOpacity
-                                    className="py-4 items-center bg-white active:bg-slate-50 flex-row justify-center"
-                                    disabled={!!addingShelfId}
-                                    onPress={() => {
-                                        setIsMenuExpanded(false);
-                                        createReviewModalRef.current?.present();
-                                    }}
-                                >
-                                    <AppText className="font-fraunces-bold text-[#1e656d] text-lg">Write Review</AppText>
-                                    <View className="w-5 h-5 ml-2" />
-                                </TouchableOpacity>
+                                        <TouchableOpacity
+                                            className="flex-row items-center justify-between px-4 py-4 active:bg-slate-50"
+                                            disabled={!!addingShelfId}
+                                            onPress={() => {
+                                                setIsMenuExpanded(false);
+                                                setShowShelfPicker(false);
+                                                createReviewModalRef.current?.present();
+                                            }}
+                                        >
+                                            <AppText className="font-fraunces-bold text-[#1e656d] text-base">Write Review</AppText>
+                                            <ChevronRight size={18} color={Colors.primary} />
+                                        </TouchableOpacity>
+                                    </>
+                                ) : (
+                                    // ── Level 2: shelf picker ──────────────────────────────
+                                    <>
+                                        <TouchableOpacity
+                                            className="flex-row items-center px-4 py-3 border-b border-slate-100 active:bg-slate-50"
+                                            onPress={() => {
+                                                LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                                                setShowShelfPicker(false);
+                                            }}
+                                        >
+                                            <ChevronLeft size={16} color={Colors.mutedForeground} />
+                                            <AppText variant="caption" className="text-muted-foreground ml-1">Back</AppText>
+                                        </TouchableOpacity>
+                                        {shelves.map((shelf, index) => (
+                                            <TouchableOpacity
+                                                key={shelf.id}
+                                                onPress={() => handleAddToShelf(shelf.id)}
+                                                disabled={!!addingShelfId}
+                                                className={`flex-row items-center justify-between px-4 py-3.5 ${index < shelves.length - 1 ? 'border-b border-slate-100' : ''
+                                                    } ${addingShelfId && addingShelfId !== shelf.id ? 'opacity-40' : ''}`}
+                                            >
+                                                <AppText variant="body" className="font-fraunces-bold text-[#1e656d]">
+                                                    {shelf.name}
+                                                </AppText>
+                                                {addingShelfId === shelf.id ? (
+                                                    <ActivityIndicator size="small" color={Colors.primary} />
+                                                ) : (
+                                                    <View className="w-5 h-5" />
+                                                )}
+                                            </TouchableOpacity>
+                                        ))}
+                                    </>
+                                )}
                             </View>
                         </Animated.View>
                     )}
