@@ -33,8 +33,6 @@ interface CommentsModalProps {
 const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId, currentUserId, onCommentAdded, onCommentDeleted }, ref) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
-  const [newComment, setNewComment] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const insets = useSafeAreaInsets();
 
   const snapPoints = useMemo(() => ['50%', '90%'], []);
@@ -72,32 +70,6 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
     }
   }, [postId, fetchComments]);
 
-  const handlePostComment = async () => {
-    if (!newComment.trim() || !postId || !currentUserId || isSubmitting) return;
-
-    setIsSubmitting(true);
-    try {
-      const { error } = await supabase
-        .from('comments')
-        .insert({
-          postId,
-          userId: currentUserId,
-          text: newComment.trim(),
-        });
-
-      if (error) throw error;
-
-      setNewComment('');
-      Keyboard.dismiss();
-      fetchComments();
-      if (onCommentAdded) onCommentAdded();
-    } catch (error) {
-      console.error('Error posting comment:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleDeleteComment = async (commentId: string) => {
     Alert.alert(
       "Delete Comment",
@@ -114,8 +86,6 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
                 .from('comments')
                 .delete({ count: 'exact' })
                 .eq('id', commentId);
-              // Temporarily removed userId filter to debug
-              // .eq('userId', currentUserId);
 
               if (error) throw error;
               console.log(`Delete response: Rows affected: ${count}`);
@@ -147,46 +117,16 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
   const renderFooter = useCallback(
     (props: any) => (
       <BottomSheetFooter {...props} bottomInset={0}>
-        <View
-          className="bg-white border-t border-slate-200 px-4 py-3"
-          style={{ paddingBottom: Math.max(insets.bottom, 12) }}
-        >
-          <View className="flex-row items-center gap-x-2">
-            {Platform.OS === 'web' ? (
-              <TextInput
-                className="flex-1 bg-slate-100 px-4 py-2.5 rounded-full text-slate-900"
-                placeholder="Write a comment..."
-                value={newComment}
-                onChangeText={setNewComment}
-                maxLength={2000}
-                autoCorrect={true}
-                spellCheck={true}
-                multiline
-              />
-            ) : (
-              <BottomSheetTextInput
-                className="flex-1 bg-slate-100 px-4 py-2.5 rounded-full text-slate-900"
-                placeholder="Write a comment..."
-                value={newComment}
-                onChangeText={setNewComment}
-                maxLength={2000}
-                autoCorrect={true}
-                spellCheck={true}
-                multiline
-              />
-            )}
-            <TouchableOpacity
-              onPress={handlePostComment}
-              disabled={!newComment.trim() || isSubmitting}
-              className={`p-2 rounded-full ${newComment.trim() ? 'bg-blue-500' : 'bg-slate-200'}`}
-            >
-              <Send size={20} color="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
+        <CommentInput
+          postId={postId}
+          currentUserId={currentUserId}
+          fetchComments={fetchComments}
+          onCommentAdded={onCommentAdded}
+          insetsBottom={insets.bottom}
+        />
       </BottomSheetFooter>
     ),
-    [insets.bottom, newComment, isSubmitting]
+    [insets.bottom, postId, currentUserId, fetchComments, onCommentAdded]
   );
 
   const renderComment = ({ item }: { item: Comment }) => (
@@ -262,3 +202,86 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
 export default CommentsModal;
 
 CommentsModal.displayName = 'CommentsModal';
+
+const CommentInput = ({
+  postId,
+  currentUserId,
+  fetchComments,
+  onCommentAdded,
+  insetsBottom
+}: {
+  postId?: number;
+  currentUserId?: string;
+  fetchComments: () => void;
+  onCommentAdded?: () => void;
+  insetsBottom: number;
+}) => {
+  const [newComment, setNewComment] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handlePostComment = async () => {
+    if (!newComment.trim() || !postId || !currentUserId || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('comments')
+        .insert({
+          postId,
+          userId: currentUserId,
+          text: newComment.trim(),
+        });
+
+      if (error) throw error;
+
+      setNewComment('');
+      Keyboard.dismiss();
+      fetchComments();
+      if (onCommentAdded) onCommentAdded();
+    } catch (error) {
+      console.error('Error posting comment:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <View
+      className="bg-white border-t border-slate-200 px-4 py-3"
+      style={{ paddingBottom: Math.max(insetsBottom, 12) }}
+    >
+      <View className="flex-row items-center gap-x-2">
+        {Platform.OS === 'web' ? (
+          <TextInput
+            className="flex-1 bg-slate-100 px-4 py-2.5 rounded-full text-slate-900"
+            placeholder="Write a comment..."
+            value={newComment}
+            onChangeText={setNewComment}
+            maxLength={2000}
+            autoCorrect={true}
+            spellCheck={true}
+            multiline
+          />
+        ) : (
+          <BottomSheetTextInput
+            className="flex-1 bg-slate-100 px-4 py-2.5 rounded-full text-slate-900"
+            placeholder="Write a comment..."
+            value={newComment}
+            onChangeText={setNewComment}
+            maxLength={2000}
+            autoCorrect={true}
+            spellCheck={true}
+            multiline
+          />
+        )}
+        <TouchableOpacity
+          onPress={handlePostComment}
+          disabled={!newComment.trim() || isSubmitting}
+          className={`p-2 rounded-full ${newComment.trim() ? 'bg-blue-500' : 'bg-slate-200'}`}
+        >
+          <Send size={20} color="white" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
