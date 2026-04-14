@@ -11,6 +11,35 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SearchBookForReviewModal } from '@/components/modals/SearchBookForReviewModal';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Colors } from '@/constants/Colors';
+import { gql, useMutation } from '@apollo/client';
+
+const SAVE_BOOK_MUTATION = gql`
+  mutation SaveBook(
+    $title: String!
+    $authors: [String!]!
+    $description: String
+    $coverImage: String
+    $pageCount: Int
+    $publisher: String
+    $isbn: String!
+    $releaseYear: String
+    $source: String!
+  ) {
+    saveBook(
+      title: $title
+      authors: $authors
+      description: $description
+      coverImage: $coverImage
+      pageCount: $pageCount
+      publisher: $publisher
+      isbn: $isbn
+      releaseYear: $releaseYear
+      source: $source
+    ) {
+      isbn
+    }
+  }
+`;
 
 type ShelfBook = Book & { shelfBookId: string; position: number };
 
@@ -23,6 +52,7 @@ export default function EditShelfScreen() {
   const [loading, setLoading] = useState(true);
 
   const searchModalRef = useRef<BottomSheetModal>(null);
+  const [saveBookMutation] = useMutation(SAVE_BOOK_MUTATION);
 
   const shelfId = typeof id === 'string' ? id : Array.isArray(id) ? id[0] : '';
 
@@ -121,15 +151,36 @@ export default function EditShelfScreen() {
 
     // Check if already in shelf
     if (books.some(b => b.isbn === book.isbn)) {
-      Alert.alert('Already Shelf', 'This book is already on the shelf.');
+      Alert.alert('Already on Shelf', 'This book is already on the shelf.');
+      return;
+    }
+
+    try {
+      // Step 1: Upsert the book into the local `books` table first.
+      // Books from the search API may not yet exist in Supabase, so the
+      // shelfBooks foreign key constraint would fail without this.
+      await saveBookMutation({
+        variables: {
+          title: book.title || '',
+          authors: book.authors || [],
+          description: book.description || '',
+          coverImage: book.coverImage || '',
+          pageCount: book.pageCount || 0,
+          publisher: book.publisher || '',
+          isbn: book.isbn,
+          releaseYear: book.releaseYear || '',
+          source: book.source || 'Google Books',
+        },
+      });
+    } catch (saveErr) {
+      console.error('Failed to save book:', saveErr);
+      Alert.alert('Error', 'Failed to save book details.');
       return;
     }
 
     const newPosition = books.length;
 
-    // Insert into db (Note: you might need to insert the book into 'books' table first if it doesnt exist, similar to other places)
-    // usually useBookSearch hook handles inserting into 'books' when it's fetched, or we do it here. 
-    // Assuming it exists if it was selected from the database search modal.
+    // Step 2: Now insert into shelfBooks — the book is guaranteed to exist.
     const { data, error } = await supabase
       .from('shelfBooks')
       .insert({
@@ -141,7 +192,12 @@ export default function EditShelfScreen() {
       .single();
 
     if (error) {
-      Alert.alert('Error', 'Failed to add book to shelf.');
+      if (error.code === '23505') {
+        Alert.alert('Already on Shelf', 'This book is already in this shelf.');
+      } else {
+        console.error('Shelf insert error:', error);
+        Alert.alert('Error', 'Failed to add book to shelf.');
+      }
     } else if (data) {
       setBooks(prev => [...prev, { ...book, shelfBookId: data.id, position: newPosition }]);
     }
