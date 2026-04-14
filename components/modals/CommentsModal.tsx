@@ -1,13 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { forwardRef, useCallback, useMemo, useState, useEffect } from 'react';
-import { View, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { View, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard, TouchableOpacity, TextInput } from 'react-native';
 import { BottomSheetModal, BottomSheetFlatList, BottomSheetTextInput, BottomSheetBackdrop, BottomSheetFooter } from '@gorhom/bottom-sheet';
 import { supabase } from '@/app/lib/supabase';
 import AppText from '../common/AppText';
 import UserHeader from '../common/UserHeader';
 import { Send, Trash2 } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAlert } from '@/contexts/AlertContext';
 
 interface Comment {
   id: string;
@@ -34,6 +35,7 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
   const insets = useSafeAreaInsets();
+  const { showConfirm, showAlert } = useAlert();
 
   const snapPoints = useMemo(() => ['50%', '90%'], []);
 
@@ -71,34 +73,24 @@ const CommentsModal = forwardRef<BottomSheetModal, CommentsModalProps>(({ postId
   }, [postId, fetchComments]);
 
   const handleDeleteComment = async (commentId: string) => {
-    Alert.alert(
-      "Delete Comment",
-      "Are you sure you want to delete this comment?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              console.log(`Attempting to delete comment with id: ${commentId} (type: ${typeof commentId}) and userId: ${currentUserId} (type: ${typeof currentUserId})`);
-              const { error, count } = await supabase
-                .from('comments')
-                .delete({ count: 'exact' })
-                .eq('id', commentId);
-
-              if (error) throw error;
-              console.log(`Delete response: Rows affected: ${count}`);
-
-              fetchComments();
-              if (onCommentDeleted) onCommentDeleted();
-            } catch (error) {
-              console.error('Error deleting comment:', error);
-              Alert.alert('Error', 'Failed to delete comment');
-            }
-          },
-        },
-      ]
+    showConfirm(
+      'Delete Comment',
+      'Are you sure you want to delete this comment?',
+      async () => {
+        try {
+          const { error } = await supabase
+            .from('comments')
+            .delete({ count: 'exact' })
+            .eq('id', commentId);
+          if (error) throw error;
+          fetchComments();
+          if (onCommentDeleted) onCommentDeleted();
+        } catch (error) {
+          console.error('Error deleting comment:', error);
+          showAlert('Error', 'Failed to delete comment', 'error');
+        }
+      },
+      { confirmText: 'Delete', destructive: true }
     );
   };
 

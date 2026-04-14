@@ -5,7 +5,7 @@ import { supabase } from "@/app/lib/supabase";
 import { Book } from "@/types/book";
 import { useRouter } from "expo-router";
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { View, ViewProps, Alert, TouchableOpacity } from "react-native";
+import { View, ViewProps, TouchableOpacity } from "react-native";
 import { EllipsisVertical, Trash2, Flag } from "lucide-react-native";
 import BookItem from "../book/BookItem";
 import UserHeader from "../common/UserHeader";
@@ -15,6 +15,7 @@ import { Dropdown } from "@/components/button/Dropdown";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import CommentsModal from "../modals/CommentsModal";
 import { Colors } from "@/constants/Colors";
+import { useAlert } from '@/contexts/AlertContext';
 
 interface ReviewProps extends ViewProps {
   firstName?: string;
@@ -60,6 +61,7 @@ const ReviewCard = ({
   ...props
 }: ReviewProps) => {
   const router = useRouter();
+  const { showConfirm, showAlert } = useAlert();
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [localLikesCount, setLocalLikesCount] = useState(likesCount);
   const [localCommentsCount, setLocalCommentsCount] = useState(commentsCount);
@@ -121,19 +123,21 @@ const ReviewCard = ({
 
   const handleDelete = () => {
     setDropdownVisible(false);
-    Alert.alert("Delete Post", "Are you sure? This cannot be undone.", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Delete", style: "destructive", onPress: async () => {
-          const { error } = await supabase.from("posts").delete().eq("id", postId);
-          if (error) Alert.alert("Error", "Failed to delete post.");
-          else onDelete?.();
-        }},
-    ]);
+    showConfirm(
+      'Delete Post',
+      'Are you sure? This cannot be undone.',
+      async () => {
+        const { error } = await supabase.from('posts').delete().eq('id', postId);
+        if (error) showAlert('Error', 'Failed to delete post.', 'error');
+        else onDelete?.();
+      },
+      { confirmText: 'Delete', destructive: true }
+    );
   };
 
   const dropdownItems = isOwner
     ? [{ label: "Delete Post", icon: <Trash2 size={16} color={Colors.destructive} />, onPress: handleDelete }]
-    : [{ label: "Report Post", icon: <Flag size={16} color={Colors.mutedForeground} />, onPress: () => Alert.alert("Reported", "Thank you for your report.") }];
+    : [{ label: "Report Post", icon: <Flag size={16} color={Colors.mutedForeground} />, onPress: () => showAlert('Reported', 'Thank you for your report.', 'success') }];
 
   const handleCommentAdded = useCallback(() => setLocalCommentsCount(prev => prev + 1), []);
   const handleCommentDeleted = useCallback(() => setLocalCommentsCount(prev => Math.max(0, prev - 1)), []);

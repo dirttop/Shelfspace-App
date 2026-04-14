@@ -9,13 +9,14 @@ import { Rating } from '@kolking/react-native-rating';
 import { Colors } from '@/constants/Colors';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { forwardRef, useCallback, useEffect, useMemo, useState, useRef } from 'react';
-import { Alert, Image, View, TouchableOpacity, LayoutAnimation } from "react-native";
+import { Image, View, TouchableOpacity, LayoutAnimation } from "react-native";
 import Animated, { FadeInUp, FadeOutUp, LinearTransition } from 'react-native-reanimated';
 import { supabase } from '@/app/lib/supabase';
 import { gql, useMutation } from '@apollo/client';
 import { CreateReviewModal } from './CreateReviewModal';
 import CondensedReviewCard from '../card/CondensedReviewCard';
 import { Plus, X } from 'lucide-react-native';
+import { useAlert } from '@/contexts/AlertContext';
 
 const SAVE_BOOK_MUTATION = gql`
   mutation SaveBook(
@@ -79,6 +80,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
 
     const [olRating, setOlRating] = useState<number | null>(null);
     const [saveBookMutation] = useMutation(SAVE_BOOK_MUTATION);
+    const { showAlert } = useAlert();
 
     useEffect(() => {
         setOlRating(null);
@@ -194,7 +196,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
 
     const handleAddToShelf = async (shelfId: string) => {
         if (!book?.isbn) {
-            Alert.alert("Error", "This book cannot be added because it is missing an ISBN.");
+            showAlert('Error', 'This book cannot be added because it is missing an ISBN.', 'error');
             return;
         }
 
@@ -215,7 +217,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                 });
             } catch (bookErr: any) {
                 console.error("Book upsert error:", bookErr);
-                Alert.alert("Error", "Failed to save book details.");
+                showAlert('Error', 'Failed to save book details.', 'error');
                 return;
             }
 
@@ -226,10 +228,10 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
 
             if (shelfErr) {
                 if (shelfErr.code === '23505') {
-                    Alert.alert("In Shelf", "This book is already in the selected shelf.");
+                    showAlert('Already in Shelf', 'This book is already in the selected shelf.', 'info');
                 } else {
                     console.error("Shelf addition error:", shelfErr);
-                    Alert.alert("Error", "Failed to add book to shelf.");
+                    showAlert('Error', 'Failed to add book to shelf.', 'error');
                 }
             } else {
                 // Determine if we need to update reading/read counts in the profiles table
@@ -244,7 +246,6 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                         try {
                             const { data: userData } = await supabase.auth.getUser();
                             if (userData?.user) {
-                                // fetch current count
                                 const { data: currentProfile } = await supabase
                                     .from('profiles')
                                     .select(counterField)
@@ -252,7 +253,6 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                                     .single();
 
                                 if (currentProfile) {
-                                    // increment
                                     const currentCount = (currentProfile as any)[counterField] || 0;
                                     await supabase
                                         .from('profiles')
@@ -266,11 +266,11 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                     }
                 }
 
-                Alert.alert("Success", "Book added to shelf!");
+                showAlert('Added!', 'Book added to shelf.', 'success');
             }
         } catch (e: any) {
             console.error("Error adding to shelf:", e);
-            Alert.alert("Error", e.message || "An unexpected error occurred.");
+            showAlert('Error', e.message || 'An unexpected error occurred.', 'error');
         }
     };
 
@@ -505,7 +505,7 @@ export const BookInfoModal = forwardRef<BottomSheetModal>((props, ref) => {
                 ref={createReviewModalRef}
                 selectedBook={book}
                 onReviewCreated={() => {
-                    Alert.alert("Success", "Review created successfully!");
+                    showAlert('Review Posted!', 'Your review was created successfully.', 'success');
                 }}
             />
         </BottomSheetModal>

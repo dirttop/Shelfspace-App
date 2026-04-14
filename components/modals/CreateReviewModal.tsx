@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, BottomSheetScrollView, BottomSheetTextInput, BottomSheetFooter } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo, useState, useEffect } from 'react';
-import { View, Keyboard, Platform, TouchableWithoutFeedback, Alert, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { View, Keyboard, Platform, TouchableWithoutFeedback, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import AppText from '../common/AppText';
 import Buttons from '../common/Buttons';
 import { supabase } from '@/app/lib/supabase';
@@ -11,6 +11,7 @@ import { Rating } from '@kolking/react-native-rating';
 import { Book } from '@/types/book';
 import { Colors } from '@/constants/Colors';
 import { gql, useMutation } from '@apollo/client';
+import { useAlert } from '@/contexts/AlertContext';
 
 const SAVE_BOOK_MUTATION = gql`
   mutation SaveBook(
@@ -53,6 +54,7 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
     const insets = useSafeAreaInsets();
     
     const [saveBookMutation] = useMutation(SAVE_BOOK_MUTATION);
+    const { showAlert } = useAlert();
 
     const MAX_CHARS = 1000; // allow a bit more text for reviews
     const charsRemaining = MAX_CHARS - postText.length;
@@ -80,11 +82,11 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
 
     const handleSubmit = async () => {
       if (!selectedBook) {
-        Alert.alert('Error', 'No book selected.');
+        showAlert('Error', 'No book selected.', 'error');
         return;
       }
       if (userRating === 0) {
-        Alert.alert('Error', 'Please provide a rating.');
+        showAlert('Error', 'Please provide a rating.', 'error');
         return;
       }
       
@@ -164,7 +166,7 @@ export const CreateReviewModal = forwardRef<BottomSheetModal, CreateReviewModalP
           onReviewCreated();
         }
       } catch (error: any) {
-        Alert.alert('Error', error.message || 'Failed to create review');
+        showAlert('Error', error.message || 'Failed to create review', 'error');
       } finally {
         setIsSubmitting(false);
       }

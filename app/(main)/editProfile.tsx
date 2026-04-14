@@ -9,7 +9,6 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { CustomizeShelvesModal } from "@/components/modals/CustomizeShelvesModal";
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -18,10 +17,12 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAlert } from '@/contexts/AlertContext';
 
 export default function EditProfile() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { showAlert } = useAlert();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -41,7 +42,7 @@ export default function EditProfile() {
       setLoading(true);
       const { data: userData, error: userErr } = await supabase.auth.getUser();
       if (userErr || !userData?.user) {
-        if (mounted) Alert.alert(userErr?.message ?? "Not signed in");
+        if (mounted) showAlert('Error', userErr?.message ?? 'Not signed in', 'error');
         if (mounted) setLoading(false);
         return;
       }
@@ -72,15 +73,15 @@ export default function EditProfile() {
 
   function validate() {
     if (!firstName.trim()) {
-      Alert.alert("First name is required");
+      showAlert('Validation Error', 'First name is required', 'error');
       return false;
     }
     if (!lastName.trim()) {
-      Alert.alert("Last name is required");
+      showAlert('Validation Error', 'Last name is required', 'error');
       return false;
     }
     if (!username.trim()) {
-      Alert.alert("Username is required");
+      showAlert('Validation Error', 'Username is required', 'error');
       return false;
     }
     return true;
@@ -90,7 +91,7 @@ export default function EditProfile() {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permission required", "Permission needed to access photos.");
+        showAlert('Permission Required', 'Permission needed to access photos.', 'info');
         return;
       }
 
@@ -104,7 +105,7 @@ export default function EditProfile() {
         setNewAvatarUri(result.assets[0].uri);
       }
     } catch (err) {
-      Alert.alert("Image picker error", "Could not pick image");
+      showAlert('Image Picker Error', 'Could not pick image', 'error');
     }
   };
 
@@ -136,7 +137,7 @@ export default function EditProfile() {
     try {
       const { data: userData, error: userErr } = await supabase.auth.getUser();
       if (userErr || !userData?.user) {
-        Alert.alert(userErr?.message ?? "Not signed in");
+        showAlert('Error', userErr?.message ?? 'Not signed in', 'error');
         setSaving(false);
         return;
       }
@@ -170,7 +171,7 @@ export default function EditProfile() {
           finalAvatarUrl = await uploadAvatar(userId, newAvatarUri);
         } catch (e: any) {
           console.warn("avatar upload failed", e);
-          Alert.alert("Upload failed", "Could not upload avatar. Saving profile without it.");
+          showAlert('Upload Failed', 'Could not upload avatar. Saving profile without it.', 'warning');
         }
       }
 
@@ -183,16 +184,13 @@ export default function EditProfile() {
         avatar_url: finalAvatarUrl,
       });
       if (error) {
-        Alert.alert(
-          "Failed to save profile",
-          error.message ?? "Unexpected error",
-        );
+        showAlert('Failed to Save', error.message ?? 'Unexpected error', 'error');
       } else {
         // navigate to profile and replace current route so profile reloads
         router.replace("/profile");
       }
     } catch (e: any) {
-      Alert.alert("Unexpected error", e?.message ?? String(e));
+      showAlert('Unexpected Error', e?.message ?? String(e), 'error');
     } finally {
       setSaving(false);
     }

@@ -16,6 +16,8 @@ import { Platform, View } from 'react-native';
 
 import { BookInfoModal } from '@/components/modals/BookInfoModal';
 import { BookModalProvider, useBookModal } from '@/contexts/BookModalContext';
+import { AlertProvider } from '@/contexts/AlertContext';
+import { AlertDialog } from '@/components/common/AlertDialog';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -143,16 +145,19 @@ export default function RootLayout() {
   return (
     <ApolloProvider client={client}>
       <AuthProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <SafeAreaProvider>
-            <BottomSheetModalProvider>
-              <BookModalProvider>
-                <RootLayoutNav />
-                <GlobalBookModal />
-              </BookModalProvider>
-            </BottomSheetModalProvider>
-          </SafeAreaProvider>
-        </GestureHandlerRootView>
+        <AlertProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaProvider>
+              <BottomSheetModalProvider>
+                <BookModalProvider>
+                  <RootLayoutNav />
+                  <GlobalBookModal />
+                </BookModalProvider>
+              </BottomSheetModalProvider>
+            </SafeAreaProvider>
+          </GestureHandlerRootView>
+          <AlertDialog />
+        </AlertProvider>
       </AuthProvider>
     </ApolloProvider>
   );

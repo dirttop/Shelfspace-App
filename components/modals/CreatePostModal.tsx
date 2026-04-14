@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, BottomSheetScrollView, BottomSheetTextInput, BottomSheetFooter } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
-import { View, Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Alert, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { View, Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import AppText from '../common/AppText';
 import Buttons from '../common/Buttons';
 import { supabase } from '@/app/lib/supabase';
@@ -10,6 +10,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { X, Image as ImageIcon, ChevronDown, Keyboard as KeyboardIcon } from 'lucide-react-native';
 import { Colors } from '@/constants/Colors';
+import { useAlert } from '@/contexts/AlertContext';
 // Replaced above
 
 export type CreatePostModalProps = {
@@ -22,6 +23,7 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
     const [imageUri, setImageUri] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const insets = useSafeAreaInsets();
+    const { showAlert } = useAlert();
 
     const MAX_CHARS = 500;
     const charsRemaining = MAX_CHARS - postText.length;
@@ -134,7 +136,7 @@ export const CreatePostModal = forwardRef<BottomSheetModal, CreatePostModalProps
           props.onPostCreated();
         }
       } catch (error: any) {
-        Alert.alert('Error', error.message || 'Failed to create post');
+        showAlert('Error', error.message || 'Failed to create post', 'error');
       } finally {
         setIsSubmitting(false);
       }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Image, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/app/lib/supabase';
 import { Book } from '@/types/book';
@@ -12,6 +12,7 @@ import { SearchBookForReviewModal } from '@/components/modals/SearchBookForRevie
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Colors } from '@/constants/Colors';
 import { gql, useMutation } from '@apollo/client';
+import { useAlert } from '@/contexts/AlertContext';
 
 const SAVE_BOOK_MUTATION = gql`
   mutation SaveBook(
@@ -53,6 +54,7 @@ export default function EditShelfScreen() {
 
   const searchModalRef = useRef<BottomSheetModal>(null);
   const [saveBookMutation] = useMutation(SAVE_BOOK_MUTATION);
+  const { showConfirm, showAlert } = useAlert();
 
   const shelfId = typeof id === 'string' ? id : Array.isArray(id) ? id[0] : '';
 
@@ -101,24 +103,21 @@ export default function EditShelfScreen() {
   }, [shelfId]);
 
   const removeBook = async (bookId: string, shelfBookId: string) => {
-    Alert.alert('Remove Book', 'Are you sure you want to remove this book from the shelf?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Remove',
-        style: 'destructive',
-        onPress: async () => {
-          setBooks(prev => prev.filter(b => b.shelfBookId !== shelfBookId));
-          const { error } = await supabase
-            .from('shelfBooks')
-            .delete()
-            .eq('id', shelfBookId);
-          if (error) {
-            Alert.alert('Error', 'Could not remove book');
-            // Consider refetching to revert
-          }
+    showConfirm(
+      'Remove Book',
+      'Are you sure you want to remove this book from the shelf?',
+      async () => {
+        setBooks(prev => prev.filter(b => b.shelfBookId !== shelfBookId));
+        const { error } = await supabase
+          .from('shelfBooks')
+          .delete()
+          .eq('id', shelfBookId);
+        if (error) {
+          showAlert('Error', 'Could not remove book', 'error');
         }
-      }
-    ]);
+      },
+      { confirmText: 'Remove', destructive: true }
+    );
   };
 
   const onDragEnd = async ({ data }: { data: ShelfBook[] }) => {
@@ -151,7 +150,7 @@ export default function EditShelfScreen() {
 
     // Check if already in shelf
     if (books.some(b => b.isbn === book.isbn)) {
-      Alert.alert('Already on Shelf', 'This book is already on the shelf.');
+      showAlert('Already on Shelf', 'This book is already on the shelf.', 'info');
       return;
     }
 
@@ -174,7 +173,7 @@ export default function EditShelfScreen() {
       });
     } catch (saveErr) {
       console.error('Failed to save book:', saveErr);
-      Alert.alert('Error', 'Failed to save book details.');
+      showAlert('Error', 'Failed to save book details.', 'error');
       return;
     }
 
@@ -193,10 +192,10 @@ export default function EditShelfScreen() {
 
     if (error) {
       if (error.code === '23505') {
-        Alert.alert('Already on Shelf', 'This book is already in this shelf.');
+        showAlert('Already on Shelf', 'This book is already in this shelf.', 'info');
       } else {
         console.error('Shelf insert error:', error);
-        Alert.alert('Error', 'Failed to add book to shelf.');
+        showAlert('Error', 'Failed to add book to shelf.', 'error');
       }
     } else if (data) {
       setBooks(prev => [...prev, { ...book, shelfBookId: data.id, position: newPosition }]);

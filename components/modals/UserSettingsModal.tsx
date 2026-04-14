@@ -2,9 +2,10 @@
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { router } from 'expo-router';
 import React, { forwardRef, useCallback, useMemo } from 'react';
-import { Alert, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { supabase } from '../../app/lib/supabase';
 import AppText from '../common/AppText';
+import { useAlert } from '@/contexts/AlertContext';
 
 export type UserSettingsModalProps = {
   // We no longer need isVisible/onClose props since BottomSheet uses Refs
@@ -13,13 +14,14 @@ export type UserSettingsModalProps = {
 export const UserSettingsModal = forwardRef<BottomSheetModal, UserSettingsModalProps>(
   (props, ref) => {
     const { dismiss } = useBottomSheetModal();
+    const { showAlert } = useAlert();
     // variables
     const snapPoints = useMemo(() => ['25%', '50%'], []);
 
     const handleSignOut = async () => {
       const { error } = await supabase.auth.signOut();
       if (error) {
-        Alert.alert('Error signing out', error.message);
+        showAlert('Error signing out', error.message, 'error');
       } else {
         dismiss();
         router.replace('/(auth)/login');

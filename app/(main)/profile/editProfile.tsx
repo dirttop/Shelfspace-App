@@ -7,10 +7,12 @@ import Buttons from "@/components/common/Buttons";
 import Input from "@/components/common/Input";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
+import { useAlert } from '@/contexts/AlertContext';
 
 export default function EditProfile() {
   const router = useRouter();
+  const { showAlert } = useAlert();
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
@@ -49,10 +51,7 @@ export default function EditProfile() {
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert(
-          "Permission required",
-          "Permission needed to access photos.",
-        );
+        showAlert('Permission Required', 'Permission needed to access photos.', 'info');
         return;
       }
 
@@ -66,10 +65,7 @@ export default function EditProfile() {
         setAvatar(result.assets[0].uri);
       }
     } catch (err) {
-      Alert.alert(
-        "Image picker not available",
-        "Install `expo-image-picker` to pick images.",
-      );
+      showAlert('Image Picker Unavailable', 'Install expo-image-picker to pick images.', 'error');
     }
   };
 
@@ -110,10 +106,7 @@ export default function EditProfile() {
           avatarUrl = await uploadAvatar(user.id, avatar);
         } catch (e) {
           console.warn("avatar upload failed", e);
-          Alert.alert(
-            "Upload failed",
-            "Could not upload avatar. Check console.",
-          );
+          showAlert('Upload Failed', 'Could not upload avatar. Check console.', 'error');
         }
       }
 
@@ -133,17 +126,19 @@ export default function EditProfile() {
       router.back();
     } catch (e: any) {
       console.error(e);
-      Alert.alert("Save failed", e.message || String(e));
+      showAlert('Save Failed', e.message || String(e), 'error');
     } finally {
       setLoading(false);
     }
   };
 
   const onUseUrl = () => {
-    if (!imageUrlInput)
-      return Alert.alert("No URL", "Paste an image URL first.");
+    if (!imageUrlInput) {
+      showAlert('No URL', 'Paste an image URL first.', 'info');
+      return;
+    }
     setAvatar(imageUrlInput.trim());
-    setImageUrlInput("");
+    setImageUrlInput('');
   };
 
   return (

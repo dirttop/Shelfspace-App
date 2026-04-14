@@ -1,7 +1,8 @@
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView, useBottomSheetModal } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo } from 'react';
-import { Alert, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import AppText from '../common/AppText';
+import { useAlert } from '@/contexts/AlertContext';
 
 export type OtherUserSettingsModalProps = {};
 
@@ -9,13 +10,14 @@ export const OtherUserSettingsModal = forwardRef<BottomSheetModal, OtherUserSett
   (props, ref) => {
     const { dismiss } = useBottomSheetModal();
     const snapPoints = useMemo(() => ['25%'], []);
+    const { showAlert } = useAlert();
 
     const handleBlock = () => {
-      Alert.alert('Under Construction', 'Block user functionality coming soon.');
+      showAlert('Under Construction', 'Block user functionality coming soon.', 'info');
     };
 
     const handleReport = () => {
-      Alert.alert('Under Construction', 'Report user functionality coming soon.');
+      showAlert('Under Construction', 'Report user functionality coming soon.', 'info');
     };
 
     const renderBackdrop = useCallback(

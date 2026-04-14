@@ -8,7 +8,8 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useAlert } from '@/contexts/AlertContext';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 const GET_BOOK_QUERY = gql`
   query GetBook($isbn: String!) {
@@ -37,6 +38,7 @@ export default function AddTab() {
   const { openBookModal } = useBookModal();
   const [searchBooks] = useLazyQuery(SEARCH_BOOKS_QUERY);
   const [getBook] = useLazyQuery(GET_BOOK_QUERY);
+  const { showAlert } = useAlert();
 
   if (!permission) {
     return <View className="flex-1 bg-black" />; // Loading
@@ -108,21 +110,21 @@ export default function AddTab() {
             }
             openBookModal({ ...books[0], source: validSource });
           } else {
-            Alert.alert('Scan Result', 'Could not find a matching book in our database.');
+            showAlert('Scan Result', 'Could not find a matching book in our database.', 'info');
           }
         } catch (searchErr) {
           console.error('Book Search Error:', searchErr);
-          Alert.alert('Search Failed', 'Failed to retrieve book details from the database.');
+          showAlert('Search Failed', 'Failed to retrieve book details from the database.', 'error');
         } finally {
           setIsProcessing(false);
         }
       } else {
-        Alert.alert('Scan Result', 'Could not detect book details. Please try again.');
+        showAlert('Scan Result', 'Could not detect book details. Please try again.', 'info');
         setIsProcessing(false);
       }
     } catch (err) {
       console.error('Error processing image:', err);
-      Alert.alert("Scan Failed", (err instanceof Error) ? err.message : "An unknown error occurred.");
+      showAlert('Scan Failed', (err instanceof Error) ? err.message : 'An unknown error occurred.', 'error');
       setIsProcessing(false);
     }
   };
@@ -151,9 +153,10 @@ export default function AddTab() {
 
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert(
+        showAlert(
           'Permission required',
-          'Camera roll permission is required to select a photo.'
+          'Camera roll permission is required to select a photo.',
+          'info'
         );
         setIsProcessing(false);
         return;
@@ -195,11 +198,11 @@ export default function AddTab() {
         }
         openBookModal({ ...book, source: validSource });
       } else {
-        Alert.alert('Scan Result', 'Could not find a matching book for this barcode.');
+        showAlert('Scan Result', 'Could not find a matching book for this barcode.', 'info');
       }
     } catch (searchErr) {
       console.error('Barcode Search Error:', searchErr);
-      Alert.alert('Search Failed', 'Failed to retrieve book details for this barcode.');
+      showAlert('Search Failed', 'Failed to retrieve book details for this barcode.', 'error');
     } finally {
       setTimeout(() => setIsProcessing(false), 2000);
     }

@@ -1,10 +1,11 @@
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo, useState, useEffect } from 'react';
-import { View, Switch, Alert, Platform, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Switch, Platform, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import AppText from '../common/AppText';
 import { supabase } from '@/app/lib/supabase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAlert } from '@/contexts/AlertContext';
 
 export type Shelf = {
   id: string;
@@ -23,6 +24,7 @@ export const CustomizeShelvesModal = forwardRef<BottomSheetModal, CustomizeShelv
     const snapPoints = useMemo(() => ['60%', '90%'], []);
     const [shelves, setShelves] = useState<Shelf[]>([]);
     const [loading, setLoading] = useState(false);
+    const { showAlert } = useAlert();
     
     // Track loading state for individual toggles
     const [togglingIds, setTogglingIds] = useState<Set<string>>(new Set());
@@ -37,7 +39,7 @@ export const CustomizeShelvesModal = forwardRef<BottomSheetModal, CustomizeShelv
         .order('created_at', { ascending: true });
         
       if (error) {
-        Alert.alert('Error', 'Failed to load shelves.');
+        showAlert('Error', 'Failed to load shelves.', 'error');
       } else {
         setShelves(data as Shelf[]);
       }
@@ -84,7 +86,7 @@ export const CustomizeShelvesModal = forwardRef<BottomSheetModal, CustomizeShelv
       if (error) {
          // Revert on error
          setShelves(prev => prev.map(s => s.id === shelf.id ? { ...s, display_on_profile: !newValue } : s));
-         Alert.alert('Error', 'Failed to update shelf visibility.');
+         showAlert('Error', 'Failed to update shelf visibility.', 'error');
       }
     };
 
