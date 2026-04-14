@@ -10,63 +10,70 @@ import { MoreHorizontal } from 'lucide-react-native';
 
 type ProfileBookListProps = {
   userId: string;
-  shelfId: string; // Changed from number to string to match UUID
+  shelfId: string;
   title?: string;
+  initialBooks?: Book[];
+  onBooksFetched?: (books: Book[]) => void;
+  forceRefresh?: boolean;
 };
 
-export default function ProfileBookList({ userId, shelfId, title }: ProfileBookListProps) {
+export default function ProfileBookList({ userId, shelfId, title, initialBooks, onBooksFetched, forceRefresh }: ProfileBookListProps) {
   const router = useRouter();
-  const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [books, setBooks] = useState<Book[]>(initialBooks || []);
+  const [loading, setLoading] = useState(!initialBooks && books.length === 0);
   const [error, setError] = useState<string | null>(null);
 
-  useFocusEffect(
-    useCallback(() => {
-      let mounted = true;
+  useEffect(() => {
+    if (initialBooks && !forceRefresh) {
+      setBooks(initialBooks);
+      setLoading(false);
+      return;
+    }
 
-      async function fetchBooks() {
-        setLoading(true);
-        setError(null);
+    let mounted = true;
 
-        // Fetch from shelfBooks, join with books
-        const { data, error: fetchError } = await supabase
-          .from('shelfBooks')
-          .select('*, books(*)')
-          // Note: shelfBooks only stores the shelf_id and book_isbn,
-          // and user_id is implicit via the shelf, but we already filter by shelf_id.
-          .eq('shelf_id', shelfId)
-          .order('position', { ascending: true, nullsFirst: false });
+    async function fetchBooks() {
+      setLoading(true);
+      setError(null);
 
-        if (fetchError) {
-          if (mounted) setError(fetchError.message);
-        } else if (data) {
-          const mappedBooks = data.map((item: any) => {
-            const bookData = item.books || item.book;
-            if (!bookData) return null;
+      const { data, error: fetchError } = await supabase
+        .from('shelfBooks')
+        .select('*, books(*)')
+        .eq('shelf_id', shelfId)
+        .order('position', { ascending: true, nullsFirst: false });
 
-            return {
-              ...bookData,
-              coverImage: bookData.cover_image,
-              pageCount: bookData.page_count,
-              releaseYear: bookData.release_year,
-            } as Book;
-          }).filter((book): book is Book => book !== null);
+      if (fetchError) {
+        if (mounted) setError(fetchError.message);
+      } else if (data) {
+        const mappedBooks = data.map((item: any) => {
+          const bookData = item.books || item.book;
+          if (!bookData) return null;
 
-          if (mounted) setBooks(mappedBooks);
+          return {
+            ...bookData,
+            coverImage: bookData.cover_image,
+            pageCount: bookData.page_count,
+            releaseYear: bookData.release_year,
+          } as Book;
+        }).filter((book): book is Book => book !== null);
+
+        if (mounted) {
+          setBooks(mappedBooks);
+          if (onBooksFetched) onBooksFetched(mappedBooks);
         }
-
-        if (mounted) setLoading(false);
       }
 
-      if (userId) {
-        fetchBooks();
-      }
+      if (mounted) setLoading(false);
+    }
 
-      return () => {
-        mounted = false;
-      };
-    }, [userId, shelfId])
-  );
+    if (userId) {
+      fetchBooks();
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [userId, shelfId, forceRefresh]);
 
   if (loading) {
     return (

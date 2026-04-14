@@ -34,6 +34,7 @@ export default function Profile() {
   const [readCount, setReadCount] = useState<number>(0);
   const [readingCount, setReadingCount] = useState<number>(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [shelfBooksCache, setShelfBooksCache] = useState<Record<string, any[]>>({});
 
   const customizeModalRef = useRef<BottomSheetModal>(null);
 
@@ -136,21 +137,20 @@ export default function Profile() {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      let mounted = true;
-      const loadInitialData = async () => {
-        setLoading(true);
-        await fetchData();
-        if (mounted) setLoading(false);
-      };
-      loadInitialData();
-      return () => { mounted = false; };
-    }, [])
-  );
+  useEffect(() => {
+    let mounted = true;
+    const loadInitialData = async () => {
+      setLoading(true);
+      await fetchData();
+      if (mounted) setLoading(false);
+    };
+    loadInitialData();
+    return () => { mounted = false; };
+  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
+    setShelfBooksCache({});
     await fetchData();
     setRefreshing(false);
   }, []);
@@ -231,6 +231,10 @@ export default function Profile() {
                       userId={profile.id}
                       shelfId={item.id}
                       title={item.name}
+                      initialBooks={shelfBooksCache[item.id]}
+                      onBooksFetched={(books) => {
+                        setShelfBooksCache((prev) => ({ ...prev, [item.id]: books }));
+                      }}
                     />
                   </View>
                 );
